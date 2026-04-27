@@ -1,7 +1,14 @@
 const axios = require('axios');
 
 async function enviarWhatsApp(numero, codigos) {
-  const mensaje = "🎟️ Tus códigos: " + codigos.join(", ");
+
+  const mensaje =
+`🎟️ Compra confirmada
+
+Tus códigos:
+${codigos.join(", ")}
+
+Guárdalos.`;
 
   await axios.post(
     `https://api.twilio.com/2010-04-01/Accounts/${process.env.TWILIO_SID}/Messages.json`,

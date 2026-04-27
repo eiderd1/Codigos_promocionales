@@ -58,9 +58,12 @@ async function generarCodigos(cantidad) {
       const elegido = codigos[Math.floor(Math.random() * codigos.length)];
 
       await supabase
-        .from('codigos')
-        .update({ dorado: true })
-        .eq('codigo', elegido);
+  .from('codigos')
+  .update({ 
+    vendido: true,
+    referencia: referencia 
+  })
+  .in('id', ids);
 
       console.log("✨ Código dorado activado:", elegido);
     }

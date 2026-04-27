@@ -9,15 +9,27 @@ const transporter = nodemailer.createTransport({
 });
 
 async function enviarCorreo(destino, codigos) {
-  const lista = codigos.join(', ');
+
+  const lista = codigos.map(c => `<div style="font-size:18px">${c}</div>`).join("");
 
   await transporter.sendMail({
     from: process.env.EMAIL_USER,
     to: destino,
-    subject: "🎟️ Tus códigos",
-    html: `<h2>Gracias por tu compra</h2>
-           <p>Tus códigos son:</p>
-           <b>${lista}</b>`
+    subject: "🎟️ Ticket de compra - Códigos",
+    html: `
+      <div style="background:#111;padding:20px;color:white;font-family:Arial">
+        <h2 style="color:gold">🎟️ Compra Confirmada</h2>
+        <p>Estos son tus códigos:</p>
+
+        <div style="background:#000;padding:15px;border-radius:10px">
+          ${lista}
+        </div>
+
+        <p style="margin-top:20px;color:#aaa">
+          Guarda este ticket como comprobante.
+        </p>
+      </div>
+    `
   });
 }
 

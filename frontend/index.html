@@ -14,7 +14,7 @@ body {
 }
 
 .container {
-  max-width: 400px;
+  max-width: 420px;
   margin: auto;
   margin-top: 40px;
   padding: 20px;
@@ -66,6 +66,7 @@ button {
   width: 0%;
 }
 
+/* 🎰 loading */
 #casino {
   position: fixed;
   top: 0;
@@ -87,7 +88,38 @@ button {
   100% { transform: rotate(360deg); }
 }
 
-#contador { color: #facc15; }
+/* ✅ success */
+#success {
+  display:none;
+  margin-top:20px;
+  color:gold;
+}
+
+/* 🏆 ganadores */
+.ganador {
+  background:black;
+  color:gold;
+  padding:10px;
+  margin:5px;
+  border-radius:10px;
+  font-size:20px;
+}
+
+/* 🎟️ códigos */
+.codigo {
+  display:inline-block;
+  padding:10px;
+  margin:5px;
+  background:#1f2937;
+  border-radius:8px;
+}
+
+.dorado {
+  background:linear-gradient(45deg,gold,orange);
+  color:black;
+  font-weight:bold;
+  box-shadow:0 0 10px gold;
+}
 </style>
 </head>
 
@@ -100,7 +132,11 @@ button {
 <div class="container">
 
 <h1>🎟️ Compra tus códigos</h1>
-<h3 id="contador">Selecciona un paquete</h3>
+
+<div id="success">
+  <h2>✅ Pago confirmado</h2>
+  <p>Revisa tu correo y WhatsApp</p>
+</div>
 
 <h3>Selecciona paquete</h3>
 
@@ -118,10 +154,19 @@ button {
   <button onclick="pagar()">Pagar ahora</button>
 </div>
 
-<h3>Progreso</h3>
-<div class="progress">
-  <div id="barra" class="progress-bar"></div>
-</div>
+<hr>
+
+<h2>🔎 Consultar mis códigos</h2>
+
+<input id="buscar" placeholder="Correo o Cédula">
+<button onclick="consultar()">Buscar</button>
+
+<div id="resultado"></div>
+
+<hr>
+
+<h3>🏆 Números Ganadores</h3>
+<div id="ganadores"></div>
 
 </div>
 
@@ -129,29 +174,35 @@ button {
 
 let cantidad = 0;
 
+// ========================
+// seleccionar paquete
+// ========================
 function seleccionar(c) {
   cantidad = c;
   document.getElementById("form").style.display = "block";
 }
 
+// ========================
+// pagar wompi
+// ========================
 async function pagar() {
 
-  const nombre = document.getElementById("nombre").value;
-  const cedula = document.getElementById("cedula").value;
-  const telefono = document.getElementById("telefono").value;
-  const correo = document.getElementById("correo").value;
-  const direccion = document.getElementById("direccion").value;
+  const nombre = nombreInput.value;
+  const cedula = cedulaInput.value;
+  const telefono = telefonoInput.value;
+  const correo = correoInput.value;
+  const direccion = direccionInput.value;
 
   if (!nombre || !correo) {
     alert("Completa los datos");
     return;
   }
 
-  document.getElementById("casino").style.display = "flex";
+  casino.style.display = "flex";
 
   try {
 
-    const res = await fetch("/api/crear-transaccion", {
+    const res = await fetch("https://codigos-promocionales-qmmz.onrender.com/api/crear-transaccion", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -162,39 +213,87 @@ async function pagar() {
 
     const data = await res.json();
 
-    console.log("TX COMPLETO:", data);
-
-    if (!data.tx) {
-      alert("Error en pago");
-      return;
-    }
-
-    if (!data.tx.amount_in_cents) {
-      alert("Monto inválido");
-      return;
-    }
-
-    // ✅ URL WOMPI CORRECTA (SIN expiration)
     const params = new URLSearchParams({
-  "public-key": data.publicKey,
-  currency: "COP",
-  "amount-in-cents": data.tx.amount_in_cents,
-  reference: data.tx.reference,
-  "signature:integrity": data.tx.signature,
-  "redirect-url": window.location.origin + "/?status=success"
-});
+      "public-key": data.publicKey,
+      currency: "COP",
+      "amount-in-cents": data.tx.amount_in_cents,
+      reference: data.tx.reference,
+      "signature:integrity": data.tx.signature,
+      "redirect-url": "https://codigos-promocionales-qmmz.onrender.com/?status=success"
+    });
 
-    const url = `https://checkout.wompi.co/p/?mode=widget&${params.toString()}`;
-
-    console.log("✅ URL WOMPI:", url);
-
-    window.location.href = url;
+    window.location.href = `https://checkout.wompi.co/p/?mode=widget&${params.toString()}`;
 
   } catch (error) {
-    console.error(error);
-    alert("Error al procesar el pago");
+    alert("Error en el pago");
   }
 }
+
+// ========================
+// detectar pago exitoso
+// ========================
+const urlParams = new URLSearchParams(window.location.search);
+if (urlParams.get("status") === "success") {
+  success.style.display = "block";
+}
+
+// ========================
+// consultar códigos
+// ========================
+async function consultar() {
+
+  const valor = buscar.value;
+
+  if (!valor) {
+    alert("Ingresa correo o cédula");
+    return;
+  }
+
+  const res = await fetch("https://codigos-promocionales-qmmz.onrender.com/api/mis-codigos", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({ dato: valor })
+  });
+
+  const data = await res.json();
+
+  const contenedor = resultado;
+
+  contenedor.innerHTML = "";
+
+  if (!data.codigos || data.codigos.length === 0) {
+    contenedor.innerHTML = "<p>No tienes códigos</p>";
+    return;
+  }
+
+  data.codigos.forEach(c => {
+    const div = document.createElement("div");
+
+    div.className = "codigo";
+
+    if (c.dorado) {
+      div.classList.add("dorado");
+      div.innerText = c.codigo + " ✨";
+    } else {
+      div.innerText = c.codigo;
+    }
+
+    contenedor.appendChild(div);
+  });
+
+}
+
+// ========================
+// ganadores (demo)
+// ========================
+function mostrarGanadores(lista){
+  ganadores.innerHTML =
+    lista.map(n => `<div class="ganador">${n}</div>`).join("");
+}
+
+mostrarGanadores(["1234","5678","9999"]);
 
 </script>
 
