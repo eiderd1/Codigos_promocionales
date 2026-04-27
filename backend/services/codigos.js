@@ -1,9 +1,8 @@
 const supabase = require('../config/supabase');
 
-async function generarCodigos(cantidad) {
+async function generarCodigos(cantidad, referencia) {
   try {
 
-    // 🎟️ OBTENER CÓDIGOS DISPONIBLES
     const { data: disponibles, error } = await supabase
       .from('codigos')
       .select('id, codigo')
@@ -22,10 +21,13 @@ async function generarCodigos(cantidad) {
     const codigos = disponibles.map(r => r.codigo);
     const ids = disponibles.map(r => r.id);
 
-    // 🔄 MARCAR COMO VENDIDOS
+    // 🔄 marcar vendidos
     const { error: updateError } = await supabase
       .from('codigos')
-      .update({ vendido: true })
+      .update({ 
+        vendido: true,
+        referencia 
+      })
       .in('id', ids);
 
     if (updateError) {
@@ -33,37 +35,26 @@ async function generarCodigos(cantidad) {
       return [];
     }
 
-    // 📊 CONTAR VENDIDOS
-    const { count, error: countError } = await supabase
+    // 📊 total vendidos
+    const { count: vendidos } = await supabase
       .from('codigos')
       .select('*', { count: 'exact', head: true })
       .eq('vendido', true);
 
-    if (countError) {
-      console.error("❌ Error contando vendidos:", countError);
-      return codigos;
-    }
+    const { count: total } = await supabase
+      .from('codigos')
+      .select('*', { count: 'exact', head: true });
 
-    const total = 10000;
-    const porcentaje = (count / total) * 100;
+    const porcentaje = (vendidos / total) * 100;
 
     let activarDorado = false;
 
-    // 🎯 lógica dorado por porcentaje
-    if ([15, 30, 60, 99].some(p => porcentaje >= p)) {
+    if ([15, 30, 60, 99].includes(Math.floor(porcentaje))) {
       activarDorado = true;
     }
 
     if (activarDorado && codigos.length > 0) {
       const elegido = codigos[Math.floor(Math.random() * codigos.length)];
-
-      await supabase
-  .from('codigos')
-  .update({ 
-    vendido: true,
-    referencia: referencia 
-  })
-  .in('id', ids);
 
       console.log("✨ Código dorado activado:", elegido);
     }

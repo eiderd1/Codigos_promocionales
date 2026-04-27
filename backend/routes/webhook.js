@@ -2,7 +2,6 @@ const express = require('express');
 const router = express.Router();
 const crypto = require('crypto');
 
-// módulos tuyos
 const { generarCodigos } = require('../services/codigos');
 const { enviarCorreo } = require('../services/correo');
 const { enviarWhatsApp } = require('../services/whatsapp');
@@ -14,6 +13,11 @@ const supabase = require('../config/supabase');
 function validarFirma(event) {
   try {
     const secret = process.env.WOMPI_EVENTS_SECRET;
+
+    if (!secret) {
+      console.log("⚠️ WOMPI_EVENTS_SECRET no configurado");
+      return true; // ⚠️ en desarrollo permite pasar
+    }
 
     const firmaRecibida = event.signature?.checksum;
     const timestamp = event.timestamp;
@@ -85,11 +89,16 @@ router.post('/webhook-wompi', async (req, res) => {
     // ========================
     // 🔒 ANTIDUPLICADO
     // ========================
-    const { data: existe } = await supabase
+    const { data: existe, error: errorExiste } = await supabase
       .from('transacciones')
       .select('id')
       .eq('wompi_id', wompiId)
       .maybeSingle();
+
+    if (errorExiste) {
+      console.error("❌ Error consultando:", errorExiste);
+      return res.sendStatus(500);
+    }
 
     if (existe) {
       console.log("⚠️ Ya procesado");
@@ -99,38 +108,59 @@ router.post('/webhook-wompi', async (req, res) => {
     // ========================
     // 🎟️ GENERAR CÓDIGOS
     // ========================
-    let codigos = await generarCodigos(cantidad);
+    let codigos = [];
+
+    try {
+      codigos = await generarCodigos(cantidad);
+    } catch (err) {
+      console.error("❌ Error generando códigos:", err);
+      return res.sendStatus(500);
+    }
 
     if (!codigos || codigos.length === 0) {
       console.log("❌ Sin stock");
       return res.sendStatus(200);
     }
 
-    // 🔀 DESORDENAR
     codigos = mezclar(codigos);
 
     // ========================
     // 💾 GUARDAR
     // ========================
-    await supabase.from('transacciones').insert([{
-      referencia,
-      wompi_id: wompiId,
-      estado: "APROBADO",
-      email,
-      cantidad,
-      created_at: new Date()
-    }]);
+    const { error: errorInsert } = await supabase
+      .from('transacciones')
+      .insert([{
+        referencia,
+        wompi_id: wompiId,
+        estado: "APROBADO",
+        email,
+        cantidad,
+        created_at: new Date()
+      }]);
+
+    if (errorInsert) {
+      console.error("❌ Error insertando:", errorInsert);
+      return res.sendStatus(500);
+    }
 
     // ========================
-    // 📧 EMAIL tipo ticket
+    // 📧 EMAIL
     // ========================
-    await enviarCorreo(email, codigos);
+    try {
+      await enviarCorreo(email, codigos);
+    } catch (err) {
+      console.error("❌ Error enviando correo:", err);
+    }
 
     // ========================
     // 📱 WHATSAPP
     // ========================
     if (telefono) {
-      await enviarWhatsApp(telefono, codigos);
+      try {
+        await enviarWhatsApp(telefono, codigos);
+      } catch (err) {
+        console.error("❌ Error WhatsApp:", err);
+      }
     }
 
     console.log("✅ ENTREGA COMPLETA:", referencia);

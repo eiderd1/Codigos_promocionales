@@ -51,22 +51,9 @@ button {
   color: black;
   font-weight: bold;
   border-radius: 10px;
+  cursor: pointer;
 }
 
-.progress {
-  margin-top: 20px;
-  background: #374151;
-  border-radius: 10px;
-  overflow: hidden;
-}
-
-.progress-bar {
-  height: 20px;
-  background: gold;
-  width: 0%;
-}
-
-/* 🎰 loading */
 #casino {
   position: fixed;
   top: 0;
@@ -88,24 +75,12 @@ button {
   100% { transform: rotate(360deg); }
 }
 
-/* ✅ success */
 #success {
   display:none;
   margin-top:20px;
   color:gold;
 }
 
-/* 🏆 ganadores */
-.ganador {
-  background:black;
-  color:gold;
-  padding:10px;
-  margin:5px;
-  border-radius:10px;
-  font-size:20px;
-}
-
-/* 🎟️ códigos */
 .codigo {
   display:inline-block;
   padding:10px;
@@ -118,7 +93,6 @@ button {
   background:linear-gradient(45deg,gold,orange);
   color:black;
   font-weight:bold;
-  box-shadow:0 0 10px gold;
 }
 </style>
 </head>
@@ -151,7 +125,7 @@ button {
   <input id="telefono" placeholder="Teléfono">
   <input id="correo" placeholder="Correo">
   <input id="direccion" placeholder="Dirección">
-  <button onclick="pagar()">Pagar ahora</button>
+  <button id="btnPagar" onclick="pagar()">Pagar ahora</button>
 </div>
 
 <hr>
@@ -163,14 +137,18 @@ button {
 
 <div id="resultado"></div>
 
-<hr>
-
-<h3>🏆 Números Ganadores</h3>
-<div id="ganadores"></div>
-
 </div>
 
 <script>
+
+// ========================
+// ELEMENTOS
+// ========================
+const casino = document.getElementById("casino");
+const success = document.getElementById("success");
+const buscar = document.getElementById("buscar");
+const resultado = document.getElementById("resultado");
+const btnPagar = document.getElementById("btnPagar");
 
 let cantidad = 0;
 
@@ -187,18 +165,24 @@ function seleccionar(c) {
 // ========================
 async function pagar() {
 
-  const nombre = nombreInput.value;
-  const cedula = cedulaInput.value;
-  const telefono = telefonoInput.value;
-  const correo = correoInput.value;
-  const direccion = direccionInput.value;
+  const nombre = document.getElementById("nombre").value;
+  const cedula = document.getElementById("cedula").value;
+  const telefono = document.getElementById("telefono").value;
+  const correo = document.getElementById("correo").value;
+  const direccion = document.getElementById("direccion").value;
+
+  if (!cantidad) {
+    alert("Selecciona un paquete");
+    return;
+  }
 
   if (!nombre || !correo) {
-    alert("Completa los datos");
+    alert("Completa los datos obligatorios");
     return;
   }
 
   casino.style.display = "flex";
+  btnPagar.disabled = true;
 
   try {
 
@@ -211,7 +195,15 @@ async function pagar() {
       })
     });
 
+    if (!res.ok) {
+      throw new Error("Error en servidor");
+    }
+
     const data = await res.json();
+
+    if (!data.tx) {
+      throw new Error("Respuesta inválida");
+    }
 
     const params = new URLSearchParams({
       "public-key": data.publicKey,
@@ -225,6 +217,9 @@ async function pagar() {
     window.location.href = `https://checkout.wompi.co/p/?mode=widget&${params.toString()}`;
 
   } catch (error) {
+    console.error(error);
+    casino.style.display = "none";
+    btnPagar.disabled = false;
     alert("Error en el pago");
   }
 }
@@ -249,51 +244,45 @@ async function consultar() {
     return;
   }
 
-  const res = await fetch("https://codigos-promocionales-qmmz.onrender.com/api/mis-codigos", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({ dato: valor })
-  });
+  try {
 
-  const data = await res.json();
+    const res = await fetch("https://codigos-promocionales-qmmz.onrender.com/api/mis-codigos", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ dato: valor })
+    });
 
-  const contenedor = resultado;
+    const data = await res.json();
 
-  contenedor.innerHTML = "";
+    resultado.innerHTML = "";
 
-  if (!data.codigos || data.codigos.length === 0) {
-    contenedor.innerHTML = "<p>No tienes códigos</p>";
-    return;
-  }
-
-  data.codigos.forEach(c => {
-    const div = document.createElement("div");
-
-    div.className = "codigo";
-
-    if (c.dorado) {
-      div.classList.add("dorado");
-      div.innerText = c.codigo + " ✨";
-    } else {
-      div.innerText = c.codigo;
+    if (!data.codigos || data.codigos.length === 0) {
+      resultado.innerHTML = "<p>No tienes códigos</p>";
+      return;
     }
 
-    contenedor.appendChild(div);
-  });
+    data.codigos.forEach(c => {
+      const div = document.createElement("div");
 
+      div.className = "codigo";
+
+      if (c.dorado) {
+        div.classList.add("dorado");
+        div.innerText = c.codigo + " ✨";
+      } else {
+        div.innerText = c.codigo;
+      }
+
+      resultado.appendChild(div);
+    });
+
+  } catch (error) {
+    console.error(error);
+    alert("Error consultando códigos");
+  }
 }
-
-// ========================
-// ganadores (demo)
-// ========================
-function mostrarGanadores(lista){
-  ganadores.innerHTML =
-    lista.map(n => `<div class="ganador">${n}</div>`).join("");
-}
-
-mostrarGanadores(["1234","5678","9999"]);
 
 </script>
 
