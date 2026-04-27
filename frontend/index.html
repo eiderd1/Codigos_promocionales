@@ -176,13 +176,13 @@ async function pagar() {
 
     // ✅ URL WOMPI CORRECTA (SIN expiration)
     const params = new URLSearchParams({
-      "public-key": data.publicKey,
-      currency: "COP",
-      "amount-in-cents": data.tx.amount_in_cents,
-      reference: data.tx.reference,
-      "signature": data.tx.signature,
-      "redirect-url": window.location.origin + "/?status=success"
-    });
+  "public-key": data.publicKey,
+  currency: "COP",
+  "amount-in-cents": data.tx.amount_in_cents,
+  reference: data.tx.reference,
+  "signature:integrity": data.tx.signature,
+  "redirect-url": window.location.origin + "/?status=success"
+});
 
     const url = `https://checkout.wompi.co/p/?mode=widget&${params.toString()}`;
 
