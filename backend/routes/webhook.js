@@ -3,9 +3,9 @@ const router = express.Router();
 const crypto = require('crypto');
 
 // módulos tuyos
-const { generarCodigos } = require('../utils/codigos');
-const { enviarCorreo } = require('../utils/correo');
-const { enviarWhatsApp } = require('../utils/whatsapp');
+const { generarCodigos } = require('../services/codigos');
+const { enviarCorreo } = require('../services/correo');
+const { enviarWhatsApp } = require('../services/whatsapp');
 const supabase = require('../config/supabase');
 
 // ========================
