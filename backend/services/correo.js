@@ -8,7 +8,9 @@ let transporter = null;
 // Crear transporter solo si hay credenciales
 if (EMAIL_USER && EMAIL_PASS) {
   transporter = nodemailer.createTransport({
-    service: 'gmail',
+    host: 'smtp.gmail.com',
+    port: 465,
+    secure: true,
     auth: {
       user: EMAIL_USER,
       pass: EMAIL_PASS
@@ -26,26 +28,60 @@ async function enviarCorreo(destino, codigos) {
       return;
     }
 
+    if (!destino) {
+      console.warn("⚠️ Email omitido: destino vacío");
+      return;
+    }
+
+    if (!Array.isArray(codigos) || codigos.length === 0) {
+      console.warn("⚠️ Email omitido: sin códigos");
+      return;
+    }
+
     const lista = codigos
-      .map(c => `<div style="font-size:18px">${c}</div>`)
+      .map(c => `
+        <div style="
+          font-size:20px;
+          font-weight:bold;
+          color:gold;
+          margin:5px 0;
+          letter-spacing:2px;
+        ">
+          ${c}
+        </div>
+      `)
       .join("");
 
     await transporter.sendMail({
-      from: EMAIL_USER,
+      from: `"Tickets" <${EMAIL_USER}>`,
       to: destino,
-      subject: "🎟️ Ticket de compra - Códigos",
+      subject: "🎟️ Compra Confirmada - Tus Códigos",
       html: `
-        <div style="background:#111;padding:20px;color:white;font-family:Arial">
-          <h2 style="color:gold">🎟️ Compra Confirmada</h2>
-          <p>Estos son tus códigos:</p>
+        <div style="
+          background:#111;
+          padding:25px;
+          color:white;
+          font-family:Arial;
+          text-align:center;
+        ">
 
-          <div style="background:#000;padding:15px;border-radius:10px">
+          <h2 style="color:gold;">🎟️ Compra Confirmada</h2>
+
+          <p>Gracias por tu compra. Estos son tus códigos:</p>
+
+          <div style="
+            background:#000;
+            padding:20px;
+            border-radius:10px;
+            margin-top:15px;
+          ">
             ${lista}
           </div>
 
-          <p style="margin-top:20px;color:#aaa">
-            Guarda este ticket como comprobante.
+          <p style="margin-top:20px;color:#aaa;font-size:13px;">
+            Guarda estos códigos como comprobante.
           </p>
+
         </div>
       `
     });
