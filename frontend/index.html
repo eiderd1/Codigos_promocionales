@@ -286,7 +286,10 @@ async function pagar() {
   if (btnPagar.classList.contains("loading")) return;
 
   const nombre = document.getElementById("nombre").value;
+  const cedula = document.getElementById("cedula").value;
+  const telefono = document.getElementById("telefono").value;
   const correo = document.getElementById("correo").value;
+  const direccion = document.getElementById("direccion").value;
 
   if (!cantidad) return alert("Selecciona un paquete");
   if (!nombre || !correo) return alert("Completa los datos");
@@ -301,13 +304,7 @@ async function pagar() {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        cliente: {
-          nombre,
-          cedula: cedula.value,
-          telefono: telefono.value,
-          correo,
-          direccion: direccion.value
-        },
+        cliente: { nombre, cedula, telefono, correo, direccion },
         cantidad
       })
     });
@@ -325,7 +322,8 @@ async function pagar() {
 
     window.location.href = `https://checkout.wompi.co/p/?mode=widget&${params}`;
 
-  } catch {
+  } catch (err) {
+    console.log(err);
     alert("Error en el pago");
     btnPagar.classList.remove("loading");
     btnPagar.disabled = false;
@@ -374,10 +372,12 @@ async function consultar() {
 
       setTimeout(() => {
 
-        if (c.dorado) {
+        const esDorado = c.dorado === true || c.dorado === "true" || c.dorado === 1;
+
+        if (esDorado) {
           dorados++;
           div.classList.add("dorado");
-          div.innerText = c.codigo + " ✨";
+          div.innerText = "✨ " + c.codigo + " ✨";
         } else {
           div.innerText = c.codigo;
         }
@@ -387,17 +387,20 @@ async function consultar() {
       resultado.appendChild(div);
     });
 
-    // barra progreso
     const total = data.codigos.length;
-    const porcentaje = Math.round((dorados / total) * 100);
 
     setTimeout(() => {
+
+      const porcentaje = total > 0 ? Math.round((dorados / total) * 100) : 0;
+
       document.getElementById("barra").style.width = porcentaje + "%";
       document.getElementById("barraTexto").innerText =
         `✨ ${dorados} dorados de ${total} (${porcentaje}%)`;
+
     }, data.codigos.length * 120 + 300);
 
-  } catch {
+  } catch (err) {
+    console.log(err);
     alert("Error consultando códigos");
   }
 }
