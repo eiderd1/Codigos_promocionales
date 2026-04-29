@@ -24,16 +24,31 @@ body {
 
 h1 { color: gold; }
 
+/* ===================== */
+/* CARDS */
+/* ===================== */
 .card {
   background: #1f2937;
   padding: 15px;
   margin: 10px 0;
   border-radius: 10px;
   cursor: pointer;
+  transition: all 0.3s ease;
 }
 
 .card:hover { transform: scale(1.05); }
 
+.card.selected {
+  background: linear-gradient(45deg, gold, orange);
+  color: black;
+  transform: scale(1.07);
+  box-shadow: 0 0 20px rgba(255,215,0,0.7);
+  border: 2px solid gold;
+}
+
+/* ===================== */
+/* INPUTS Y BOTÓN */
+/* ===================== */
 input {
   width: 90%;
   padding: 10px;
@@ -52,8 +67,29 @@ button {
   font-weight: bold;
   border-radius: 10px;
   cursor: pointer;
+  transition: 0.3s;
+  position: relative;
 }
 
+button:hover { transform: scale(1.05); }
+
+button.loading {
+  background: #555;
+  color: transparent;
+  cursor: not-allowed;
+}
+
+button.loading::after {
+  content: "Procesando...";
+  color: white;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+/* ===================== */
+/* CASINO LOADER */
+/* ===================== */
 #casino {
   position: fixed;
   top: 0;
@@ -68,31 +104,78 @@ button {
 
 .ruleta {
   font-size: 100px;
-  animation: girar 1s infinite;
+  animation: girar 1s infinite linear;
 }
 
 @keyframes girar {
   100% { transform: rotate(360deg); }
 }
 
-#success {
-  display:none;
-  margin-top:20px;
-  color:gold;
-}
-
+/* ===================== */
+/* CÓDIGOS */
+/* ===================== */
 .codigo {
   display:inline-block;
   padding:10px;
   margin:5px;
   background:#1f2937;
   border-radius:8px;
+  opacity: 0;
+  transform: scale(0.8);
+  animation: aparecer 0.4s forwards;
+}
+
+@keyframes aparecer {
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* DORADOS */
+@keyframes brilloDorado {
+  0% { transform: scale(0.8); opacity: 0; }
+  50% { transform: scale(1.2); opacity: 1; }
+  100% { transform: scale(1); }
 }
 
 .dorado {
   background:linear-gradient(45deg,gold,orange);
   color:black;
   font-weight:bold;
+  box-shadow: 0 0 15px gold;
+  animation: brilloDorado 0.6s ease;
+}
+
+/* ===================== */
+/* BARRA DE PROGRESO */
+/* ===================== */
+.barra-container {
+  width: 100%;
+  background: #1f2937;
+  border-radius: 10px;
+  margin: 15px 0;
+  overflow: hidden;
+}
+
+.barra {
+  height: 20px;
+  width: 0%;
+  background: linear-gradient(90deg, gold, orange);
+  transition: width 0.8s ease;
+}
+
+.barra-texto {
+  margin-top: 5px;
+  font-size: 14px;
+  color: gold;
+}
+
+/* ===================== */
+#success {
+  display:none;
+  margin-top:20px;
+  color:gold;
 }
 </style>
 </head>
@@ -107,16 +190,17 @@ button {
 
 <h1>🎟️ Compra tus códigos</h1>
 <h1>Gana 15 millones de pesos cop</h1>
+
 <div id="success">
   <h2>✅ Pago confirmado</h2>
   <p>Revisa tu correo y WhatsApp</p>
 </div>
 
 <h3>Selecciona paquete</h3>
-
-<div class="card" onclick="seleccionar(20)">20 códigos<br><strong>$10.000</strong></div>
-<div class="card" onclick="seleccionar(40)">40 códigos<br><strong>$20.000</strong></div>
-<div class="card" onclick="seleccionar(60)">60 códigos<br><strong>$30.000</strong></div>
+el ganador del codigo sale al llegar el 100 % con la de medellin
+<div class="card" data-cantidad="20">20 códigos<br><strong>$10.000</strong></div>
+<div class="card" data-cantidad="40">40 códigos<br><strong>$20.000</strong></div>
+<div class="card" data-cantidad="60">60 códigos<br><strong>$30.000</strong></div>
 
 <div id="form" style="display:none;">
   <h3>Datos</h3>
@@ -125,7 +209,7 @@ button {
   <input id="telefono" placeholder="Teléfono">
   <input id="correo" placeholder="Correo">
   <input id="direccion" placeholder="Dirección">
-  <button id="btnPagar" onclick="pagar()">Pagar ahora</button>
+  <button id="btnPagar">Pagar ahora</button>
 </div>
 
 <hr>
@@ -135,15 +219,18 @@ button {
 <input id="buscar" placeholder="Correo o Cédula">
 <button onclick="consultar()">Buscar</button>
 
+<!-- BARRA -->
+<div class="barra-container">
+  <div id="barra" class="barra"></div>
+</div>
+<div id="barraTexto" class="barra-texto"></div>
+
 <div id="resultado"></div>
 
 </div>
 
 <script>
 
-// ========================
-// ELEMENTOS
-// ========================
 const casino = document.getElementById("casino");
 const success = document.getElementById("success");
 const buscar = document.getElementById("buscar");
@@ -152,37 +239,56 @@ const btnPagar = document.getElementById("btnPagar");
 
 let cantidad = 0;
 
-// ========================
-// seleccionar paquete
-// ========================
-function seleccionar(c) {
-  cantidad = c;
-  document.getElementById("form").style.display = "block";
-}
+/* ===================== */
+/* SELECCIÓN */
+/* ===================== */
+const cards = document.querySelectorAll(".card");
 
-// ========================
-// pagar wompi
-// ========================
+cards.forEach(card => {
+  card.addEventListener("click", () => {
+    cantidad = parseInt(card.dataset.cantidad);
+    localStorage.setItem("cantidadSeleccionada", cantidad);
+
+    cards.forEach(c => c.classList.remove("selected"));
+    card.classList.add("selected");
+
+    document.getElementById("form").style.display = "block";
+  });
+});
+
+window.addEventListener("load", () => {
+  const guardado = localStorage.getItem("cantidadSeleccionada");
+
+  if (guardado) {
+    cantidad = parseInt(guardado);
+
+    cards.forEach(card => {
+      if (parseInt(card.dataset.cantidad) === cantidad) {
+        card.classList.add("selected");
+        document.getElementById("form").style.display = "block";
+      }
+    });
+  }
+});
+
+/* ===================== */
+/* PAGAR */
+/* ===================== */
+btnPagar.addEventListener("click", pagar);
+
 async function pagar() {
 
+  if (btnPagar.classList.contains("loading")) return;
+
   const nombre = document.getElementById("nombre").value;
-  const cedula = document.getElementById("cedula").value;
-  const telefono = document.getElementById("telefono").value;
   const correo = document.getElementById("correo").value;
-  const direccion = document.getElementById("direccion").value;
 
-  if (!cantidad) {
-    alert("Selecciona un paquete");
-    return;
-  }
+  if (!cantidad) return alert("Selecciona un paquete");
+  if (!nombre || !correo) return alert("Completa los datos");
 
-  if (!nombre || !correo) {
-    alert("Completa los datos obligatorios");
-    return;
-  }
-
-  casino.style.display = "flex";
+  btnPagar.classList.add("loading");
   btnPagar.disabled = true;
+  casino.style.display = "flex";
 
   try {
 
@@ -190,20 +296,18 @@ async function pagar() {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        cliente: { nombre, cedula, telefono, correo, direccion },
+        cliente: {
+          nombre,
+          cedula: cedula.value,
+          telefono: telefono.value,
+          correo,
+          direccion: direccion.value
+        },
         cantidad
       })
     });
 
-    if (!res.ok) {
-      throw new Error("Error en servidor");
-    }
-
     const data = await res.json();
-
-    if (!data.tx) {
-      throw new Error("Respuesta inválida");
-    }
 
     const params = new URLSearchParams({
       "public-key": data.publicKey,
@@ -214,72 +318,81 @@ async function pagar() {
       "redirect-url": "https://codigos-promocionales-qmmz.onrender.com/?status=success"
     });
 
-    window.location.href = `https://checkout.wompi.co/p/?mode=widget&${params.toString()}`;
+    window.location.href = `https://checkout.wompi.co/p/?mode=widget&${params}`;
 
-  } catch (error) {
-    console.error(error);
-    casino.style.display = "none";
-    btnPagar.disabled = false;
+  } catch {
     alert("Error en el pago");
+    btnPagar.classList.remove("loading");
+    btnPagar.disabled = false;
+    casino.style.display = "none";
   }
 }
 
-// ========================
-// detectar pago exitoso
-// ========================
+/* ===================== */
+/* SUCCESS */
+/* ===================== */
 const urlParams = new URLSearchParams(window.location.search);
 if (urlParams.get("status") === "success") {
   success.style.display = "block";
 }
 
-// ========================
-// consultar códigos
-// ========================
+/* ===================== */
+/* CONSULTAR */
+/* ===================== */
 async function consultar() {
 
   const valor = buscar.value;
-
-  if (!valor) {
-    alert("Ingresa correo o cédula");
-    return;
-  }
+  if (!valor) return alert("Ingresa correo o cédula");
 
   try {
 
     const res = await fetch("https://codigos-promocionales-qmmz.onrender.com/api/mis-codigos", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
+      headers: {"Content-Type":"application/json"},
       body: JSON.stringify({ dato: valor })
     });
 
     const data = await res.json();
-
     resultado.innerHTML = "";
 
-    if (!data.codigos || data.codigos.length === 0) {
+    if (!data.codigos?.length) {
       resultado.innerHTML = "<p>No tienes códigos</p>";
       return;
     }
 
-    data.codigos.forEach(c => {
-      const div = document.createElement("div");
+    let dorados = 0;
 
+    data.codigos.forEach((c, index) => {
+
+      const div = document.createElement("div");
       div.className = "codigo";
 
-      if (c.dorado) {
-        div.classList.add("dorado");
-        div.innerText = c.codigo + " ✨";
-      } else {
-        div.innerText = c.codigo;
-      }
+      setTimeout(() => {
+
+        if (c.dorado) {
+          dorados++;
+          div.classList.add("dorado");
+          div.innerText = c.codigo + " ✨";
+        } else {
+          div.innerText = c.codigo;
+        }
+
+      }, index * 120);
 
       resultado.appendChild(div);
     });
 
-  } catch (error) {
-    console.error(error);
+    // barra progreso
+    const total = data.codigos.length;
+    const porcentaje = Math.round((dorados / total) * 100);
+
+    setTimeout(() => {
+      document.getElementById("barra").style.width = porcentaje + "%";
+      document.getElementById("barraTexto").innerText =
+        `✨ ${dorados} dorados de ${total} (${porcentaje}%)`;
+    }, data.codigos.length * 120 + 300);
+
+  } catch {
     alert("Error consultando códigos");
   }
 }

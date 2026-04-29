@@ -2,7 +2,10 @@ require('dotenv').config();
 
 const express = require('express');
 const cors = require('cors');
+const { generarDoradosIniciales } = require('./services/dorados');
 
+// 🚀 Ejecutar una sola vez al iniciar servidor
+generarDoradosIniciales();
 console.log("🔥 Iniciando servidor...");
 
 // ========================
