@@ -286,9 +286,34 @@ let cantidad = 0;
 const cards = document.querySelectorAll(".card");
 const form = document.getElementById("form");
 
-/* 🔥 SELECCIÓN PRO */
+/* =========================
+   🔥 VERIFICAR STOCK (NUEVO)
+========================= */
+async function verificarStock() {
+  try {
+    const res = await fetch(`${API_URL}/api/progreso`);
+    const data = await res.json();
+
+    if (data.disponibles <= 0) {
+      cards.forEach(c => c.classList.add("disabled"));
+      form.style.display = "none";
+      alert("🚫 Códigos agotados");
+    }
+
+  } catch (e) {
+    console.log("Error verificando stock");
+  }
+}
+
+verificarStock();
+
+/* =========================
+   🔥 SELECCIÓN PRO
+========================= */
 cards.forEach(card => {
   card.addEventListener("click", () => {
+
+    if (card.classList.contains("disabled")) return;
 
     cards.forEach(c => c.classList.remove("selected","disabled"));
 
@@ -311,7 +336,9 @@ cards.forEach(card => {
   });
 });
 
-/* CONSULTAR */
+/* =========================
+   🔎 CONSULTAR
+========================= */
 window.consultar = async function() {
   try {
     const valor = document.getElementById("buscar").value;
@@ -349,7 +376,9 @@ window.consultar = async function() {
   }
 };
 
-/* 🔥 PAGAR CORREGIDO */
+/* =========================
+   💰 PAGAR
+========================= */
 const btnPagar = document.getElementById("btnPagar");
 const casino = document.getElementById("casino");
 
@@ -387,8 +416,20 @@ btnPagar.addEventListener("click", async () => {
 
     const data = await res.json();
 
+    /* 🚫 SI NO HAY STOCK */
+    if (!res.ok) {
+      alert(data.error || "Error en compra");
+
+      btnPagar.classList.remove("loading");
+      casino.style.display = "none";
+
+      verificarStock(); // 🔥 refresca estado
+
+      return;
+    }
+
     if (!data || !data.tx) {
-      throw new Error("Respuesta inválida del servidor");
+      throw new Error("Respuesta inválida");
     }
 
     const params = new URLSearchParams({
@@ -396,7 +437,7 @@ btnPagar.addEventListener("click", async () => {
       currency: "COP",
       "amount-in-cents": data.tx.amount_in_cents,
       reference: data.tx.reference,
-      "signature:integrity": data.tx.signature,
+      "signature:integrity": data.tx.signature.integrity,
       "redirect-url": `${API_URL}?status=success`
     });
 
@@ -412,7 +453,9 @@ btnPagar.addEventListener("click", async () => {
 
 });
 
-/* SUCCESS */
+/* =========================
+   ✅ SUCCESS
+========================= */
 const urlParams = new URLSearchParams(window.location.search);
 if (urlParams.get("status") === "success") {
   document.getElementById("success").style.display = "block";

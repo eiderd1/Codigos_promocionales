@@ -1,6 +1,7 @@
 const express = require('express');
 const crypto = require('crypto');
 const router = express.Router();
+const supabase = require('../supabase');
 
 router.post('/crear-transaccion', async (req, res) => {
   try {
