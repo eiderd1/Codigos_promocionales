@@ -1,7 +1,7 @@
 const express = require('express');
 const crypto = require('crypto');
 const router = express.Router();
-const supabase = require('../supabase');
+const supabase = require('../config/supabase');
 
 router.post('/crear-transaccion', async (req, res) => {
   try {
@@ -20,7 +20,7 @@ router.post('/crear-transaccion', async (req, res) => {
     const precios = {
       4: 1500,
       8: 40000,
-      16: 80000
+      16: 80000,
     };
 
     const monto = precios[cantidad];
