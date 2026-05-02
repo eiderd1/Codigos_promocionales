@@ -311,7 +311,7 @@ cards.forEach(card => {
   });
 });
 
-/* CONSULTAR (igual tuyo) */
+/* CONSULTAR */
 window.consultar = async function() {
   try {
     const valor = document.getElementById("buscar").value;
@@ -349,21 +349,27 @@ window.consultar = async function() {
   }
 };
 
-/* PAGAR (igual tuyo) */
+/* 🔥 PAGAR CORREGIDO */
 const btnPagar = document.getElementById("btnPagar");
 const casino = document.getElementById("casino");
 
 btnPagar.addEventListener("click", async () => {
 
-  if (!cantidad) return alert("Selecciona un paquete");
+  if (!cantidad) {
+    alert("Selecciona un paquete");
+    return;
+  }
 
-  const nombre = document.getElementById("nombre").value;
-  const cedula = document.getElementById("cedula").value;
-  const telefono = document.getElementById("telefono").value;
-  const correo = document.getElementById("correo").value;
-  const direccion = document.getElementById("direccion").value;
+  const nombre = document.getElementById("nombre").value.trim();
+  const cedula = document.getElementById("cedula").value.trim();
+  const telefono = document.getElementById("telefono").value.trim();
+  const correo = document.getElementById("correo").value.trim();
+  const direccion = document.getElementById("direccion").value.trim();
 
-  if (!nombre || !correo) return alert("Completa los datos");
+  if (!nombre || !correo || !cedula || !telefono) {
+    alert("Completa todos los datos");
+    return;
+  }
 
   btnPagar.classList.add("loading");
   casino.style.display = "flex";
@@ -381,19 +387,27 @@ btnPagar.addEventListener("click", async () => {
 
     const data = await res.json();
 
+    if (!data || !data.tx) {
+      throw new Error("Respuesta inválida del servidor");
+    }
+
     const params = new URLSearchParams({
       "public-key": data.publicKey,
       currency: "COP",
       "amount-in-cents": data.tx.amount_in_cents,
       reference: data.tx.reference,
       "signature:integrity": data.tx.signature,
-      "redirect-url": `${API_URL}/?status=success`
+      "redirect-url": `${API_URL}?status=success`
     });
 
-    window.location.href = `https://checkout.wompi.co/p/?mode=widget&${params}`;
+    window.location.href = `https://checkout.wompi.co/p/?mode=widget&${params.toString()}`;
 
   } catch (err) {
-    alert("Error en pago");
+    console.error(err);
+    alert("Error en el pago");
+
+    btnPagar.classList.remove("loading");
+    casino.style.display = "none";
   }
 
 });
