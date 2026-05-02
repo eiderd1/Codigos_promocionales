@@ -15,9 +15,9 @@ router.post('/crear-transaccion', async (req, res) => {
     }
 
     const precios = {
-      20: 10000,
-      40: 20000,
-      60: 30000
+      4: 1500,
+      8: 40000,
+      16: 80000
     };
 
     const monto = precios[cantidad];
@@ -52,11 +52,12 @@ router.post('/crear-transaccion', async (req, res) => {
         phone_number: cliente.telefono || ""
       },
       metadata: {
-        cedula: cliente.cedula || "",
-        direccion: cliente.direccion || "",
-        cantidad,
-        correo: cliente.correo
-      }
+  nombre: cliente.nombre,
+  cedula: cliente.cedula || "",
+  direccion: cliente.direccion || "",
+  cantidad,
+  correo: cliente.correo
+}
     };
 
     console.log("🧾 Nueva transacción:");

@@ -1,48 +1,59 @@
 const axios = require('axios');
 
-const SID = process.env.TWILIO_SID;
-const TOKEN = process.env.TWILIO_TOKEN;
-const FROM = process.env.TWILIO_FROM;
+const TOKEN = process.env.WHATSAPP_TOKEN;
+const PHONE_ID = process.env.PHONE_NUMBER_ID;
+const TEMPLATE = process.env.WHATSAPP_TEMPLATE;
 
-async function enviarWhatsApp(numero, codigos) {
+async function enviarWhatsApp(numero, nombre, codigos) {
   try {
 
-    if (!SID || !TOKEN || !FROM) {
-      console.warn("⚠️ WhatsApp no configurado (faltan variables)");
+    if (!TOKEN || !PHONE_ID || !TEMPLATE) {
+      console.warn("⚠️ WhatsApp no configurado");
       return;
     }
 
-    if (!numero) {
-      console.warn("⚠️ Número vacío, no se envía WhatsApp");
+    if (!numero || !codigos?.length) {
+      console.warn("⚠️ Datos incompletos WhatsApp");
       return;
     }
 
-    const mensaje = `🎟️ Compra confirmada
-
-Tus códigos:
-${codigos.join(", ")}
-
-Guárdalos.`;
+    // 🔥 convertir lista a texto bonito
+    const listaCodigos = codigos.join("\n");
 
     await axios.post(
-      `https://api.twilio.com/2010-04-01/Accounts/${SID}/Messages.json`,
-      new URLSearchParams({
-        From: FROM,
-        To: "whatsapp:" + numero,
-        Body: mensaje
-      }),
+      `https://graph.facebook.com/v18.0/${PHONE_ID}/messages`,
       {
-        auth: {
-          username: SID,
-          password: TOKEN
+        messaging_product: "whatsapp",
+        to: numero,
+        type: "template",
+        template: {
+          name: TEMPLATE,
+          language: {
+            code: "es"
+          },
+          components: [
+            {
+              type: "body",
+              parameters: [
+                { type: "text", text: nombre || "Cliente" },
+                { type: "text", text: listaCodigos }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${TOKEN}`,
+          "Content-Type": "application/json"
         }
       }
     );
 
-    console.log("📱 WhatsApp enviado a:", numero);
+    console.log("📱 WhatsApp PRO enviado a:", numero);
 
   } catch (error) {
-    console.error("❌ Error enviando WhatsApp:", error.response?.data || error.message);
+    console.error("❌ Error WhatsApp:", error.response?.data || error.message);
   }
 }
 

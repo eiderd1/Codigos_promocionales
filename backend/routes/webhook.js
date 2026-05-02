@@ -16,7 +16,7 @@ function validarFirma(event) {
 
     if (!secret) {
       console.log("⚠️ WOMPI_EVENTS_SECRET no configurado");
-      return true; // ⚠️ en desarrollo permite pasar
+      return false;
     }
 
     const firmaRecibida = event.signature?.checksum;
@@ -39,10 +39,10 @@ function validarFirma(event) {
 }
 
 // ========================
-// 🎲 MEZCLAR CÓDIGOS
+// 🎲 MEZCLAR (mejorado)
 // ========================
 function mezclar(array) {
-  return array.sort(() => Math.random() - 0.5);
+  return [...array].sort(() => Math.random() - 0.5);
 }
 
 // ========================
@@ -53,7 +53,7 @@ router.post('/webhook-wompi', async (req, res) => {
 
     console.log("📩 Evento recibido");
 
-    // 🔐 validar firma
+    // 🔐 Validar firma
     if (!validarFirma(req.body)) {
       console.log("❌ Firma inválida");
       return res.sendStatus(403);
@@ -69,6 +69,7 @@ router.post('/webhook-wompi', async (req, res) => {
       status: evento.status
     });
 
+    // Solo pagos aprobados
     if (evento.status !== "APPROVED") {
       return res.sendStatus(200);
     }
@@ -79,6 +80,7 @@ router.post('/webhook-wompi', async (req, res) => {
 
     const cantidad = parseInt(metadata.cantidad || 0);
     const email = metadata.correo;
+    const nombre = metadata.nombre || "Cliente";
     const telefono = evento.customer_data?.phone_number || "";
 
     if (!cantidad || !email) {
@@ -108,10 +110,10 @@ router.post('/webhook-wompi', async (req, res) => {
     // ========================
     // 🎟️ GENERAR CÓDIGOS
     // ========================
-    let codigos = [];
+    let codigos;
 
     try {
-      codigos = await generarCodigos(cantidad);
+      codigos = await generarCodigos(cantidad, referencia);
     } catch (err) {
       console.error("❌ Error generando códigos:", err);
       return res.sendStatus(500);
@@ -125,7 +127,7 @@ router.post('/webhook-wompi', async (req, res) => {
     codigos = mezclar(codigos);
 
     // ========================
-    // 💾 GUARDAR
+    // 💾 GUARDAR TRANSACCIÓN
     // ========================
     const { error: errorInsert } = await supabase
       .from('transacciones')
@@ -144,22 +146,44 @@ router.post('/webhook-wompi', async (req, res) => {
     }
 
     // ========================
-    // 📧 EMAIL
+    // 💾 GUARDAR CÓDIGOS (🔥 FALTABA ESTO)
+    // ========================
+    const codigosDB = codigos.map(c => ({
+      codigo: typeof c === "object" ? c.codigo : c,
+      dorado: typeof c === "object" ? c.dorado : false,
+      referencia,
+      email
+    }));
+
+    const { error: errorCodigos } = await supabase
+      .from('codigos')
+      .insert(codigosDB);
+
+    if (errorCodigos) {
+      console.error("❌ Error guardando códigos:", errorCodigos);
+    }
+
+    // ========================
+    // 📧 EMAIL (no rompe flujo)
     // ========================
     try {
       await enviarCorreo(email, codigos);
     } catch (err) {
-      console.error("❌ Error enviando correo:", err);
+      console.error("❌ Error email:", err.message);
     }
 
     // ========================
-    // 📱 WHATSAPP
+    // WHATSAPP (PRO)
     // ========================
     if (telefono) {
       try {
-        await enviarWhatsApp(telefono, codigos);
+        await enviarWhatsApp(
+          telefono,
+          nombre,
+          codigos
+        );
       } catch (err) {
-        console.error("❌ Error WhatsApp:", err);
+        console.error("❌ Error WhatsApp:", err.message);
       }
     }
 

@@ -5,7 +5,6 @@ const EMAIL_PASS = process.env.EMAIL_PASS;
 
 let transporter = null;
 
-// Crear transporter solo si hay credenciales
 if (EMAIL_USER && EMAIL_PASS) {
   transporter = nodemailer.createTransport({
     host: 'smtp.gmail.com',
@@ -16,80 +15,91 @@ if (EMAIL_USER && EMAIL_PASS) {
       pass: EMAIL_PASS
     }
   });
-} else {
-  console.warn("⚠️ Email no configurado (faltan variables)");
 }
 
 async function enviarCorreo(destino, codigos) {
   try {
 
-    if (!transporter) {
-      console.warn("⚠️ Email omitido: transporter no configurado");
-      return;
-    }
+    if (!transporter || !destino || !codigos?.length) return;
 
-    if (!destino) {
-      console.warn("⚠️ Email omitido: destino vacío");
-      return;
-    }
+    // 🔥 SEPARAR
+    const dorados = codigos.filter(c => c.dorado);
+    const normales = codigos.filter(c => !c.dorado);
 
-    if (!Array.isArray(codigos) || codigos.length === 0) {
-      console.warn("⚠️ Email omitido: sin códigos");
-      return;
-    }
+    // 🟡 NORMALES
+    const listaNormales = normales.map(c => `
+      <div style="
+        background:#1f2937;
+        color:white;
+        padding:12px;
+        margin:6px 0;
+        border-radius:8px;
+        font-size:18px;
+        letter-spacing:2px;
+      ">
+        🎟️ ${c.codigo}
+      </div>
+    `).join("");
 
-    const lista = codigos
-      .map(c => `
-        <div style="
-          font-size:20px;
-          font-weight:bold;
-          color:gold;
-          margin:5px 0;
-          letter-spacing:2px;
-        ">
-          ${c}
-        </div>
-      `)
-      .join("");
+    // ✨ DORADOS
+    const listaDorados = dorados.map(c => `
+      <div style="
+        background: linear-gradient(45deg, gold, orange);
+        color:black;
+        padding:15px;
+        margin:10px 0;
+        border-radius:10px;
+        font-size:22px;
+        font-weight:bold;
+        letter-spacing:3px;
+        box-shadow:0 0 15px gold;
+      ">
+        ✨ ${c.codigo} ✨
+      </div>
+    `).join("");
 
     await transporter.sendMail({
-      from: `"Tickets" <${EMAIL_USER}>`,
+      from: `"EiderTech Soluciones" <${EMAIL_USER}>`,
       to: destino,
       subject: "🎟️ Compra Confirmada - Tus Códigos",
       html: `
-        <div style="
-          background:#111;
-          padding:25px;
-          color:white;
-          font-family:Arial;
-          text-align:center;
-        ">
+      <div style="background:#0f172a; padding:30px; font-family:Arial; color:white; text-align:center;">
 
-          <h2 style="color:gold;">🎟️ Compra Confirmada</h2>
+        <div style="max-width:500px; margin:auto; background:#111827; border-radius:15px; padding:25px;">
 
-          <p>Gracias por tu compra. Estos son tus códigos:</p>
+          <h1 style="color:gold;">🎉 ¡Compra Exitosa!</h1>
 
-          <div style="
-            background:#000;
-            padding:20px;
-            border-radius:10px;
-            margin-top:15px;
-          ">
-            ${lista}
+          <p style="color:#ccc;">Estos son tus códigos:</p>
+
+          ${listaNormales ? `
+          <div style="margin-top:20px;">
+            <h3 style="color:#ccc;">🎟️ Códigos</h3>
+            ${listaNormales}
           </div>
+          ` : ""}
 
-          <p style="margin-top:20px;color:#aaa;font-size:13px;">
-            Guarda estos códigos como comprobante.
+          ${listaDorados ? `
+          <div style="margin-top:25px; padding:15px; background:#020617; border-radius:10px; border:2px solid gold;">
+            <h2 style="color:gold;">💎 CÓDIGO DORADO</h2>
+            ${listaDorados}
+            <p style="color:gold;">🎉 ¡Podrías ser ganador!</p>
+          </div>
+          ` : ""}
+
+          <p style="margin-top:20px; font-size:12px; color:#888;">
+            Guarda este correo como comprobante.
           </p>
 
         </div>
+
+      </div>
       `
     });
 
-    console.log("📧 Email enviado a:", destino);
+    console.log("📧 Email PRO enviado a:", destino);
 
   } catch (error) {
-    console.error("❌ Error enviando email:", error.message);
+    console.error("❌ Error email:", error.message);
   }
 }
 
