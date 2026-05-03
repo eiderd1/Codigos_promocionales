@@ -237,9 +237,12 @@ button.loading::after {
   <div style="background:#1f2937; border-radius:999px; height:14px; overflow:hidden;">
     <div id="barraProgreso" style="height:100%; width:0%; background:linear-gradient(90deg, gold, orange); border-radius:999px; transition:width 1s ease;"></div>
   </div>
-  <div style="font-size:12px; color:#6b7280; margin-top:4px;">
-    <span id="txtVendidos">0</span> de <span id="txtTotal">10.000</span> códigos
-  </div>
+</div>
+
+<!-- CÓDIGOS DORADOS SALIDOS -->
+<div id="seccionDorados" style="display:none; margin:15px 0; padding:12px; background:#020617; border-radius:10px; border:1px solid gold;">
+  <div style="font-size:13px; color:gold; margin-bottom:8px;">💎 Códigos dorados entregados</div>
+  <div id="listaDorados" style="display:flex; flex-wrap:wrap; gap:8px; justify-content:center;"></div>
 </div>
 
 <div id="success">
@@ -306,13 +309,26 @@ async function verificarStock() {
     const pct = Math.min(data.porcentaje || 0, 100);
     document.getElementById("barraProgreso").style.width = pct + "%";
     document.getElementById("txtProgreso").innerText = pct.toFixed(1) + "%";
-    document.getElementById("txtVendidos").innerText = (data.vendidos || 0).toLocaleString();
-    document.getElementById("txtTotal").innerText = (data.total || 10000).toLocaleString();
 
     if (data.disponibles <= 0) {
       cards.forEach(c => c.classList.add("disabled"));
       form.style.display = "none";
       alert("🚫 Códigos agotados");
+    }
+
+    const resDorados = await fetch(`${API_URL}/api/admin/codigos-dorados`);
+    const dorados = await resDorados.json();
+
+    if (dorados && dorados.length > 0) {
+      document.getElementById("seccionDorados").style.display = "block";
+      const lista = document.getElementById("listaDorados");
+      lista.innerHTML = "";
+      dorados.forEach(d => {
+        const span = document.createElement("span");
+        span.innerText = "✨ " + d.codigo;
+        span.style.cssText = "background:linear-gradient(45deg,gold,orange);color:black;padding:6px 12px;border-radius:8px;font-weight:bold;font-size:14px;";
+        lista.appendChild(span);
+      });
     }
 
   } catch (e) {
