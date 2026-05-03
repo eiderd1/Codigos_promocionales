@@ -7,9 +7,6 @@ const { enviarCorreo } = require('../services/correo');
 const { enviarWhatsApp } = require('../services/whatsapp');
 const supabase = require('../config/supabase');
 
-// ========================
-// 🔐 VALIDAR FIRMA WOMPI
-// ========================
 function validarFirma(event) {
   try {
     const secret = process.env.WOMPI_EVENTS_SECRET;
@@ -28,7 +25,6 @@ function validarFirma(event) {
       return false;
     }
 
-    // Wompi firma: valor1 + valor2 + valor3 + timestamp + secret
     const valores = properties.map(prop => {
       const keys = prop.split('.');
       let val = event.data;
@@ -59,19 +55,15 @@ function mezclar(array) {
   return [...array].sort(() => Math.random() - 0.5);
 }
 
-// ========================
-// 🚀 WEBHOOK
-// ========================
 router.post('/webhook-wompi', async (req, res) => {
   try {
     console.log("📩 Evento recibido");
 
-    if (!validarFirma(req.body)) {
-      console.log("⚠️ Validación de firma desactivada temporalmente");
-// if (!validarFirma(req.body)) {
-//   console.log("❌ Firma inválida");
-//   return res.sendStatus(403);
-// }
+    // ⚠️ TEMPORAL: firma desactivada para pruebas
+    // if (!validarFirma(req.body)) {
+    //   console.log("❌ Firma inválida");
+    //   return res.sendStatus(403);
+    // }
 
     const evento = req.body?.data?.transaction;
     if (!evento) return res.sendStatus(200);
@@ -96,28 +88,22 @@ router.post('/webhook-wompi', async (req, res) => {
       return res.sendStatus(200);
     }
 
-    // ========================
-    // 🔒 ANTIDUPLICADO
-    // ========================
-   const { data: existe, error: errorExiste } = await supabase
-  .from('transacciones')
-  .select('wompi_id')
-  .eq('wompi_id', wompiId)
-  .limit(1);
+    const { data: existe, error: errorExiste } = await supabase
+      .from('transacciones')
+      .select('wompi_id')
+      .eq('wompi_id', wompiId)
+      .limit(1);
 
-if (errorExiste) {
-  console.error("❌ Error consultando:", errorExiste);
-  return res.sendStatus(500);
-}
+    if (errorExiste) {
+      console.error("❌ Error consultando:", errorExiste);
+      return res.sendStatus(500);
+    }
 
-if (existe && existe.length > 0) {
-  console.log("⚠️ Ya procesado:", wompiId);
-  return res.sendStatus(200);
-}
+    if (existe && existe.length > 0) {
+      console.log("⚠️ Ya procesado:", wompiId);
+      return res.sendStatus(200);
+    }
 
-    // ========================
-    // 🎟️ GENERAR CÓDIGOS
-    // ========================
     let codigos;
     try {
       codigos = await generarCodigos(cantidad, referencia);
@@ -133,9 +119,6 @@ if (existe && existe.length > 0) {
 
     codigos = mezclar(codigos);
 
-    // ========================
-    // 💾 GUARDAR EN transacciones
-    // ========================
     const { error: errorTx } = await supabase
       .from('transacciones')
       .insert([{
@@ -152,9 +135,6 @@ if (existe && existe.length > 0) {
       return res.sendStatus(500);
     }
 
-    // ========================
-    // 💾 GUARDAR EN compras
-    // ========================
     const { error: errorCompra } = await supabase
       .from('compras')
       .insert([{
@@ -172,9 +152,6 @@ if (existe && existe.length > 0) {
       console.error("❌ Error insertando compra:", errorCompra);
     }
 
-    // ========================
-    // 💾 MARCAR CÓDIGOS VENDIDOS
-    // ========================
     for (const c of codigos) {
       const { error: errorUpdate } = await supabase
         .from('codigos')
@@ -186,18 +163,12 @@ if (existe && existe.length > 0) {
       }
     }
 
-    // ========================
-    // 📧 EMAIL
-    // ========================
     try {
       await enviarCorreo(email, codigos);
     } catch (err) {
       console.error("❌ Error email:", err.message);
     }
 
-    // ========================
-    // 📱 WHATSAPP
-    // ========================
     if (telefono) {
       try {
         await enviarWhatsApp(telefono, nombre, codigos);
