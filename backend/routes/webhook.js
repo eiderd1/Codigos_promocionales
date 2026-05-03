@@ -13,19 +13,42 @@ const supabase = require('../config/supabase');
 function validarFirma(event) {
   try {
     const secret = process.env.WOMPI_EVENTS_SECRET;
+
     if (!secret) {
-      console.log("⚠️ WOMPI_EVENTS_SECRET no configurado");
+      console.log("⚠️ WOMPI_EVENTS_SECRET no configurado - aceptando");
+      return true;
+    }
+
+    const checksum = event.signature?.checksum;
+    const properties = event.signature?.properties || [];
+    const timestamp = event.timestamp;
+
+    if (!checksum || !timestamp) {
+      console.log("⚠️ Firma o timestamp ausente");
       return false;
     }
-    const firmaRecibida = event.signature?.checksum;
-    const timestamp = event.timestamp;
-    const payload = JSON.stringify(event.data);
-    const cadena = `${timestamp}.${payload}`;
+
+    // Wompi firma: valor1 + valor2 + valor3 + timestamp + secret
+    const valores = properties.map(prop => {
+      const keys = prop.split('.');
+      let val = event.data;
+      for (const k of keys) val = val?.[k];
+      return val ?? '';
+    });
+
+    const cadena = [...valores, timestamp, secret].join('');
+
     const firmaCalculada = crypto
-      .createHmac('sha256', secret)
+      .createHash('sha256')
       .update(cadena)
       .digest('hex');
-    return firmaCalculada === firmaRecibida;
+
+    console.log("🔐 Firma calculada:", firmaCalculada);
+    console.log("🔐 Firma recibida: ", checksum);
+    console.log("🔐 Coincide:", firmaCalculada === checksum);
+
+    return firmaCalculada === checksum;
+
   } catch (error) {
     console.error("❌ Error validando firma:", error);
     return false;
@@ -67,7 +90,7 @@ router.post('/webhook-wompi', async (req, res) => {
     const telefono = evento.customer_data?.phone_number || "";
 
     if (!cantidad || !email) {
-      console.log("⚠️ Datos incompletos");
+      console.log("⚠️ Metadata incompleta - cantidad:", cantidad, "email:", email);
       return res.sendStatus(200);
     }
 
@@ -86,7 +109,7 @@ router.post('/webhook-wompi', async (req, res) => {
     }
 
     if (existe) {
-      console.log("⚠️ Ya procesado");
+      console.log("⚠️ Ya procesado:", wompiId);
       return res.sendStatus(200);
     }
 
@@ -102,7 +125,7 @@ router.post('/webhook-wompi', async (req, res) => {
     }
 
     if (!codigos || codigos.length === 0) {
-      console.log("❌ Sin stock");
+      console.log("❌ Sin stock disponible");
       return res.sendStatus(200);
     }
 
@@ -110,7 +133,6 @@ router.post('/webhook-wompi', async (req, res) => {
 
     // ========================
     // 💾 GUARDAR EN transacciones
-    // columnas: id, referencia, estado, email, cantidad, created_at, wompi_id
     // ========================
     const { error: errorTx } = await supabase
       .from('transacciones')
@@ -130,7 +152,6 @@ router.post('/webhook-wompi', async (req, res) => {
 
     // ========================
     // 💾 GUARDAR EN compras
-    // columnas: id, nombre, cedula, telefono, correo, direccion, cantidad, referencia, fecha
     // ========================
     const { error: errorCompra } = await supabase
       .from('compras')
@@ -150,17 +171,12 @@ router.post('/webhook-wompi', async (req, res) => {
     }
 
     // ========================
-    // 💾 ACTUALIZAR codigos
-    // marcar como vendidos con referencia y email
+    // 💾 MARCAR CÓDIGOS VENDIDOS
     // ========================
     for (const c of codigos) {
       const { error: errorUpdate } = await supabase
         .from('codigos')
-        .update({
-          vendido: true,
-          referencia,
-          email
-        })
+        .update({ vendido: true, referencia, email })
         .eq('codigo', c.codigo);
 
       if (errorUpdate) {
