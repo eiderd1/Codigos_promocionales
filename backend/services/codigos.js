@@ -1,6 +1,6 @@
 const supabase = require('../config/supabase');
 
-const HITOS_DORADOS = [7000, 8000, 9000, 9800];
+const HITOS_DORADOS = [30, 8000, 9000, 9800];
 
 async function generarCodigos(cantidad, referencia) {
   try {
