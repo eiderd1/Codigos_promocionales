@@ -7,9 +7,6 @@ const { enviarCorreo } = require('../services/correo');
 const { enviarWhatsApp } = require('../services/whatsapp');
 const supabase = require('../config/supabase');
 
-// ========================
-// 🔐 VALIDAR FIRMA WOMPI
-// ========================
 function validarFirma(event) {
   try {
     const secret = process.env.WOMPI_EVENTS_SECRET;
@@ -58,9 +55,6 @@ function mezclar(array) {
   return [...array].sort(() => Math.random() - 0.5);
 }
 
-// ========================
-// 🚀 WEBHOOK
-// ========================
 router.post('/webhook-wompi', async (req, res) => {
   try {
     console.log("📩 Evento recibido");
@@ -79,19 +73,6 @@ router.post('/webhook-wompi', async (req, res) => {
 
     const wompiId = evento.id;
     const referencia = evento.reference;
-    const metadata = evento.metadata || {};
-
-    const cantidad = parseInt(metadata.cantidad || 0);
-    const email = metadata.correo;
-    const nombre = metadata.nombre || "Cliente";
-    const cedula = metadata.cedula || "";
-    const direccion = metadata.direccion || "";
-    const telefono = evento.customer_data?.phone_number || "";
-
-    if (!cantidad || !email) {
-      console.log("⚠️ Metadata incompleta - cantidad:", cantidad, "email:", email);
-      return res.sendStatus(200);
-    }
 
     // ========================
     // 🔒 ANTIDUPLICADO
@@ -111,6 +92,30 @@ router.post('/webhook-wompi', async (req, res) => {
       console.log("⚠️ Ya procesado:", wompiId);
       return res.sendStatus(200);
     }
+
+    // ========================
+    // 📋 BUSCAR DATOS POR REFERENCIA
+    // ========================
+    const { data: compra, error: errorCompra } = await supabase
+      .from('compras')
+      .select('*')
+      .eq('referencia', referencia)
+      .limit(1)
+      .single();
+
+    if (errorCompra || !compra) {
+      console.log("⚠️ No se encontró compra para:", referencia);
+      return res.sendStatus(200);
+    }
+
+    const cantidad = compra.cantidad;
+    const email = compra.correo;
+    const nombre = compra.nombre || "Cliente";
+    const cedula = compra.cedula || "";
+    const direccion = compra.direccion || "";
+    const telefono = compra.telefono || evento.customer_data?.phone_number || "";
+
+    console.log("📋 Compra encontrada:", { cantidad, email, nombre });
 
     // ========================
     // 🎟️ GENERAR CÓDIGOS
@@ -147,26 +152,6 @@ router.post('/webhook-wompi', async (req, res) => {
     if (errorTx) {
       console.error("❌ Error insertando transacción:", errorTx);
       return res.sendStatus(500);
-    }
-
-    // ========================
-    // 💾 GUARDAR EN compras
-    // ========================
-    const { error: errorCompra } = await supabase
-      .from('compras')
-      .insert([{
-        nombre,
-        cedula,
-        telefono,
-        correo: email,
-        direccion,
-        cantidad,
-        referencia,
-        fecha: new Date()
-      }]);
-
-    if (errorCompra) {
-      console.error("❌ Error insertando compra:", errorCompra);
     }
 
     // ========================
