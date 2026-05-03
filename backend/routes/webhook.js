@@ -58,12 +58,10 @@ function mezclar(array) {
 router.post('/webhook-wompi', async (req, res) => {
   try {
     console.log("📩 Evento recibido");
-
-    // TEMPORAL
-// if (!validarFirma(req.body)) {
-//   console.log("❌ Firma inválida");
-//   return res.sendStatus(403);
-// }
+    if (!validarFirma(req.body)) {
+  console.log("❌ Firma inválida");
+  return res.sendStatus(403);
+}
 
     const evento = req.body?.data?.transaction;
     if (!evento) return res.sendStatus(200);
