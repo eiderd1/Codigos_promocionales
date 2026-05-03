@@ -1,10 +1,11 @@
-const { Resend } = require('resend');
-
-const resend = new Resend(process.env.RESEND_API_KEY);
+const SibApiV3Sdk = require('@getbrevo/brevo');
 
 async function enviarCorreo(destino, codigos) {
   try {
-    if (!process.env.RESEND_API_KEY || !destino || !codigos?.length) return;
+    if (!process.env.BREVO_API_KEY || !destino || !codigos?.length) return;
+
+    const apiInstance = new SibApiV3Sdk.TransactionalEmailsApi();
+    apiInstance.authentications['api-key'].apiKey = process.env.BREVO_API_KEY;
 
     const dorados = codigos.filter(c => c.dorado);
     const normales = codigos.filter(c => !c.dorado);
@@ -21,11 +22,15 @@ async function enviarCorreo(destino, codigos) {
       </div>
     `).join("");
 
-    await resend.emails.send({
-      from: 'EiderTech Soluciones <onboarding@resend.dev>',
-      to: destino,
-      subject: '🎟️ Compra Confirmada - Tus Códigos',
-      html: `
+    const sendSmtpEmail = new SibApiV3Sdk.SendSmtpEmail();
+
+    sendSmtpEmail.subject = "🎟️ Compra Confirmada - Tus Códigos";
+    sendSmtpEmail.to = [{ email: destino }];
+    sendSmtpEmail.sender = {
+      name: "EiderTech Soluciones",
+      email: process.env.BREVO_FROM_EMAIL || "eidercobo383@gmail.com"
+    };
+    sendSmtpEmail.htmlContent = `
       <div style="background:#0f172a;padding:30px;font-family:Arial;color:white;text-align:center;">
         <div style="max-width:500px;margin:auto;background:#111827;border-radius:15px;padding:25px;">
           <h1 style="color:gold;">🎉 ¡Compra Exitosa!</h1>
@@ -35,9 +40,9 @@ async function enviarCorreo(destino, codigos) {
           <p style="margin-top:20px;font-size:12px;color:#888;">Guarda este correo como comprobante.</p>
         </div>
       </div>
-      `
-    });
+    `;
 
+    await apiInstance.sendTransacEmail(sendSmtpEmail);
     console.log("📧 Email enviado a:", destino);
 
   } catch (error) {
