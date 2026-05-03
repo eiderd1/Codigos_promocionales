@@ -1,11 +1,12 @@
-const SibApiV3Sdk = require('@getbrevo/brevo');
+const Brevo = require('@getbrevo/brevo');
 
 async function enviarCorreo(destino, codigos) {
   try {
     if (!process.env.BREVO_API_KEY || !destino || !codigos?.length) return;
 
-    const apiInstance = new SibApiV3Sdk.TransactionalEmailsApi();
-    apiInstance.authentications['api-key'].apiKey = process.env.BREVO_API_KEY;
+    const apiInstance = new Brevo.TransactionalEmailsApi();
+    const apiKey = apiInstance.authentications['api-key'];
+    apiKey.apiKey = process.env.BREVO_API_KEY;
 
     const dorados = codigos.filter(c => c.dorado);
     const normales = codigos.filter(c => !c.dorado);
@@ -22,8 +23,7 @@ async function enviarCorreo(destino, codigos) {
       </div>
     `).join("");
 
-    const sendSmtpEmail = new SibApiV3Sdk.SendSmtpEmail();
-
+    const sendSmtpEmail = new Brevo.SendSmtpEmail();
     sendSmtpEmail.subject = "🎟️ Compra Confirmada - Tus Códigos";
     sendSmtpEmail.to = [{ email: destino }];
     sendSmtpEmail.sender = {
