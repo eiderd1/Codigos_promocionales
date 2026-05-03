@@ -16,33 +16,40 @@ async function generarCodigos(cantidad, referencia) {
       .eq('dorado', true)
       .eq('vendido', true);
 
+    // 🔀 Obtener más códigos para mezclar
     const { data: disponibles, error } = await supabase
       .from('codigos')
       .select('codigo')
       .eq('vendido', false)
-      .limit(cantidad);
+      .limit(cantidad * 10);
 
     if (error || !disponibles?.length) {
       console.error("❌ Error obteniendo códigos:", error);
       return [];
     }
 
+    // 🔀 Mezclar y tomar los necesarios
+    const mezclados = disponibles
+      .sort(() => Math.random() - 0.5)
+      .slice(0, cantidad);
+
     let indexDorado = -1;
 
     if (doradosEntregados < HITOS_DORADOS.length) {
       const siguienteHito = HITOS_DORADOS[doradosEntregados];
       if (vendidos < siguienteHito && (vendidos + cantidad) >= siguienteHito) {
-        indexDorado = Math.floor(Math.random() * disponibles.length);
+        indexDorado = Math.floor(Math.random() * mezclados.length);
       }
     }
 
     const resultado = [];
 
-    for (let i = 0; i < disponibles.length; i++) {
-      const c = disponibles[i];
+    for (let i = 0; i < mezclados.length; i++) {
+      const c = mezclados[i];
       const esDorado = i === indexDorado;
 
-      const { error: errorUpdate } = await supabase
+      // 🔒 Solo actualiza si sigue disponible (anti-repetición)
+      const { data: actualizado, error: errorUpdate } = await supabase
         .from('codigos')
         .update({
           vendido: true,
@@ -50,13 +57,26 @@ async function generarCodigos(cantidad, referencia) {
           dorado: esDorado
         })
         .eq('codigo', c.codigo)
-        .eq('vendido', false);
+        .eq('vendido', false)  // ← solo si no fue vendido por otra transacción
+        .select('codigo');
 
       if (errorUpdate) {
         console.error("❌ Error actualizando código:", c.codigo, errorUpdate);
+        continue;
+      }
+
+      // Si no se actualizó es porque ya fue vendido — saltar
+      if (!actualizado || actualizado.length === 0) {
+        console.log("⚠️ Código ya vendido, saltando:", c.codigo);
+        continue;
       }
 
       resultado.push({ codigo: c.codigo, dorado: esDorado });
+    }
+
+    // Si no alcanzaron los códigos únicos, avisar
+    if (resultado.length < cantidad) {
+      console.warn(`⚠️ Solo se pudieron asignar ${resultado.length} de ${cantidad} códigos`);
     }
 
     return resultado;
