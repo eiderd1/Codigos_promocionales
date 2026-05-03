@@ -8,8 +8,8 @@ let transporter = null;
 if (EMAIL_USER && EMAIL_PASS) {
   transporter = nodemailer.createTransport({
     host: 'smtp.gmail.com',
-    port: 465,
-    secure: true,
+    port: 587,
+    secure: false,
     auth: {
       user: EMAIL_USER,
       pass: EMAIL_PASS
