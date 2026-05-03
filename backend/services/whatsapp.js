@@ -17,8 +17,10 @@ async function enviarWhatsApp(numero, nombre, codigos) {
       return;
     }
 
-    // 🔥 convertir lista a texto bonito
-    const listaCodigos = codigos.join("\n");
+    // ✅ codigos es array de objetos {codigo, dorado}
+    const listaCodigos = codigos
+      .map(c => c.dorado ? `✨ ${c.codigo} ✨` : c.codigo)
+      .join("\n");
 
     await axios.post(
       `https://graph.facebook.com/v18.0/${PHONE_ID}/messages`,
@@ -28,9 +30,7 @@ async function enviarWhatsApp(numero, nombre, codigos) {
         type: "template",
         template: {
           name: TEMPLATE,
-          language: {
-            code: "es"
-          },
+          language: { code: "es" },
           components: [
             {
               type: "body",
@@ -50,7 +50,7 @@ async function enviarWhatsApp(numero, nombre, codigos) {
       }
     );
 
-    console.log("📱 WhatsApp PRO enviado a:", numero);
+    console.log("📱 WhatsApp enviado a:", numero);
 
   } catch (error) {
     console.error("❌ Error WhatsApp:", error.response?.data || error.message);

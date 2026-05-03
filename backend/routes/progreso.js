@@ -6,7 +6,7 @@ router.get('/progreso', async (req, res) => {
   try {
     const total = 10000;
 
-    const { count, error } = await supabase
+    const { count: vendidos, error } = await supabase
       .from('codigos')
       .select('*', { count: 'exact', head: true })
       .eq('vendido', true);
@@ -16,22 +16,20 @@ router.get('/progreso', async (req, res) => {
       return res.status(500).json({ ok: false });
     }
 
-    const cantidadVendidos = count || 0;
-
+    const cantidadVendidos = vendidos || 0;
+    const disponibles = total - cantidadVendidos;
     const porcentaje = (cantidadVendidos / total) * 100;
 
     res.json({
       porcentaje: Number(porcentaje.toFixed(2)),
       vendidos: cantidadVendidos,
+      disponibles,
       total
     });
 
   } catch (error) {
     console.error("💥 Error progreso:", error);
-
-    res.status(500).json({
-      error: "Error obteniendo progreso"
-    });
+    res.status(500).json({ error: "Error obteniendo progreso" });
   }
 });
 

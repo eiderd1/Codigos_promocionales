@@ -2,7 +2,6 @@ const express = require('express');
 const router = express.Router();
 const supabase = require('../config/supabase');
 
-// 🔍 CONSULTAR CÓDIGOS POR CORREO O CÉDULA
 router.post('/mis-codigos', async (req, res) => {
   try {
     const { dato } = req.body;
@@ -11,25 +10,29 @@ router.post('/mis-codigos', async (req, res) => {
       return res.status(400).json({ error: "Dato requerido" });
     }
 
-    // 🔎 Buscar transacciones por email o cedula
-    const { data: transacciones, error: errorTx } = await supabase
+    // Buscar por email en transacciones O por correo en compras
+    const { data: porEmail } = await supabase
       .from('transacciones')
       .select('referencia')
-      .or(`email.eq.${dato},cedula.eq.${dato}`);
+      .eq('email', dato);
 
-    if (errorTx) {
-      console.error("❌ Error buscando transacciones:", errorTx);
-      return res.status(500).json({ error: "Error consultando" });
-    }
+    const { data: porCedula } = await supabase
+      .from('compras')
+      .select('referencia')
+      .eq('cedula', dato);
 
-    if (!transacciones || transacciones.length === 0) {
+    const todasRefs = [
+      ...(porEmail || []),
+      ...(porCedula || [])
+    ].map(t => t.referencia);
+
+    if (todasRefs.length === 0) {
       return res.json({ codigos: [] });
     }
 
-    // 📌 Obtener referencias
-    const referencias = transacciones.map(t => t.referencia);
+    // Eliminar duplicados
+    const referencias = [...new Set(todasRefs)];
 
-    // 🔎 Buscar códigos asociados
     const { data: codigos, error: errorCod } = await supabase
       .from('codigos')
       .select('codigo, dorado')
@@ -40,9 +43,7 @@ router.post('/mis-codigos', async (req, res) => {
       return res.status(500).json({ error: "Error obteniendo códigos" });
     }
 
-    res.json({
-      codigos: codigos || []
-    });
+    res.json({ codigos: codigos || [] });
 
   } catch (error) {
     console.error("💥 Error mis-codigos:", error);
