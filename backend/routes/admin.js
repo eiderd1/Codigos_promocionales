@@ -2,14 +2,13 @@ const express = require('express');
 const router = express.Router();
 const supabase = require('../config/supabase');
 
-// 🔥 CÓDIGOS DORADOS
 router.get('/admin/codigos-dorados', async (req, res) => {
   try {
-
     const { data, error } = await supabase
       .from('codigos')
       .select('codigo')
-      .eq('dorado', true);
+      .eq('dorado', true)
+      .eq('vendido', true);
 
     if (error) {
       console.error(error);
