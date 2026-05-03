@@ -97,21 +97,21 @@ router.post('/webhook-wompi', async (req, res) => {
     // ========================
     // 🔒 ANTIDUPLICADO
     // ========================
-    const { data: existe, error: errorExiste } = await supabase
-      .from('transacciones')
-      .select('id')
-      .eq('wompi_id', wompiId)
-      .maybeSingle();
+   const { data: existe, error: errorExiste } = await supabase
+  .from('transacciones')
+  .select('wompi_id')
+  .eq('wompi_id', wompiId)
+  .limit(1);
 
-    if (errorExiste) {
-      console.error("❌ Error consultando:", errorExiste);
-      return res.sendStatus(500);
-    }
+if (errorExiste) {
+  console.error("❌ Error consultando:", errorExiste);
+  return res.sendStatus(500);
+}
 
-    if (existe) {
-      console.log("⚠️ Ya procesado:", wompiId);
-      return res.sendStatus(200);
-    }
+if (existe && existe.length > 0) {
+  console.log("⚠️ Ya procesado:", wompiId);
+  return res.sendStatus(200);
+}
 
     // ========================
     // 🎟️ GENERAR CÓDIGOS
