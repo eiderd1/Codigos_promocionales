@@ -16,7 +16,7 @@ router.post('/crear-transaccion', async (req, res) => {
     }
 
     const precios = {
-      4: 1500,
+      4: 20000,
       8: 40000,
       16: 80000,
     };

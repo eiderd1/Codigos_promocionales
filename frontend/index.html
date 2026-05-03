@@ -242,7 +242,7 @@ button.loading::after {
 
 <!-- CÓDIGOS DORADOS SALIDOS -->
 <div id="seccionDorados" style="display:none; margin:15px 0; padding:12px; background:#020617; border-radius:10px; border:1px solid gold;">
-  <div style="font-size:13px; color:gold; margin-bottom:8px;">💎 Códigos dorados entregados por el valor de $ 500 mil pesos cop</div>
+  <div style="font-size:13px; color:gold; margin-bottom:8px;">💎 Códigos dorados entregados por el valor de $500 mil pesos COP</div>
   <div id="listaDorados" style="display:flex; flex-wrap:wrap; gap:8px; justify-content:center;"></div>
 </div>
 
@@ -252,7 +252,7 @@ button.loading::after {
 
 <h3>Selecciona paquete</h3>
 
-<div class="card" data-cantidad="4">4 códigos<br><strong>$1.500</strong></div>
+<div class="card" data-cantidad="4">4 códigos<br><strong>$20.000</strong></div>
 <div class="card" data-cantidad="8">8 códigos<br><strong>$40.000</strong></div>
 <div class="card" data-cantidad="16">16 códigos<br><strong>$80.000</strong></div>
 
@@ -272,6 +272,13 @@ button.loading::after {
 <button onclick="consultar()">Buscar</button>
 
 <div id="resultado"></div>
+
+<div id="btnReenviarDiv" style="display:none; margin-top:10px;">
+  <button onclick="reenviarCorreo()" style="background:#1f2937; color:gold; border:1px solid gold; width:95%;">
+    📧 Reenviar códigos al correo
+  </button>
+</div>
+<div id="msgReenvio" style="margin-top:8px; color:gold; font-size:13px;"></div>
 
 <!-- REDES -->
 <div class="redes">
@@ -298,6 +305,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 const API_URL = window.location.origin;
 let cantidad = 0;
+let datoActual = "";
 
 const cards = document.querySelectorAll(".card");
 const form = document.getElementById("form");
@@ -361,6 +369,7 @@ window.consultar = async function() {
   try {
     const valor = document.getElementById("buscar").value;
     if (!valor) return alert("Ingresa correo o cédula");
+    datoActual = valor;
 
     const res = await fetch(`${API_URL}/api/mis-codigos`, {
       method:"POST",
@@ -371,6 +380,8 @@ window.consultar = async function() {
     const data = await res.json();
     const resultado = document.getElementById("resultado");
     resultado.innerHTML = "";
+    document.getElementById("btnReenviarDiv").style.display = "none";
+    document.getElementById("msgReenvio").innerText = "";
 
     if (!data.codigos || data.codigos.length === 0) {
       resultado.innerHTML = "❌ No se encontraron códigos";
@@ -387,8 +398,29 @@ window.consultar = async function() {
       resultado.appendChild(div);
     });
 
+    document.getElementById("btnReenviarDiv").style.display = "block";
+
   } catch (error) {
     alert("Error consultando");
+  }
+};
+
+window.reenviarCorreo = async function() {
+  try {
+    if (!datoActual) return;
+    document.getElementById("msgReenvio").innerText = "Enviando...";
+
+    const res = await fetch(`${API_URL}/api/reenviar-correo`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ dato: datoActual })
+    });
+
+    const data = await res.json();
+    document.getElementById("msgReenvio").innerText = data.mensaje || "✅ Correo reenviado";
+
+  } catch (error) {
+    document.getElementById("msgReenvio").innerText = "❌ Error al reenviar";
   }
 };
 
