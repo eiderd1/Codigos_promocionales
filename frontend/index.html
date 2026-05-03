@@ -241,7 +241,7 @@ button.loading::after {
 
 <!-- CÓDIGOS DORADOS SALIDOS -->
 <div id="seccionDorados" style="display:none; margin:15px 0; padding:12px; background:#020617; border-radius:10px; border:1px solid gold;">
-  <div style="font-size:13px; color:gold; margin-bottom:8px;">💎 Códigos dorados entregados</div>
+  <div style="font-size:13px; color:gold; margin-bottom:8px;">💎 Códigos dorados entregados por el valor de $ 500 mil pesos cop</div>
   <div id="listaDorados" style="display:flex; flex-wrap:wrap; gap:8px; justify-content:center;"></div>
 </div>
 
@@ -308,7 +308,7 @@ async function verificarStock() {
 
     const pct = Math.min(data.porcentaje || 0, 100);
     document.getElementById("barraProgreso").style.width = pct + "%";
-    document.getElementById("txtProgreso").innerText = pct.toFixed(1) + "%";
+    document.getElementById("txtProgreso").innerText = pct.toFixed(2) + "%";
 
     if (data.disponibles <= 0) {
       cards.forEach(c => c.classList.add("disabled"));
