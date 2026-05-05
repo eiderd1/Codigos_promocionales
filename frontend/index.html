@@ -211,6 +211,33 @@ button.loading::after {
   margin-top:20px;
   color:gold;
 }
+
+/* TÉRMINOS */
+.btn-terminos {
+  background: transparent;
+  border: 1px solid #374151;
+  color: #9ca3af;
+  font-size: 13px;
+  padding: 10px;
+  width: 95%;
+  margin-top: 20px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+.btn-terminos:hover {
+  border-color: gold;
+  color: gold;
+  transform: scale(1.01);
+}
+
+#terminosContent {
+  display: none;
+  margin-top: 10px;
+  text-align: left;
+  font-size: 13px;
+  animation: aparecer 0.3s forwards;
+}
 </style>
 </head>
 
@@ -280,6 +307,56 @@ button.loading::after {
 </div>
 <div id="msgReenvio" style="margin-top:8px; color:gold; font-size:13px;"></div>
 
+<!-- TÉRMINOS Y CONDICIONES -->
+<button class="btn-terminos" onclick="toggleTerminos()">
+  📋 Ver Términos y Condiciones ▼
+</button>
+
+<div id="terminosContent">
+
+  <div style="background:#1f2937; border-radius:10px; padding:15px; margin-bottom:10px;">
+    <p style="color:gold; font-weight:bold; margin:0 0 5px;">🏆 Método de juego</p>
+    <p style="margin:0; color:#ccc;">El ganador se determina con el resultado de la <strong style="color:white;">Lotería de Medellín</strong>. Se toman los <strong style="color:white;">3 últimos números del premio mayor</strong> más el <strong style="color:white;">primer número de la serie</strong>. El código que coincida con esta combinación será el ganador.</p>
+    <p style="margin:8px 0 0; color:#9ca3af; font-size:12px;">Ejemplo: Si el premio mayor es <strong style="color:white;">1234</strong> y la serie es <strong style="color:white;">234</strong>, el código ganador sería <strong style="color:gold;">2342</strong> (últimos 3 del mayor: 1,2,3 + primer número de serie: 2).</p>
+  </div>
+
+  <div style="background:#1f2937; border-radius:10px; padding:15px; margin-bottom:10px;">
+    <p style="color:gold; font-weight:bold; margin:0 0 5px;">💰 Pago del premio</p>
+    <p style="margin:0; color:#ccc;">El pago se realiza por <strong style="color:white;">transferencia bancaria</strong> a cualquiera de estos bancos:</p>
+    <div style="display:flex; flex-wrap:wrap; gap:8px; margin-top:10px;">
+      <span style="background:#0f172a; color:gold; padding:5px 10px; border-radius:6px; border:1px solid gold;">Nequi</span>
+      <span style="background:#0f172a; color:gold; padding:5px 10px; border-radius:6px; border:1px solid gold;">Bancolombia</span>
+      <span style="background:#0f172a; color:gold; padding:5px 10px; border-radius:6px; border:1px solid gold;">Davivienda</span>
+      <span style="background:#0f172a; color:gold; padding:5px 10px; border-radius:6px; border:1px solid gold;">BBVA</span>
+    </div>
+  </div>
+
+  <div style="background:#1f2937; border-radius:10px; padding:15px; margin-bottom:10px;">
+    <p style="color:gold; font-weight:bold; margin:0 0 5px;">⏱️ Tiempo de pago</p>
+    <p style="margin:0; color:#ccc;">El pago del premio se realiza entre <strong style="color:white;">1 a 5 días hábiles</strong> después de verificar el código ganador.</p>
+  </div>
+
+  <div style="background:#1f2937; border-radius:10px; padding:15px; margin-bottom:10px;">
+    <p style="color:gold; font-weight:bold; margin:0 0 5px;">🎰 ¿Cuándo se juega?</p>
+    <p style="margin:0; color:#ccc;">El sorteo se realiza cuando se vendan el <strong style="color:white;">100% de los códigos</strong> disponibles, usando el resultado de la <strong style="color:white;">Lotería de Medellín</strong> del día del cierre.</p>
+  </div>
+
+  <div style="background:#1f2937; border-radius:10px; padding:15px; margin-bottom:10px;">
+    <p style="color:gold; font-weight:bold; margin:0 0 5px;">📌 Condiciones generales</p>
+    <ul style="margin:0; padding-left:20px; color:#ccc;">
+      <li>Cada código es único e irrepetible.</li>
+      <li>El comprador debe conservar su correo de confirmación como comprobante.</li>
+      <li>EiderTech Soluciones se reserva el derecho de cancelar el sorteo y devolver el dinero si no se venden todos los códigos.</li>
+    </ul>
+  </div>
+
+  <p style="text-align:center; color:#6b7280; font-size:11px; margin-top:15px;">
+    Al comprar un código aceptas estos términos y condiciones.<br>
+    📧 Contacto: eidercobo383@gmail.com
+  </p>
+
+</div>
+
 <!-- REDES -->
 <div class="redes">
   <a href="https://facebook.com" target="_blank" title="Facebook">
@@ -288,7 +365,7 @@ button.loading::after {
   <a href="https://instagram.com" target="_blank" title="Instagram">
     <svg viewBox="0 0 24 24"><path fill="#E4405F" d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
   </a>
-  <a href="mailto:correo@gmail.com" target="_blank" title="Email">
+  <a href="mailto:eidercobo383@gmail.com" target="_blank" title="Email">
     <svg viewBox="0 0 24 24"><path fill="#FF6B35" d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
   </a>
 </div>
@@ -309,6 +386,22 @@ let datoActual = "";
 
 const cards = document.querySelectorAll(".card");
 const form = document.getElementById("form");
+
+window.toggleTerminos = function() {
+  const content = document.getElementById("terminosContent");
+  const btn = document.querySelector(".btn-terminos");
+  if (content.style.display === "none" || content.style.display === "") {
+    content.style.display = "block";
+    btn.innerHTML = "📋 Ocultar Términos y Condiciones ▲";
+    btn.style.color = "gold";
+    btn.style.borderColor = "gold";
+  } else {
+    content.style.display = "none";
+    btn.innerHTML = "📋 Ver Términos y Condiciones ▼";
+    btn.style.color = "#9ca3af";
+    btn.style.borderColor = "#374151";
+  }
+};
 
 async function verificarStock() {
   try {

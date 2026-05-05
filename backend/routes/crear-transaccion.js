@@ -46,7 +46,7 @@ router.post('/crear-transaccion', async (req, res) => {
       .update(cadena)
       .digest('hex');
 
-    // 💾 GUARDAR COMPRA ANTES DEL PAGO
+    // 💾 GUARDA COMPRA ANTES DEL PAGO
     const { error: errorCompra } = await supabase
       .from('compras')
       .insert([{
