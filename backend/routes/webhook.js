@@ -59,9 +59,9 @@ router.post('/webhook-wompi', async (req, res) => {
   try {
     console.log("📩 Evento recibido");
     if (!validarFirma(req.body)) {
-  console.log("❌ Firma inválida");
-  return res.sendStatus(403);
-}
+      console.log("❌ Firma inválida");
+      return res.sendStatus(403);
+    }
 
     const evento = req.body?.data?.transaction;
     if (!evento) return res.sendStatus(200);
@@ -70,7 +70,7 @@ router.post('/webhook-wompi', async (req, res) => {
 
     if (evento.status !== "APPROVED") return res.sendStatus(200);
 
-    const wompiId = evento.id;
+    const wompiId    = evento.id;
     const referencia = evento.reference;
 
     // ========================
@@ -107,17 +107,19 @@ router.post('/webhook-wompi', async (req, res) => {
       return res.sendStatus(200);
     }
 
-    const cantidad = compra.cantidad;
-    const email = compra.correo;
-    const nombre = compra.nombre || "Cliente";
-    const cedula = compra.cedula || "";
+    const cantidad  = compra.cantidad;
+    const email     = compra.correo;
+    const nombre    = compra.nombre    || "Cliente";
+    const cedula    = compra.cedula    || "";
     const direccion = compra.direccion || "";
-    const telefono = compra.telefono || evento.customer_data?.phone_number || "";
+    const telefono  = compra.telefono  || evento.customer_data?.phone_number || "";
 
     console.log("📋 Compra encontrada:", { cantidad, email, nombre });
 
     // ========================
     // 🎟️ GENERAR CÓDIGOS
+    // Los códigos son asignados automáticamente por el sistema de forma aleatoria.
+    // Ninguna persona interviene en la selección.
     // ========================
     let codigos;
     try {
@@ -141,8 +143,8 @@ router.post('/webhook-wompi', async (req, res) => {
       .from('transacciones')
       .insert([{
         referencia,
-        wompi_id: wompiId,
-        estado: "APROBADO",
+        wompi_id:   wompiId,
+        estado:     "APROBADO",
         email,
         cantidad,
         created_at: new Date()
@@ -154,12 +156,36 @@ router.post('/webhook-wompi', async (req, res) => {
     }
 
     // ========================
+    // ✅ MARCAR COMPRA COMO PAGADA
+    // Solo aquí, cuando Wompi confirma el pago, se cambia el estado.
+    // Las compras "pendiente" son intentos que no se completaron.
+    // ========================
+    const { error: errorEstado } = await supabase
+      .from('compras')
+      .update({ estado: "pagado" })
+      .eq('referencia', referencia);
+
+    if (errorEstado) {
+      console.error("⚠️ Error actualizando estado de compra:", errorEstado);
+    } else {
+      console.log("✅ Compra marcada como pagada:", referencia);
+    }
+
+    // ========================
     // 💾 MARCAR CÓDIGOS VENDIDOS
+    // Se guardan todos los datos del comprador para identificar al ganador fácilmente
     // ========================
     for (const c of codigos) {
       const { error: errorUpdate } = await supabase
         .from('codigos')
-        .update({ vendido: true, referencia, email })
+        .update({
+          vendido:   true,
+          referencia,
+          email,
+          nombre,
+          telefono,
+          direccion
+        })
         .eq('codigo', c.codigo);
 
       if (errorUpdate) {

@@ -1,379 +1,615 @@
-<!DOCTYPE html> 
+<!DOCTYPE html>
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<title>Compra de Códigos</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="theme-color" content="#0f172a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Compra de Códigos – Gana 15 Millones COP</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎟️</text></svg>">
 
 <style>
+/* ── Reset & base ────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --gold: #f5c518;
+  --orange: #f97316;
+  --bg: #0f172a;
+  --surface: #111827;
+  --card: #1f2937;
+  --muted: #9ca3af;
+  --text: #ffffff;
+  --radius: 14px;
+  --radius-sm: 8px;
+}
+
+html { font-size: 16px; scroll-behavior: smooth; }
+
 body {
-  margin: 0;
-  font-family: Arial;
-  background: linear-gradient(135deg, #0f172a, #1e293b);
-  color: white;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background: linear-gradient(135deg, var(--bg), #1e293b);
+  color: var(--text);
+  min-height: 100dvh;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── Layout ──────────────────────────────────────────────── */
+.page {
+  max-width: 520px;
+  margin: 0 auto;
+  padding: clamp(12px, 4vw, 32px) clamp(12px, 4vw, 24px) 100px;
+}
+
+/* ── Typography ──────────────────────────────────────────── */
+.title {
+  font-size: clamp(1.5rem, 5vw, 2rem);
+  font-weight: 800;
+  color: var(--gold);
   text-align: center;
+  line-height: 1.2;
+  margin-bottom: 4px;
 }
-
-.container {
-  max-width: 420px;
-  margin: auto;
-  margin-top: 40px;
-  padding: 20px;
-  background: #111827;
-  border-radius: 15px;
+.subtitle {
+  font-size: clamp(1rem, 3.5vw, 1.25rem);
+  font-weight: 700;
+  color: var(--text);
+  text-align: center;
+  margin-bottom: 6px;
 }
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(245,197,24,.12);
+  border: 1px solid rgba(245,197,24,.35);
+  color: var(--gold);
+  font-size: 0.82rem;
+  font-weight: 600;
+  padding: 6px 12px;
+  border-radius: 999px;
+  margin: 0 auto 16px;
+}
+.badge-wrap { display:flex; justify-content:center; }
 
-h1 { color: gold; }
-
-.card {
-  background: #1f2937;
-  padding: 15px;
-  margin: 10px 0;
-  border-radius: 12px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  position: relative;
+/* ── Progress bar ────────────────────────────────────────── */
+.progress-wrap {
+  background: var(--surface);
+  border-radius: var(--radius);
+  padding: 16px;
+  margin-bottom: 16px;
+}
+.progress-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.78rem;
+  color: var(--muted);
+  margin-bottom: 8px;
+}
+.progress-track {
+  background: var(--card);
+  border-radius: 999px;
+  height: 12px;
   overflow: hidden;
 }
-
-.card:hover {
-  transform: translateY(-3px) scale(1.03);
+.progress-bar {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, var(--gold), var(--orange));
+  border-radius: 999px;
+  transition: width 1.2s ease;
 }
 
+/* ── Dorados entregados ──────────────────────────────────── */
+#seccionDorados {
+  display: none;
+  background: #020617;
+  border: 1px solid var(--gold);
+  border-radius: var(--radius);
+  padding: 14px;
+  margin-bottom: 16px;
+  text-align: center;
+}
+#seccionDorados .sec-label { font-size: 0.8rem; color: var(--gold); margin-bottom: 10px; }
+#listaDorados { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+
+/* ── Alerta de éxito ─────────────────────────────────────── */
+#success {
+  display: none;
+  background: rgba(34,197,94,.15);
+  border: 1px solid #22c55e;
+  border-radius: var(--radius);
+  padding: 16px;
+  text-align: center;
+  color: #4ade80;
+  font-weight: 700;
+  margin-bottom: 16px;
+  font-size: 1.05rem;
+}
+
+/* ── Package cards ───────────────────────────────────────── */
+.section-title {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  margin: 20px 0 10px;
+}
+
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-bottom: 16px;
+}
+@media (max-width: 380px) {
+  .cards-grid { grid-template-columns: 1fr; }
+}
+
+.card {
+  background: var(--card);
+  border: 2px solid transparent;
+  padding: 18px 10px;
+  border-radius: var(--radius);
+  cursor: pointer;
+  text-align: center;
+  transition: transform .2s, box-shadow .2s, border-color .2s, background .2s;
+  position: relative;
+  overflow: hidden;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+.card:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(0,0,0,.4); }
 .card.selected {
-  background: linear-gradient(45deg, gold, orange);
-  color: black;
-  transform: scale(1.08);
-  box-shadow: 0 0 25px rgba(255,215,0,0.9);
-  border: 2px solid gold;
+  background: linear-gradient(135deg, var(--gold), var(--orange));
+  color: #000;
+  border-color: var(--gold);
+  transform: scale(1.05);
+  box-shadow: 0 0 28px rgba(245,197,24,.7);
 }
-
 .card.selected::after {
   content: "";
   position: absolute;
-  width: 200%;
-  height: 200%;
-  top: -50%;
-  left: -50%;
-  background: linear-gradient(120deg, transparent, rgba(255,255,255,0.6), transparent);
-  transform: rotate(25deg);
-  animation: brilloMove 1s;
+  inset: 0;
+  background: linear-gradient(120deg, transparent 30%, rgba(255,255,255,.45) 50%, transparent 70%);
+  animation: shimmer .8s forwards;
 }
-
-@keyframes brilloMove {
-  from { transform: translateX(-100%) rotate(25deg); }
-  to { transform: translateX(100%) rotate(25deg); }
+@keyframes shimmer {
+  from { transform: translateX(-100%); }
+  to   { transform: translateX(100%); }
 }
-
 .card.disabled {
-  opacity: 0.4;
-  transform: scale(0.95);
+  opacity: .35;
   pointer-events: none;
-  filter: grayscale(60%);
+  filter: grayscale(70%);
+  transform: scale(.96);
 }
+.card-qty  { font-size: 1.5rem; font-weight: 800; line-height: 1; }
+.card-label{ font-size: .72rem; color: inherit; opacity: .75; margin: 2px 0; }
+.card-price{ font-size: 1rem; font-weight: 700; }
+.card.selected .card-label { opacity: .7; }
 
-input {
-  width: 90%;
-  padding: 10px;
-  margin: 6px 0;
-  border-radius: 6px;
-  border: none;
-}
-
-button {
-  padding: 12px;
-  width: 95%;
-  margin-top: 10px;
-  border: none;
-  background: gold;
-  color: black;
-  font-weight: bold;
-  border-radius: 10px;
-  cursor: pointer;
-  position: relative;
-}
-button:hover { transform: scale(1.05); }
-
-button.loading {
-  background: #555;
-  color: transparent;
-  cursor: not-allowed;
-}
-button.loading::after {
-  content: "Procesando...";
-  color: white;
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-}
-
-#casino {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: black;
+/* ── Aviso de stock ajustado ─────────────────────────────── */
+#avisoStock {
   display: none;
-  justify-content: center;
-  align-items: center;
-}
-.ruleta {
-  font-size: 100px;
-  animation: girar 1s infinite linear;
-}
-@keyframes girar {
-  100% { transform: rotate(360deg); }
+  background: rgba(251,191,36,.12);
+  border: 1px solid rgba(251,191,36,.5);
+  border-radius: var(--radius-sm);
+  color: #fbbf24;
+  font-size: .84rem;
+  padding: 10px 14px;
+  margin-bottom: 12px;
+  line-height: 1.4;
 }
 
-.codigo {
-  display:inline-block;
-  padding:10px;
-  margin:5px;
-  background:#1f2937;
-  border-radius:8px;
+/* ── Formulario ──────────────────────────────────────────── */
+#form { display: none; animation: fadeIn .3s ease; }
+@keyframes fadeIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:none; } }
+
+.input-group { margin-bottom: 10px; }
+.input-label { font-size: .78rem; color: var(--muted); margin-bottom: 4px; display: block; font-weight: 600; }
+
+input[type="text"],
+input[type="email"],
+input[type="tel"] {
+  width: 100%;
+  padding: 13px 14px;
+  background: var(--card);
+  border: 1.5px solid #374151;
+  border-radius: var(--radius-sm);
+  color: var(--text);
+  font-size: 1rem;
+  outline: none;
+  transition: border-color .2s;
+  -webkit-appearance: none;
+appearance: none;
+}
+input:focus { border-color: var(--gold); }
+input.error { border-color: #f87171; }
+.field-error { font-size: .75rem; color: #f87171; margin-top: 3px; display: none; }
+
+/* ── Botones ─────────────────────────────────────────────── */
+.btn {
+  display: block;
+  width: 100%;
+  padding: 15px;
+  border: none;
+  border-radius: var(--radius);
+  font-size: 1.05rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform .15s, opacity .15s;
+  -webkit-tap-highlight-color: transparent;
+  letter-spacing: .02em;
+}
+.btn:active { transform: scale(.97); }
+.btn-primary { background: linear-gradient(135deg, var(--gold), var(--orange)); color: #000; margin-top: 14px; }
+.btn-primary:disabled { opacity: .5; cursor: not-allowed; transform: none; }
+.btn-primary.loading { color: transparent; position: relative; }
+.btn-primary.loading::after {
+  content: "Procesando...";
+  color: #000;
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ── Divider ─────────────────────────────────────────────── */
+.divider { border: none; border-top: 1px solid #1f2937; margin: 28px 0; }
+
+/* ── Consulta de códigos ─────────────────────────────────── */
+.consult-row { display: flex; gap: 8px; }
+.consult-row input { flex: 1; }
+.btn-consult {
+  padding: 13px 18px;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: var(--gold);
+  color: #000;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  font-size: .92rem;
+  -webkit-tap-highlight-color: transparent;
+}
+.btn-consult:active { opacity: .8; }
+
+.codes-list { margin-top: 14px; display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+.code-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 10px 16px;
+  background: var(--card);
+  border-radius: var(--radius-sm);
+  font-size: .92rem;
+  letter-spacing: .08em;
+  font-weight: 600;
   opacity: 0;
-  transform: scale(0.8);
-  animation: aparecer 0.4s forwards;
+  transform: scale(.85);
+  animation: popIn .35s forwards;
 }
-@keyframes aparecer {
-  to { opacity: 1; transform: scale(1); }
+@keyframes popIn { to { opacity:1; transform:scale(1); } }
+.code-chip.dorado {
+  background: linear-gradient(135deg, var(--gold), var(--orange));
+  color: #000;
+  border: 2px solid var(--gold);
+  animation: popIn .35s forwards, glow 1.2s infinite alternate;
 }
-
-@keyframes brillo {
-  from { box-shadow: 0 0 10px gold; }
-  to { box-shadow: 0 0 25px orange; }
-}
-.dorado {
-  background:linear-gradient(45deg,gold,orange);
-  color:black;
-  font-weight:bold;
-  border:2px solid gold;
-  animation: brillo 1s infinite alternate;
+@keyframes glow {
+  from { box-shadow: 0 0 8px var(--gold); }
+  to   { box-shadow: 0 0 22px var(--orange); }
 }
 
-.redes {
-  margin-top: 25px;
-  display: flex;
-  justify-content: center;
-  gap: 15px;
+.btn-reenviar {
+  margin-top: 10px;
+  width: 100%;
+  padding: 12px;
+  border: 1.5px solid var(--gold);
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--gold);
+  font-weight: 700;
+  font-size: .9rem;
+  cursor: pointer;
+  transition: background .2s;
 }
-.redes a {
-  width: 45px;
-  height: 45px;
-  border-radius: 50%;
-  background: #1f2937;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: 0.3s;
-  text-decoration: none;
-}
-.redes a:hover {
-  transform: scale(1.2);
-  background: gold;
-}
-.redes svg {
-  width: 22px;
-  height: 22px;
-  fill: white;
-}
+.btn-reenviar:hover { background: rgba(245,197,24,.1); }
+.msg-reenvio { margin-top: 8px; font-size: .85rem; color: var(--gold); text-align: center; min-height: 20px; }
 
-@keyframes pulse {
-  0% { transform: scale(1); }
-  50% { transform: scale(1.1); }
-  100% { transform: scale(1); }
-}
-.whatsapp-float {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  width: 65px;
-  height: 65px;
-  background: #25D366;
-  border-radius: 50%;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  box-shadow: 0 0 20px rgba(0,0,0,0.5);
-  z-index: 9999;
-  animation: pulse 1.5s infinite;
-  text-decoration: none;
-}
-.whatsapp-float svg {
-  width: 30px;
-  height: 30px;
-  fill: white;
-}
-
-#success {
-  display:none;
-  margin-top:20px;
-  color:gold;
-}
-
-/* TÉRMINOS */
+/* ── Términos ────────────────────────────────────────────── */
 .btn-terminos {
+  width: 100%;
   background: transparent;
   border: 1px solid #374151;
-  color: #9ca3af;
-  font-size: 13px;
-  padding: 10px;
-  width: 95%;
-  margin-top: 20px;
-  border-radius: 10px;
+  color: var(--muted);
+  font-size: .85rem;
+  padding: 12px;
+  border-radius: var(--radius);
   cursor: pointer;
-  transition: all 0.3s;
+  transition: border-color .2s, color .2s;
+  margin-top: 24px;
 }
-.btn-terminos:hover {
-  border-color: gold;
-  color: gold;
-  transform: scale(1.01);
+.btn-terminos:hover { border-color: var(--gold); color: var(--gold); }
+.terminos-body { display: none; margin-top: 10px; }
+.terminos-card {
+  background: var(--card);
+  border-radius: var(--radius-sm);
+  padding: 15px;
+  margin-bottom: 10px;
+  font-size: .88rem;
+  line-height: 1.6;
+  color: #cbd5e1;
+  text-align: left;
+}
+.terminos-card strong { color: var(--text); }
+.terminos-card h4 { color: var(--gold); margin-bottom: 8px; font-size: .9rem; }
+.terminos-card ul { padding-left: 18px; margin-top: 6px; }
+
+/* ── Redes sociales ──────────────────────────────────────── */
+.redes {
+  display: flex;
+  justify-content: center;
+  gap: 14px;
+  margin-top: 28px;
+  flex-wrap: wrap;
+}
+.red-btn {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background: var(--card);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  transition: transform .2s, background .2s;
+}
+.red-btn:hover { transform: scale(1.2); background: var(--gold); }
+.red-btn svg { width: 22px; height: 22px; fill: white; display: block; }
+
+/* ── WhatsApp flotante ───────────────────────────────────── */
+.wa-float {
+  position: fixed;
+  bottom: 20px;
+  right: 16px;
+  width: 58px;
+  height: 58px;
+  background: #25D366;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 20px rgba(0,0,0,.4);
+  z-index: 9999;
+  text-decoration: none;
+  animation: pulse 2s infinite;
+}
+.wa-float svg { width: 28px; height: 28px; fill: white; }
+@keyframes pulse {
+  0%,100% { transform: scale(1); }
+  50%      { transform: scale(1.08); }
 }
 
-#terminosContent {
+/* ── Casino overlay ──────────────────────────────────────── */
+#casino {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.85);
   display: none;
-  margin-top: 10px;
-  text-align: left;
-  font-size: 13px;
-  animation: aparecer 0.3s forwards;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  backdrop-filter: blur(4px);
+}
+.casino-inner { text-align: center; }
+.casino-emoji { font-size: 80px; animation: spin 1s linear infinite; display: block; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.casino-txt { margin-top: 16px; color: var(--gold); font-weight: 700; font-size: 1.1rem; }
+
+/* ── Tablet & desktop tweaks ─────────────────────────────── */
+@media (min-width: 600px) {
+  body { padding-top: 20px; }
+  .page { padding-top: 40px; }
+}
+@media (min-width: 900px) {
+  .page { padding-top: 50px; }
+}
+
+/* ── TV / large screens ──────────────────────────────────── */
+@media (min-width: 1600px) {
+  html { font-size: 18px; }
+  .page { max-width: 640px; }
+}
+
+/* ── Safe area (notch / home bar) ───────────────────────── */
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+  body { padding-bottom: env(safe-area-inset-bottom); }
 }
 </style>
 </head>
 
 <body>
 
+<!-- Casino overlay -->
 <div id="casino">
-  <div class="ruleta">🎰</div>
-</div>
-
-<div class="container">
-
-<h1>🎟️ Compra tus códigos</h1>
-<h1>Gana 15 millones COP</h1>
-
-<div style="margin:15px; color:gold;">
-💎 Solo existen <strong>4 códigos dorados por el valor de 500 mil pesos cada uno</strong>
-</div>
-
-<!-- BARRA DE PROGRESO -->
-<div style="margin:15px 0; text-align:left;">
-  <div style="display:flex; justify-content:space-between; font-size:13px; color:#9ca3af; margin-bottom:6px;">
-    <span>Códigos vendidos</span>
-    <span id="txtProgreso">Cargando...</span>
-  </div>
-  <div style="background:#1f2937; border-radius:999px; height:14px; overflow:hidden;">
-    <div id="barraProgreso" style="height:100%; width:0%; background:linear-gradient(90deg, gold, orange); border-radius:999px; transition:width 1s ease;"></div>
+  <div class="casino-inner">
+    <span class="casino-emoji">🎰</span>
+    <p class="casino-txt">Procesando tu pago...</p>
   </div>
 </div>
 
-<!-- CÓDIGOS DORADOS SALIDOS -->
-<div id="seccionDorados" style="display:none; margin:15px 0; padding:12px; background:#020617; border-radius:10px; border:1px solid gold;">
-  <div style="font-size:13px; color:gold; margin-bottom:8px;">💎 Códigos dorados entregados por el valor de $500 mil pesos COP</div>
-  <div id="listaDorados" style="display:flex; flex-wrap:wrap; gap:8px; justify-content:center;"></div>
-</div>
+<div class="page">
 
-<div id="success">
-  <h2>✅ Pago confirmado</h2>
-</div>
+  <!-- Header -->
+  <h1 class="title">🎟️ Compra tus códigos</h1>
+  <p class="subtitle">Gana <span style="color:var(--gold)">$15.000.000 COP</span></p>
 
-<h3>Selecciona paquete</h3>
-
-<div class="card" data-cantidad="4">4 códigos<br><strong>$20.000</strong></div>
-<div class="card" data-cantidad="8">8 códigos<br><strong>$40.000</strong></div>
-<div class="card" data-cantidad="16">16 códigos<br><strong>$80.000</strong></div>
-
-<div id="form" style="display:none;">
-  <input id="nombre" placeholder="Nombre">
-  <input id="cedula" placeholder="Cédula">
-  <input id="telefono" placeholder="Teléfono">
-  <input id="correo" placeholder="Correo">
-  <input id="direccion" placeholder="Dirección">
-  <button id="btnPagar">Pagar ahora</button>
-</div>
-
-<hr>
-
-<h3>Consultar códigos</h3>
-<input id="buscar" placeholder="Correo o Cédula">
-<button onclick="consultar()">Buscar</button>
-
-<div id="resultado"></div>
-
-<div id="btnReenviarDiv" style="display:none; margin-top:10px;">
-  <button onclick="reenviarCorreo()" style="background:#1f2937; color:gold; border:1px solid gold; width:95%;">
-    📧 Reenviar códigos al correo
-  </button>
-</div>
-<div id="msgReenvio" style="margin-top:8px; color:gold; font-size:13px;"></div>
-
-<!-- TÉRMINOS Y CONDICIONES -->
-<button class="btn-terminos" onclick="toggleTerminos()">
-  📋 Ver Términos y Condiciones ▼
-</button>
-
-<div id="terminosContent">
-
-  <div style="background:#1f2937; border-radius:10px; padding:15px; margin-bottom:10px;">
-    <p style="color:gold; font-weight:bold; margin:0 0 5px;">🏆 Método de juego</p>
-    <p style="margin:0; color:#ccc;">El ganador se determina con el resultado de la <strong style="color:white;">Lotería de Medellín</strong>. Se toman los <strong style="color:white;">3 últimos números del premio mayor</strong> más el <strong style="color:white;">primer número de la serie</strong>. El código que coincida con esta combinación será el ganador.</p>
-    <p style="margin:8px 0 0; color:#9ca3af; font-size:12px;">Ejemplo: Si el premio mayor es <strong style="color:white;">1234</strong> y la serie es <strong style="color:white;">234</strong>, el código ganador sería <strong style="color:gold;">2342</strong> (últimos 3 del mayor: 1,2,3 + primer número de serie: 2).</p>
+  <div class="badge-wrap">
+    <span class="badge">💎 4 códigos dorados · $500.000 c/u</span>
   </div>
 
-  <div style="background:#1f2937; border-radius:10px; padding:15px; margin-bottom:10px;">
-    <p style="color:gold; font-weight:bold; margin:0 0 5px;">💰 Pago del premio</p>
-    <p style="margin:0; color:#ccc;">El pago se realiza por <strong style="color:white;">transferencia bancaria</strong> a cualquiera de estos bancos:</p>
-    <div style="display:flex; flex-wrap:wrap; gap:8px; margin-top:10px;">
-      <span style="background:#0f172a; color:gold; padding:5px 10px; border-radius:6px; border:1px solid gold;">Nequi</span>
-      <span style="background:#0f172a; color:gold; padding:5px 10px; border-radius:6px; border:1px solid gold;">Bancolombia</span>
-      <span style="background:#0f172a; color:gold; padding:5px 10px; border-radius:6px; border:1px solid gold;">Davivienda</span>
-      <span style="background:#0f172a; color:gold; padding:5px 10px; border-radius:6px; border:1px solid gold;">BBVA</span>
+  <!-- Progreso -->
+  <div class="progress-wrap">
+    <div class="progress-labels">
+      <span>Códigos vendidos</span>
+      <span id="txtProgreso">Cargando...</span>
+    </div>
+    <div class="progress-track">
+      <div id="barraProgreso" class="progress-bar"></div>
     </div>
   </div>
 
-  <div style="background:#1f2937; border-radius:10px; padding:15px; margin-bottom:10px;">
-    <p style="color:gold; font-weight:bold; margin:0 0 5px;">⏱️ Tiempo de pago</p>
-    <p style="margin:0; color:#ccc;">El pago del premio se realiza entre <strong style="color:white;">1 a 5 días hábiles</strong> después de verificar el código ganador.</p>
+  <!-- Dorados entregados -->
+  <div id="seccionDorados">
+    <div class="sec-label">💎 Códigos dorados entregados ($500.000 COP)</div>
+    <div id="listaDorados"></div>
   </div>
 
-  <div style="background:#1f2937; border-radius:10px; padding:15px; margin-bottom:10px;">
-    <p style="color:gold; font-weight:bold; margin:0 0 5px;">🎰 ¿Cuándo se juega?</p>
-    <p style="margin:0; color:#ccc;">El sorteo se realiza cuando se vendan el <strong style="color:white;">100% de los códigos</strong> disponibles, usando el resultado de la <strong style="color:white;">Lotería de Medellín</strong> del día del cierre.</p>
+  <!-- Éxito post-pago -->
+  <div id="success">✅ ¡Pago confirmado! Revisa tu correo.</div>
+
+  <!-- Aviso stock ajustado -->
+  <div id="avisoStock"></div>
+
+  <!-- Paquetes -->
+  <p class="section-title">Selecciona tu paquete</p>
+
+  <div class="cards-grid">
+    <div class="card" data-cantidad="4">
+      <div class="card-qty">4</div>
+      <div class="card-label">códigos</div>
+      <div class="card-price">$20.000</div>
+    </div>
+    <div class="card" data-cantidad="8">
+      <div class="card-qty">8</div>
+      <div class="card-label">códigos</div>
+      <div class="card-price">$40.000</div>
+    </div>
+    <div class="card" data-cantidad="16">
+      <div class="card-qty">16</div>
+      <div class="card-label">códigos</div>
+      <div class="card-price">$80.000</div>
+    </div>
   </div>
 
-  <div style="background:#1f2937; border-radius:10px; padding:15px; margin-bottom:10px;">
-    <p style="color:gold; font-weight:bold; margin:0 0 5px;">📌 Condiciones generales</p>
-    <ul style="margin:0; padding-left:20px; color:#ccc;">
-      <li>Cada código es único e irrepetible.</li>
-      <li>El comprador debe conservar su correo de confirmación como comprobante.</li>
-      <li>EiderTech Soluciones se reserva el derecho de cancelar el sorteo y devolver el dinero si no se venden todos los códigos.</li>
-    </ul>
+  <!-- Formulario -->
+  <div id="form">
+    <div class="input-group">
+      <label class="input-label" for="nombre">Nombre completo</label>
+      <input type="text" id="nombre" placeholder="Ej: Juan Pérez" autocomplete="name">
+      <div class="field-error" id="err-nombre">Ingresa tu nombre</div>
+    </div>
+    <div class="input-group">
+      <label class="input-label" for="cedula">Cédula</label>
+      <input type="text" id="cedula" placeholder="Ej: 1234567890" inputmode="numeric" autocomplete="off">
+      <div class="field-error" id="err-cedula">Ingresa tu cédula</div>
+    </div>
+    <div class="input-group">
+      <label class="input-label" for="telefono">Teléfono / WhatsApp</label>
+      <input type="tel" id="telefono" placeholder="Ej: 3001234567" inputmode="tel" autocomplete="tel">
+      <div class="field-error" id="err-telefono">Ingresa tu teléfono</div>
+    </div>
+    <div class="input-group">
+      <label class="input-label" for="correo">Correo electrónico</label>
+      <input type="email" id="correo" placeholder="Ej: juan@correo.com" inputmode="email" autocomplete="email">
+      <div class="field-error" id="err-correo">Ingresa un correo válido</div>
+    </div>
+    <div class="input-group">
+      <label class="input-label" for="direccion">Dirección (opcional)</label>
+      <input type="text" id="direccion" placeholder="Ej: Cra 5 #10-20, Medellín" autocomplete="street-address">
+    </div>
+
+    <div style="background:rgba(245,197,24,.08);border:1px solid rgba(245,197,24,.2);border-radius:10px;padding:12px;margin:10px 0;font-size:.82rem;color:#cbd5e1;line-height:1.5;">
+      🎟️ <strong style="color:var(--gold)">Los códigos son 100% aleatorios.</strong>
+      Son generados automáticamente por el sistema al momento del pago. Ninguna persona los selecciona ni los manipula.
+    </div>
+
+    <button class="btn btn-primary" id="btnPagar">🔒 Pagar ahora</button>
   </div>
 
-  <p style="text-align:center; color:#6b7280; font-size:11px; margin-top:15px;">
-    Al comprar un código aceptas estos términos y condiciones.<br>
-    📧 Contacto: eidercobo383@gmail.com
-  </p>
+  <hr class="divider">
 
-</div>
+  <!-- Consultar códigos -->
+  <p class="section-title">Consultar mis códigos</p>
+  <div class="consult-row">
+    <input type="text" id="buscar" placeholder="Correo o Cédula">
+    <button class="btn-consult" onclick="consultar()">Buscar</button>
+  </div>
 
-<!-- REDES -->
-<div class="redes">
-  <a href="https://facebook.com" target="_blank" title="Facebook">
-    <svg viewBox="0 0 24 24"><path fill="#1877F2" d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
-  </a>
-  <a href="https://instagram.com" target="_blank" title="Instagram">
-    <svg viewBox="0 0 24 24"><path fill="#E4405F" d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
-  </a>
-  <a href="mailto:eidercobo383@gmail.com" target="_blank" title="Email">
-    <svg viewBox="0 0 24 24"><path fill="#FF6B35" d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
-  </a>
-</div>
+  <div id="resultado" class="codes-list"></div>
 
-</div>
+  <div id="btnReenviarDiv" style="display:none; margin-top:10px;">
+    <button class="btn-reenviar" onclick="reenviarCorreo()">📧 Reenviar códigos al correo</button>
+  </div>
+  <div class="msg-reenvio" id="msgReenvio"></div>
 
-<!-- WHATSAPP -->
-<a href="https://wa.me/573053228703?text=Hola quiero comprar códigos" class="whatsapp-float" target="_blank">
+  <!-- Términos -->
+  <button class="btn-terminos" onclick="toggleTerminos()">
+    📋 Ver Términos y Condiciones ▼
+  </button>
+
+  <div class="terminos-body" id="terminosContent">
+
+    <div class="terminos-card">
+      <h4>🏆 Método de juego</h4>
+      El ganador se determina con el resultado de la <strong>Lotería de Medellín</strong>. Se toman los <strong>3 últimos números del premio mayor</strong> más el <strong>primer número de la serie</strong>. El código que coincida con esta combinación será el ganador.
+      <p style="margin-top:8px;font-size:.8rem;color:var(--muted);">Ejemplo: Premio mayor <strong style="color:white;">1234</strong> · Serie <strong style="color:white;">234</strong> → código ganador: <strong style="color:var(--gold);">2342</strong></p>
+    </div>
+
+    <div class="terminos-card">
+      <h4>🎰 Aleatoriedad garantizada</h4>
+      Los códigos son asignados de forma <strong>completamente aleatoria</strong> por el servidor al momento del pago. <strong>Ninguna persona interviene</strong> en la selección. El proceso es automático e imodificable.
+    </div>
+
+    <div class="terminos-card">
+      <h4>💰 Pago del premio</h4>
+      Por <strong>transferencia bancaria</strong> en un plazo de <strong>1 a 5 días hábiles</strong> tras verificar el código ganador.
+      <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;">
+        <span style="background:#0f172a;color:var(--gold);padding:4px 10px;border-radius:6px;border:1px solid var(--gold);font-size:.8rem;">Nequi</span>
+        <span style="background:#0f172a;color:var(--gold);padding:4px 10px;border-radius:6px;border:1px solid var(--gold);font-size:.8rem;">Bancolombia</span>
+        <span style="background:#0f172a;color:var(--gold);padding:4px 10px;border-radius:6px;border:1px solid var(--gold);font-size:.8rem;">Davivienda</span>
+        <span style="background:#0f172a;color:var(--gold);padding:4px 10px;border-radius:6px;border:1px solid var(--gold);font-size:.8rem;">BBVA</span>
+      </div>
+    </div>
+
+    <div class="terminos-card">
+      <h4>🎰 ¿Cuándo se juega?</h4>
+      El sorteo se realiza cuando se vendan el <strong>100% de los códigos</strong> disponibles, usando el resultado de la <strong>Lotería de Medellín</strong> del día del cierre.
+    </div>
+
+    <div class="terminos-card">
+      <h4>📌 Condiciones generales</h4>
+      <ul>
+        <li>Cada código es único e irrepetible.</li>
+        <li>Conserva tu correo de confirmación como comprobante.</li>
+        <li>EiderTech Soluciones puede cancelar el sorteo y devolver el dinero si no se venden todos los códigos.</li>
+      </ul>
+      <p style="margin-top:10px;font-size:.78rem;color:var(--muted);">Al comprar aceptas estos términos. · 📧 eidercobo383@gmail.com</p>
+    </div>
+
+  </div>
+
+  <!-- Redes -->
+  <div class="redes">
+    <a href="https://facebook.com" target="_blank" rel="noopener" class="red-btn" title="Facebook">
+      <svg viewBox="0 0 24 24"><path fill="#1877F2" d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+    </a>
+    <a href="https://instagram.com" target="_blank" rel="noopener" class="red-btn" title="Instagram">
+      <svg viewBox="0 0 24 24"><path fill="#E4405F" d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+    </a>
+    <a href="mailto:eidercobo383@gmail.com" class="red-btn" title="Email">
+      <svg viewBox="0 0 24 24"><path fill="#FF6B35" d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+    </a>
+  </div>
+
+</div><!-- /page -->
+
+<!-- WhatsApp flotante -->
+<a href="https://wa.me/573053228703?text=Hola quiero comprar códigos" class="wa-float" target="_blank" rel="noopener" aria-label="Contactar por WhatsApp">
   <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
 </a>
 
@@ -381,215 +617,237 @@ button.loading::after {
 document.addEventListener("DOMContentLoaded", () => {
 
 const API_URL = window.location.origin;
-let cantidad = 0;
+let cantidadSeleccionada = 0;
 let datoActual = "";
 
-const cards = document.querySelectorAll(".card");
-const form = document.getElementById("form");
+const cards    = document.querySelectorAll(".card");
+const form     = document.getElementById("form");
+const btnPagar = document.getElementById("btnPagar");
+const casino   = document.getElementById("casino");
 
+// ── Términos ──────────────────────────────────────────────
 window.toggleTerminos = function() {
-  const content = document.getElementById("terminosContent");
-  const btn = document.querySelector(".btn-terminos");
-  if (content.style.display === "none" || content.style.display === "") {
-    content.style.display = "block";
-    btn.innerHTML = "📋 Ocultar Términos y Condiciones ▲";
-    btn.style.color = "gold";
-    btn.style.borderColor = "gold";
-  } else {
-    content.style.display = "none";
-    btn.innerHTML = "📋 Ver Términos y Condiciones ▼";
-    btn.style.color = "#9ca3af";
-    btn.style.borderColor = "#374151";
-  }
+  const body = document.getElementById("terminosContent");
+  const btn  = document.querySelector(".btn-terminos");
+  const open = body.style.display === "block";
+  body.style.display = open ? "none" : "block";
+  btn.textContent    = open
+    ? "📋 Ver Términos y Condiciones ▼"
+    : "📋 Ocultar Términos y Condiciones ▲";
+  btn.style.color       = open ? "" : "var(--gold)";
+  btn.style.borderColor = open ? "" : "var(--gold)";
 };
 
+// ── Progreso + dorados ────────────────────────────────────
 async function verificarStock() {
   try {
-    const res = await fetch(`${API_URL}/api/progreso`);
+    const res  = await fetch(`${API_URL}/api/progreso`);
     const data = await res.json();
 
     const pct = Math.min(data.porcentaje || 0, 100);
     document.getElementById("barraProgreso").style.width = pct + "%";
-    document.getElementById("txtProgreso").innerText = pct.toFixed(2) + "%";
+    document.getElementById("txtProgreso").textContent   = pct.toFixed(2) + "%";
 
     if (data.disponibles <= 0) {
       cards.forEach(c => c.classList.add("disabled"));
       form.style.display = "none";
-      alert("🚫 Códigos agotados");
     }
 
-    const resDorados = await fetch(`${API_URL}/api/admin/codigos-dorados`);
-    const dorados = await resDorados.json();
-
-    if (dorados && dorados.length > 0) {
+    const resD   = await fetch(`${API_URL}/api/admin/codigos-dorados`);
+    const dorados = await resD.json();
+    if (Array.isArray(dorados) && dorados.length > 0) {
       document.getElementById("seccionDorados").style.display = "block";
       const lista = document.getElementById("listaDorados");
       lista.innerHTML = "";
       dorados.forEach(d => {
-        const span = document.createElement("span");
-        span.innerText = "✨ " + d.codigo;
-        span.style.cssText = "background:linear-gradient(45deg,gold,orange);color:black;padding:6px 12px;border-radius:8px;font-weight:bold;font-size:14px;";
-        lista.appendChild(span);
+        const s = document.createElement("span");
+        s.textContent = "✨ " + d.codigo;
+        s.style.cssText = "background:linear-gradient(135deg,gold,orange);color:#000;padding:6px 12px;border-radius:8px;font-weight:700;font-size:.85rem;";
+        lista.appendChild(s);
       });
     }
-
-  } catch (e) {
-    console.log("Error verificando stock");
-  }
+  } catch { /* silently ignore */ }
 }
-
 verificarStock();
 
+// ── Selección de paquete ──────────────────────────────────
 cards.forEach(card => {
   card.addEventListener("click", () => {
     if (card.classList.contains("disabled")) return;
-    cards.forEach(c => c.classList.remove("selected","disabled"));
+    cards.forEach(c => c.classList.remove("selected", "disabled"));
     card.classList.add("selected");
-    cards.forEach(c => {
-      if (c !== card) c.classList.add("disabled");
-    });
-    cantidad = parseInt(card.dataset.cantidad);
+    cards.forEach(c => { if (c !== card) c.classList.add("disabled"); });
+    cantidadSeleccionada = parseInt(card.dataset.cantidad, 10);
+    document.getElementById("avisoStock").style.display = "none";
     form.style.display = "block";
-    form.style.opacity = 0;
-    setTimeout(() => {
-      form.style.transition = "all 0.3s";
-      form.style.opacity = 1;
-    }, 50);
   });
 });
 
-window.consultar = async function() {
-  try {
-    const valor = document.getElementById("buscar").value;
-    if (!valor) return alert("Ingresa correo o cédula");
-    datoActual = valor;
+// ── Validación de campos ──────────────────────────────────
+function esCorreoValido(v) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
+}
 
-    const res = await fetch(`${API_URL}/api/mis-codigos`, {
-      method:"POST",
-      headers:{ "Content-Type":"application/json"},
-      body: JSON.stringify({dato: valor})
-    });
+function mostrarError(campo, msgId) {
+  campo.classList.add("error");
+  document.getElementById(msgId).style.display = "block";
+}
+function limpiarError(campo, msgId) {
+  campo.classList.remove("error");
+  document.getElementById(msgId).style.display = "none";
+}
 
-    const data = await res.json();
-    const resultado = document.getElementById("resultado");
-    resultado.innerHTML = "";
-    document.getElementById("btnReenviarDiv").style.display = "none";
-    document.getElementById("msgReenvio").innerText = "";
-
-    if (!data.codigos || data.codigos.length === 0) {
-      resultado.innerHTML = "❌ No se encontraron códigos";
-      return;
+["nombre","cedula","telefono","correo"].forEach(id => {
+  const el = document.getElementById(id);
+  el.addEventListener("input", () => {
+    const err = "err-" + id;
+    if (id === "correo") {
+      if (esCorreoValido(el.value.trim())) limpiarError(el, err);
+    } else {
+      if (el.value.trim()) limpiarError(el, err);
     }
+  });
+});
 
-    data.codigos.forEach((c, index) => {
-      const div = document.createElement("div");
-      div.className = "codigo";
-      setTimeout(() => {
-        div.innerText = c.dorado ? "✨ " + c.codigo + " ✨" : c.codigo;
-        if (c.dorado) div.classList.add("dorado");
-      }, index * 120);
-      resultado.appendChild(div);
-    });
-
-    document.getElementById("btnReenviarDiv").style.display = "block";
-
-  } catch (error) {
-    alert("Error consultando");
-  }
-};
-
-window.reenviarCorreo = async function() {
-  try {
-    if (!datoActual) return;
-    document.getElementById("msgReenvio").innerText = "Enviando...";
-
-    const res = await fetch(`${API_URL}/api/reenviar-correo`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ dato: datoActual })
-    });
-
-    const data = await res.json();
-    document.getElementById("msgReenvio").innerText = data.mensaje || "✅ Correo reenviado";
-
-  } catch (error) {
-    document.getElementById("msgReenvio").innerText = "❌ Error al reenviar";
-  }
-};
-
-const btnPagar = document.getElementById("btnPagar");
-const casino = document.getElementById("casino");
-
+// ── Pagar ─────────────────────────────────────────────────
 btnPagar.addEventListener("click", async () => {
-  if (!cantidad) {
-    alert("Selecciona un paquete");
-    return;
-  }
+  if (!cantidadSeleccionada) { alert("Selecciona un paquete"); return; }
 
-  const nombre = document.getElementById("nombre").value.trim();
-  const cedula = document.getElementById("cedula").value.trim();
+  const nombre   = document.getElementById("nombre").value.trim();
+  const cedula   = document.getElementById("cedula").value.trim();
   const telefono = document.getElementById("telefono").value.trim();
-  const correo = document.getElementById("correo").value.trim();
-  const direccion = document.getElementById("direccion").value.trim();
+  const correo   = document.getElementById("correo").value.trim();
+  const direccion= document.getElementById("direccion").value.trim();
 
-  if (!nombre || !correo || !cedula || !telefono) {
-    alert("Completa todos los datos");
-    return;
-  }
+  // Validar campos
+  let ok = true;
+  if (!nombre)               { mostrarError(document.getElementById("nombre"),   "err-nombre");   ok = false; }
+  if (!cedula)               { mostrarError(document.getElementById("cedula"),   "err-cedula");   ok = false; }
+  if (!telefono)             { mostrarError(document.getElementById("telefono"), "err-telefono"); ok = false; }
+  if (!esCorreoValido(correo)){ mostrarError(document.getElementById("correo"),  "err-correo");  ok = false; }
+  if (!ok) return;
 
   btnPagar.classList.add("loading");
+  btnPagar.disabled = true;
   casino.style.display = "flex";
 
   try {
-    const res = await fetch(`${API_URL}/api/crear-transaccion`, {
-      method: "POST",
+    const res  = await fetch(`${API_URL}/api/crear-transaccion`, {
+      method:  "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         cliente: { nombre, cedula, telefono, correo, direccion },
-        cantidad
+        cantidad: cantidadSeleccionada
       })
     });
 
     const data = await res.json();
 
     if (!res.ok) {
-      alert(data.error || "Error en compra");
-      btnPagar.classList.remove("loading");
       casino.style.display = "none";
+      btnPagar.classList.remove("loading");
+      btnPagar.disabled = false;
+      alert(data.error || "Error en compra");
       verificarStock();
       return;
     }
 
-    if (!data || !data.tx) {
-      throw new Error("Respuesta inválida");
+    // Aviso si se ajustó la cantidad por stock insuficiente
+    if (data.ajustado) {
+      const aviso = document.getElementById("avisoStock");
+      aviso.style.display = "block";
+      aviso.innerHTML =
+        `⚠️ Solo hay <strong>${data.cantidadFinal}</strong> códigos disponibles. ` +
+        `Se ajustó tu pedido de ${data.cantidadSolicitada} → ${data.cantidadFinal} códigos. ` +
+        `Total a pagar: <strong>$${data.montoTotal.toLocaleString("es-CO")} COP</strong>`;
+      // Pequeña pausa para que el usuario vea el aviso antes de ir a Wompi
+      await new Promise(r => setTimeout(r, 2500));
     }
 
     const params = new URLSearchParams({
-      "public-key": data.publicKey,
-      currency: "COP",
-      "amount-in-cents": data.tx.amount_in_cents,
-      reference: data.tx.reference,
+      "public-key":          data.publicKey,
+      "currency":            "COP",
+      "amount-in-cents":     data.tx.amount_in_cents,
+      "reference":           data.tx.reference,
       "signature:integrity": data.tx.signature.integrity,
-      "redirect-url": `${API_URL}?status=success`
+      "redirect-url":        `${API_URL}?status=success`
     });
 
     window.location.href = `https://checkout.wompi.co/p/?mode=widget&${params.toString()}`;
 
   } catch (err) {
     console.error(err);
-    alert("Error en el pago");
-    btnPagar.classList.remove("loading");
     casino.style.display = "none";
+    btnPagar.classList.remove("loading");
+    btnPagar.disabled = false;
+    alert("Error al procesar el pago. Intenta de nuevo.");
   }
 });
 
-const urlParams = new URLSearchParams(window.location.search);
-if (urlParams.get("status") === "success") {
+// ── Consultar códigos ─────────────────────────────────────
+window.consultar = async function() {
+  const valor = document.getElementById("buscar").value.trim();
+  if (!valor) { alert("Ingresa correo o cédula"); return; }
+  datoActual = valor;
+
+  const resultado = document.getElementById("resultado");
+  resultado.innerHTML = '<span style="color:var(--muted);font-size:.9rem">Buscando...</span>';
+  document.getElementById("btnReenviarDiv").style.display = "none";
+  document.getElementById("msgReenvio").textContent = "";
+
+  try {
+    const res  = await fetch(`${API_URL}/api/mis-codigos`, {
+      method:  "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ dato: valor })
+    });
+    const data = await res.json();
+
+    resultado.innerHTML = "";
+
+    if (!data.codigos || data.codigos.length === 0) {
+      resultado.innerHTML = '<span style="color:var(--muted);font-size:.9rem">❌ No se encontraron códigos</span>';
+      return;
+    }
+
+    data.codigos.forEach((c, i) => {
+      const chip = document.createElement("div");
+      chip.className = "code-chip" + (c.dorado ? " dorado" : "");
+      chip.textContent = c.dorado ? "✨ " + c.codigo + " ✨" : c.codigo;
+      chip.style.animationDelay = (i * 80) + "ms";
+      resultado.appendChild(chip);
+    });
+
+    document.getElementById("btnReenviarDiv").style.display = "block";
+  } catch {
+    resultado.innerHTML = '<span style="color:#f87171">Error al consultar</span>';
+  }
+};
+
+window.reenviarCorreo = async function() {
+  if (!datoActual) return;
+  const msg = document.getElementById("msgReenvio");
+  msg.textContent = "Enviando...";
+  try {
+    const res  = await fetch(`${API_URL}/api/reenviar-correo`, {
+      method:  "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ dato: datoActual })
+    });
+    const data = await res.json();
+    msg.textContent = data.mensaje || "✅ Correo reenviado";
+  } catch {
+    msg.textContent = "❌ Error al reenviar";
+  }
+};
+
+// ── Estado post-pago ──────────────────────────────────────
+if (new URLSearchParams(window.location.search).get("status") === "success") {
   document.getElementById("success").style.display = "block";
+  window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
 });
 </script>
-
 </body>
 </html>
