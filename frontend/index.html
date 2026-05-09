@@ -10,7 +10,6 @@
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎟️</text></svg>">
 
 <style>
-/* ── Reset & base ────────────────────────────────────────── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
@@ -35,14 +34,12 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-/* ── Layout ──────────────────────────────────────────────── */
 .page {
   max-width: 520px;
   margin: 0 auto;
   padding: clamp(12px, 4vw, 32px) clamp(12px, 4vw, 24px) 100px;
 }
 
-/* ── Typography ──────────────────────────────────────────── */
 .title {
   font-size: clamp(1.5rem, 5vw, 2rem);
   font-weight: 800;
@@ -73,7 +70,6 @@ body {
 }
 .badge-wrap { display:flex; justify-content:center; }
 
-/* ── Progress bar ────────────────────────────────────────── */
 .progress-wrap {
   background: var(--surface);
   border-radius: var(--radius);
@@ -101,7 +97,6 @@ body {
   transition: width 1.2s ease;
 }
 
-/* ── Dorados entregados ──────────────────────────────────── */
 #seccionDorados {
   display: none;
   background: #020617;
@@ -114,7 +109,6 @@ body {
 #seccionDorados .sec-label { font-size: 0.8rem; color: var(--gold); margin-bottom: 10px; }
 #listaDorados { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
 
-/* ── Alerta de éxito ─────────────────────────────────────── */
 #success {
   display: none;
   background: rgba(34,197,94,.15);
@@ -128,7 +122,6 @@ body {
   font-size: 1.05rem;
 }
 
-/* ── Package cards ───────────────────────────────────────── */
 .section-title {
   font-size: 0.9rem;
   font-weight: 700;
@@ -191,7 +184,6 @@ body {
 .card-price{ font-size: 1rem; font-weight: 700; }
 .card.selected .card-label { opacity: .7; }
 
-/* ── Aviso de stock ajustado ─────────────────────────────── */
 #avisoStock {
   display: none;
   background: rgba(251,191,36,.12);
@@ -204,7 +196,6 @@ body {
   line-height: 1.4;
 }
 
-/* ── Formulario ──────────────────────────────────────────── */
 #form { display: none; animation: fadeIn .3s ease; }
 @keyframes fadeIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:none; } }
 
@@ -224,13 +215,12 @@ input[type="tel"] {
   outline: none;
   transition: border-color .2s;
   -webkit-appearance: none;
-appearance: none;
+  appearance: none;
 }
 input:focus { border-color: var(--gold); }
 input.error { border-color: #f87171; }
 .field-error { font-size: .75rem; color: #f87171; margin-top: 3px; display: none; }
 
-/* ── Botones ─────────────────────────────────────────────── */
 .btn {
   display: block;
   width: 100%;
@@ -258,10 +248,8 @@ input.error { border-color: #f87171; }
   justify-content: center;
 }
 
-/* ── Divider ─────────────────────────────────────────────── */
 .divider { border: none; border-top: 1px solid #1f2937; margin: 28px 0; }
 
-/* ── Consulta de códigos ─────────────────────────────────── */
 .consult-row { display: flex; gap: 8px; }
 .consult-row input { flex: 1; }
 .btn-consult {
@@ -320,7 +308,6 @@ input.error { border-color: #f87171; }
 .btn-reenviar:hover { background: rgba(245,197,24,.1); }
 .msg-reenvio { margin-top: 8px; font-size: .85rem; color: var(--gold); text-align: center; min-height: 20px; }
 
-/* ── Términos ────────────────────────────────────────────── */
 .btn-terminos {
   width: 100%;
   background: transparent;
@@ -349,7 +336,6 @@ input.error { border-color: #f87171; }
 .terminos-card h4 { color: var(--gold); margin-bottom: 8px; font-size: .9rem; }
 .terminos-card ul { padding-left: 18px; margin-top: 6px; }
 
-/* ── Redes sociales ──────────────────────────────────────── */
 .redes {
   display: flex;
   justify-content: center;
@@ -371,7 +357,6 @@ input.error { border-color: #f87171; }
 .red-btn:hover { transform: scale(1.2); background: var(--gold); }
 .red-btn svg { width: 22px; height: 22px; fill: white; display: block; }
 
-/* ── WhatsApp flotante ───────────────────────────────────── */
 .wa-float {
   position: fixed;
   bottom: 20px;
@@ -394,7 +379,6 @@ input.error { border-color: #f87171; }
   50%      { transform: scale(1.08); }
 }
 
-/* ── Casino overlay ──────────────────────────────────────── */
 #casino {
   position: fixed;
   inset: 0;
@@ -410,7 +394,37 @@ input.error { border-color: #f87171; }
 @keyframes spin { to { transform: rotate(360deg); } }
 .casino-txt { margin-top: 16px; color: var(--gold); font-weight: 700; font-size: 1.1rem; }
 
-/* ── Tablet & desktop tweaks ─────────────────────────────── */
+/* Footer */
+.footer {
+  max-width: 520px;
+  margin: 0 auto;
+  padding: 24px clamp(12px, 4vw, 24px) 40px;
+  text-align: center;
+  border-top: 1px solid #1f2937;
+}
+.footer-logo { max-width: 90px; height: auto; opacity: 0.7; margin-bottom: 12px; }
+.footer-text { font-size: .78rem; color: #4b5563; line-height: 1.7; }
+.footer-wompi {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--surface);
+  border: 1px solid #1f2937;
+  border-radius: 999px;
+  padding: 8px 16px;
+  margin: 12px auto;
+  font-size: .8rem;
+  color: var(--muted);
+}
+.wompi-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 700;
+  color: #7c3aed;
+  font-size: .85rem;
+}
+
 @media (min-width: 600px) {
   body { padding-top: 20px; }
   .page { padding-top: 40px; }
@@ -418,14 +432,11 @@ input.error { border-color: #f87171; }
 @media (min-width: 900px) {
   .page { padding-top: 50px; }
 }
-
-/* ── TV / large screens ──────────────────────────────────── */
 @media (min-width: 1600px) {
   html { font-size: 18px; }
   .page { max-width: 640px; }
+  .footer { max-width: 640px; }
 }
-
-/* ── Safe area (notch / home bar) ───────────────────────── */
 @supports (padding-bottom: env(safe-area-inset-bottom)) {
   body { padding-bottom: env(safe-area-inset-bottom); }
 }
@@ -434,7 +445,6 @@ input.error { border-color: #f87171; }
 
 <body>
 
-<!-- Casino overlay -->
 <div id="casino">
   <div class="casino-inner">
     <span class="casino-emoji">🎰</span>
@@ -444,7 +454,13 @@ input.error { border-color: #f87171; }
 
 <div class="page">
 
-  <!-- Header -->
+  <!-- LOGO -->
+  <div style="text-align:center; margin-bottom:16px; padding-top:8px;">
+    <img src="/images/logo.png" alt="EiderTech Soluciones"
+         style="max-width:160px; height:auto;"
+         onerror="this.style.display='none'">
+  </div>
+
   <h1 class="title">🎟️ Compra tus códigos</h1>
   <p class="subtitle">Gana <span style="color:var(--gold)">$15.000.000 COP</span></p>
 
@@ -528,6 +544,17 @@ input.error { border-color: #f87171; }
       Son generados automáticamente por el sistema al momento del pago. Ninguna persona los selecciona ni los manipula.
     </div>
 
+    <!-- Seguridad Wompi -->
+    <div style="background:rgba(124,58,237,.08);border:1px solid rgba(124,58,237,.25);border-radius:10px;padding:12px;margin:10px 0;text-align:center;">
+      <div style="font-size:.82rem;color:var(--muted);margin-bottom:6px;">🔒 Tus pagos son seguros con</div>
+      <div style="font-size:1.1rem;font-weight:800;color:#7c3aed;letter-spacing:.02em;">Wompi</div>
+      <div style="display:flex;justify-content:center;gap:14px;margin-top:8px;flex-wrap:wrap;">
+        <span style="font-size:.75rem;color:#6b7280;">🔐 Cifrado SSL</span>
+        <span style="font-size:.75rem;color:#6b7280;">✅ Pagos verificados</span>
+        <span style="font-size:.75rem;color:#6b7280;">🏦 Respaldado por Bancolombia</span>
+      </div>
+    </div>
+
     <button class="btn btn-primary" id="btnPagar">🔒 Pagar ahora</button>
   </div>
 
@@ -553,18 +580,15 @@ input.error { border-color: #f87171; }
   </button>
 
   <div class="terminos-body" id="terminosContent">
-
     <div class="terminos-card">
       <h4>🏆 Método de juego</h4>
       El ganador se determina con el resultado de la <strong>Lotería de Medellín</strong>. Se toman los <strong>3 últimos números del premio mayor</strong> más el <strong>primer número de la serie</strong>. El código que coincida con esta combinación será el ganador.
       <p style="margin-top:8px;font-size:.8rem;color:var(--muted);">Ejemplo: Premio mayor <strong style="color:white;">1234</strong> · Serie <strong style="color:white;">234</strong> → código ganador: <strong style="color:var(--gold);">2342</strong></p>
     </div>
-
     <div class="terminos-card">
       <h4>🎰 Aleatoriedad garantizada</h4>
-      Los códigos son asignados de forma <strong>completamente aleatoria</strong> por el servidor al momento del pago. <strong>Ninguna persona interviene</strong> en la selección. El proceso es automático e imodificable.
+      Los códigos son asignados de forma <strong>completamente aleatoria</strong> por el servidor al momento del pago. <strong>Ninguna persona interviene</strong> en la selección. El proceso es automático e inmodificable.
     </div>
-
     <div class="terminos-card">
       <h4>💰 Pago del premio</h4>
       Por <strong>transferencia bancaria</strong> en un plazo de <strong>1 a 5 días hábiles</strong> tras verificar el código ganador.
@@ -575,22 +599,20 @@ input.error { border-color: #f87171; }
         <span style="background:#0f172a;color:var(--gold);padding:4px 10px;border-radius:6px;border:1px solid var(--gold);font-size:.8rem;">BBVA</span>
       </div>
     </div>
-
     <div class="terminos-card">
       <h4>🎰 ¿Cuándo se juega?</h4>
       El sorteo se realiza cuando se vendan el <strong>100% de los códigos</strong> disponibles, usando el resultado de la <strong>Lotería de Medellín</strong> del día del cierre.
     </div>
-
     <div class="terminos-card">
       <h4>📌 Condiciones generales</h4>
       <ul>
         <li>Cada código es único e irrepetible.</li>
         <li>Conserva tu correo de confirmación como comprobante.</li>
-      
+        <li>El resultado oficial es el publicado en <strong>loteriademedellin.com.co</strong>.</li>
+        <li>EiderTech Soluciones se reserva el derecho de cancelar el sorteo y devolver el dinero si no se venden todos los códigos.</li>
       </ul>
       <p style="margin-top:10px;font-size:.78rem;color:var(--muted);">Al comprar aceptas estos términos. · 📧 eidercobo383@gmail.com</p>
     </div>
-
   </div>
 
   <!-- Redes -->
@@ -606,7 +628,21 @@ input.error { border-color: #f87171; }
     </a>
   </div>
 
-</div><!-- /page -->
+</div>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <img src="/images/logo.png" alt="EiderTech Soluciones" class="footer-logo"
+       onerror="this.style.display='none'">
+  <div class="footer-wompi">
+    🔒 Tus pagos son seguros con <span class="wompi-badge">⚡ Wompi</span>
+  </div>
+  <div class="footer-text">
+    <p>© 2026 EiderTech Soluciones. Todos los derechos reservados.</p>
+    <p style="margin-top:4px;">📧 eidercobo383@gmail.com</p>
+    <p style="margin-top:4px; font-size:.72rem;">Pagos procesados de forma segura · Cifrado SSL · Respaldado por Bancolombia</p>
+  </div>
+</footer>
 
 <!-- WhatsApp flotante -->
 <a href="https://wa.me/573053228703?text=Hola quiero comprar códigos" class="wa-float" target="_blank" rel="noopener" aria-label="Contactar por WhatsApp">
@@ -625,7 +661,6 @@ const form     = document.getElementById("form");
 const btnPagar = document.getElementById("btnPagar");
 const casino   = document.getElementById("casino");
 
-// ── Términos ──────────────────────────────────────────────
 window.toggleTerminos = function() {
   const body = document.getElementById("terminosContent");
   const btn  = document.querySelector(".btn-terminos");
@@ -638,22 +673,18 @@ window.toggleTerminos = function() {
   btn.style.borderColor = open ? "" : "var(--gold)";
 };
 
-// ── Progreso + dorados ────────────────────────────────────
 async function verificarStock() {
   try {
     const res  = await fetch(`${API_URL}/api/progreso`);
     const data = await res.json();
-
     const pct = Math.min(data.porcentaje || 0, 100);
     document.getElementById("barraProgreso").style.width = pct + "%";
     document.getElementById("txtProgreso").textContent   = pct.toFixed(2) + "%";
-
     if (data.disponibles <= 0) {
       cards.forEach(c => c.classList.add("disabled"));
       form.style.display = "none";
     }
-
-    const resD   = await fetch(`${API_URL}/api/admin/codigos-dorados`);
+    const resD    = await fetch(`${API_URL}/api/admin/codigos-dorados`);
     const dorados = await resD.json();
     if (Array.isArray(dorados) && dorados.length > 0) {
       document.getElementById("seccionDorados").style.display = "block";
@@ -666,11 +697,10 @@ async function verificarStock() {
         lista.appendChild(s);
       });
     }
-  } catch { /* silently ignore */ }
+  } catch { }
 }
 verificarStock();
 
-// ── Selección de paquete ──────────────────────────────────
 cards.forEach(card => {
   card.addEventListener("click", () => {
     if (card.classList.contains("disabled")) return;
@@ -683,11 +713,9 @@ cards.forEach(card => {
   });
 });
 
-// ── Validación de campos ──────────────────────────────────
 function esCorreoValido(v) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
 }
-
 function mostrarError(campo, msgId) {
   campo.classList.add("error");
   document.getElementById(msgId).style.display = "block";
@@ -709,22 +737,18 @@ function limpiarError(campo, msgId) {
   });
 });
 
-// ── Pagar ─────────────────────────────────────────────────
 btnPagar.addEventListener("click", async () => {
   if (!cantidadSeleccionada) { alert("Selecciona un paquete"); return; }
-
-  const nombre   = document.getElementById("nombre").value.trim();
-  const cedula   = document.getElementById("cedula").value.trim();
-  const telefono = document.getElementById("telefono").value.trim();
-  const correo   = document.getElementById("correo").value.trim();
-  const direccion= document.getElementById("direccion").value.trim();
-
-  // Validar campos
+  const nombre    = document.getElementById("nombre").value.trim();
+  const cedula    = document.getElementById("cedula").value.trim();
+  const telefono  = document.getElementById("telefono").value.trim();
+  const correo    = document.getElementById("correo").value.trim();
+  const direccion = document.getElementById("direccion").value.trim();
   let ok = true;
-  if (!nombre)               { mostrarError(document.getElementById("nombre"),   "err-nombre");   ok = false; }
-  if (!cedula)               { mostrarError(document.getElementById("cedula"),   "err-cedula");   ok = false; }
-  if (!telefono)             { mostrarError(document.getElementById("telefono"), "err-telefono"); ok = false; }
-  if (!esCorreoValido(correo)){ mostrarError(document.getElementById("correo"),  "err-correo");  ok = false; }
+  if (!nombre)                { mostrarError(document.getElementById("nombre"),   "err-nombre");   ok = false; }
+  if (!cedula)                { mostrarError(document.getElementById("cedula"),   "err-cedula");   ok = false; }
+  if (!telefono)              { mostrarError(document.getElementById("telefono"), "err-telefono"); ok = false; }
+  if (!esCorreoValido(correo)){ mostrarError(document.getElementById("correo"),  "err-correo");   ok = false; }
   if (!ok) return;
 
   btnPagar.classList.add("loading");
@@ -740,9 +764,7 @@ btnPagar.addEventListener("click", async () => {
         cantidad: cantidadSeleccionada
       })
     });
-
     const data = await res.json();
-
     if (!res.ok) {
       casino.style.display = "none";
       btnPagar.classList.remove("loading");
@@ -751,19 +773,15 @@ btnPagar.addEventListener("click", async () => {
       verificarStock();
       return;
     }
-
-    // Aviso si se ajustó la cantidad por stock insuficiente
     if (data.ajustado) {
       const aviso = document.getElementById("avisoStock");
       aviso.style.display = "block";
       aviso.innerHTML =
         `⚠️ Solo hay <strong>${data.cantidadFinal}</strong> códigos disponibles. ` +
         `Se ajustó tu pedido de ${data.cantidadSolicitada} → ${data.cantidadFinal} códigos. ` +
-        `Total a pagar: <strong>$${data.montoTotal.toLocaleString("es-CO")} COP</strong>`;
-      // Pequeña pausa para que el usuario vea el aviso antes de ir a Wompi
+        `Total: <strong>$${data.montoTotal.toLocaleString("es-CO")} COP</strong>`;
       await new Promise(r => setTimeout(r, 2500));
     }
-
     const params = new URLSearchParams({
       "public-key":          data.publicKey,
       "currency":            "COP",
@@ -772,9 +790,7 @@ btnPagar.addEventListener("click", async () => {
       "signature:integrity": data.tx.signature.integrity,
       "redirect-url":        `${API_URL}?status=success`
     });
-
     window.location.href = `https://checkout.wompi.co/p/?mode=widget&${params.toString()}`;
-
   } catch (err) {
     console.error(err);
     casino.style.display = "none";
@@ -784,17 +800,14 @@ btnPagar.addEventListener("click", async () => {
   }
 });
 
-// ── Consultar códigos ─────────────────────────────────────
 window.consultar = async function() {
   const valor = document.getElementById("buscar").value.trim();
   if (!valor) { alert("Ingresa correo o cédula"); return; }
   datoActual = valor;
-
   const resultado = document.getElementById("resultado");
   resultado.innerHTML = '<span style="color:var(--muted);font-size:.9rem">Buscando...</span>';
   document.getElementById("btnReenviarDiv").style.display = "none";
   document.getElementById("msgReenvio").textContent = "";
-
   try {
     const res  = await fetch(`${API_URL}/api/mis-codigos`, {
       method:  "POST",
@@ -802,14 +815,11 @@ window.consultar = async function() {
       body: JSON.stringify({ dato: valor })
     });
     const data = await res.json();
-
     resultado.innerHTML = "";
-
     if (!data.codigos || data.codigos.length === 0) {
       resultado.innerHTML = '<span style="color:var(--muted);font-size:.9rem">❌ No se encontraron códigos</span>';
       return;
     }
-
     data.codigos.forEach((c, i) => {
       const chip = document.createElement("div");
       chip.className = "code-chip" + (c.dorado ? " dorado" : "");
@@ -817,7 +827,6 @@ window.consultar = async function() {
       chip.style.animationDelay = (i * 80) + "ms";
       resultado.appendChild(chip);
     });
-
     document.getElementById("btnReenviarDiv").style.display = "block";
   } catch {
     resultado.innerHTML = '<span style="color:#f87171">Error al consultar</span>';
@@ -841,7 +850,6 @@ window.reenviarCorreo = async function() {
   }
 };
 
-// ── Estado post-pago ──────────────────────────────────────
 if (new URLSearchParams(window.location.search).get("status") === "success") {
   document.getElementById("success").style.display = "block";
   window.scrollTo({ top: 0, behavior: "smooth" });
