@@ -44,7 +44,7 @@ router.post('/crear-transaccion', async (req, res) => {
     */
 
     // ── Precios base (precio por código individual) ───────────
-    const precioPorCodigo = 5000; // $5.000 por código = $20.000 x 4, $40.000 x 8, $80.000 x 16
+    const precioPorCodigo = 500; // $5.000 por código = $20.000 x 4, $40.000 x 8, $80.000 x 16
 
     const cantidadesValidas = [4, 8, 16];
     if (!cantidadesValidas.includes(Number(cantidad))) {
