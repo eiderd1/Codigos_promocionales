@@ -180,7 +180,7 @@ async function enviarCorreo(destino, codigos) {
           <!-- Footer -->
           <p style="text-align:center;color:#6b7280;font-size:11px;margin:0;line-height:1.7;">
             Guarda este correo como comprobante de tu compra.<br>
-            📧 eidercobo383@gmail.com &nbsp;|&nbsp; EiderTech Soluciones
+            📧 infoeidertechsoluciones@gmail.com &nbsp;|&nbsp; EiderTech Soluciones
           </p>
 
         </div>
