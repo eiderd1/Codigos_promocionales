@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Pago exitoso</title>
+<title>Estado del pago</title>
 
 <style>
 
@@ -36,7 +36,6 @@ body{
 }
 
 h1{
-  color:#f5c518;
   margin-bottom:10px;
 }
 
@@ -57,6 +56,18 @@ p{
   font-weight:bold;
 }
 
+.success{
+  color:#22c55e;
+}
+
+.error{
+  color:#ef4444;
+}
+
+.pending{
+  color:#facc15;
+}
+
 </style>
 </head>
 
@@ -64,19 +75,16 @@ p{
 
 <div class="card">
 
-  <div class="icon">
-    ✅
+  <div class="icon" id="icon">
+    ⏳
   </div>
 
-  <h1>Pago confirmado</h1>
+  <h1 id="titulo">
+    Verificando pago...
+  </h1>
 
-  <p>
-    Tu compra fue procesada correctamente.
-    Los códigos fueron enviados a tu correo electrónico.
-  </p>
-
-  <p>
-    Revisa también la carpeta de spam o promociones.
+  <p id="mensaje">
+    Estamos validando el estado de tu transacción.
   </p>
 
   <a href="/" class="btn">
@@ -84,6 +92,101 @@ p{
   </a>
 
 </div>
+
+<script>
+
+const params = new URLSearchParams(window.location.search);
+
+const status =
+  params.get("status") ||
+  params.get("transactionStatus");
+
+const icon =
+  document.getElementById("icon");
+
+const titulo =
+  document.getElementById("titulo");
+
+const mensaje =
+  document.getElementById("mensaje");
+
+switch(status){
+
+  // APROBADO
+  case "APPROVED":
+  case "approved":
+  case "success":
+
+    icon.innerHTML = "✅";
+
+    titulo.innerHTML =
+      "Pago confirmado";
+
+    titulo.classList.add("success");
+
+    mensaje.innerHTML = `
+      Tu compra fue procesada correctamente.<br><br>
+      Los códigos fueron enviados a tu correo electrónico.<br>
+      Revisa también spam o promociones.
+    `;
+
+  break;
+
+  // RECHAZADO
+  case "DECLINED":
+  case "ERROR":
+  case "FAILED":
+  case "rejected":
+
+    icon.innerHTML = "❌";
+
+    titulo.innerHTML =
+      "Pago rechazado";
+
+    titulo.classList.add("error");
+
+    mensaje.innerHTML = `
+      Tu pago no pudo ser procesado.<br><br>
+      Puedes intentar nuevamente con otro método de pago.
+    `;
+
+  break;
+
+  // PENDIENTE
+  case "PENDING":
+  case "pending":
+
+    icon.innerHTML = "⏳";
+
+    titulo.innerHTML =
+      "Pago pendiente";
+
+    titulo.classList.add("pending");
+
+    mensaje.innerHTML = `
+      Tu pago está siendo validado por la entidad bancaria.<br><br>
+      Te notificaremos cuando sea confirmado.
+    `;
+
+  break;
+
+  // DEFAULT
+  default:
+
+    icon.innerHTML = "ℹ️";
+
+    titulo.innerHTML =
+      "Estado desconocido";
+
+    mensaje.innerHTML = `
+      No pudimos verificar el estado del pago.<br><br>
+      Si el dinero fue debitado, espera unos minutos
+      y revisa tu correo.
+    `;
+
+}
+
+</script>
 
 </body>
 </html>
