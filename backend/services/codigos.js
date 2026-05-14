@@ -1,7 +1,7 @@
 const supabase = require('../config/supabase');
 const { getPromoActiva } = require('./promociones');
 
-const HITOS_DORADOS = [5000, 8000, 9000, 9999];
+const HITOS_DORADOS = [700, 8000, 9000, 9999];
 
 async function generarCodigos(cantidad, referencia) {
   try {
