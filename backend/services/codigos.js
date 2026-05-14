@@ -1,10 +1,9 @@
 const supabase = require('../config/supabase');
 
-const HITOS_DORADOS = [5000, 8000, 9000, 9800];
+const HITOS_DORADOS = [300, 1000, 5000, 8000, 9000, 9999];
 
 async function generarCodigos(cantidad, referencia) {
   try {
-
     const { count: vendidos } = await supabase
       .from('codigos')
       .select('*', { count: 'exact', head: true })
@@ -16,25 +15,33 @@ async function generarCodigos(cantidad, referencia) {
       .eq('dorado', true)
       .eq('vendido', true);
 
-    // 🔀 Obtener más códigos para mezclar
+    // ─── 1. Obtener TODOS los códigos disponibles (ordenados) ────────────────
     const { data: disponibles, error } = await supabase
       .from('codigos')
       .select('codigo')
       .eq('vendido', false)
-      .limit(cantidad * 10);
+      .order('codigo', { ascending: true }); // orden numérico
 
     if (error || !disponibles?.length) {
       console.error("❌ Error obteniendo códigos:", error);
       return [];
     }
 
-    // 🔀 Mezclar y tomar los necesarios
-    const mezclados = disponibles
-      .sort(() => Math.random() - 0.5)
-      .slice(0, cantidad);
+    // ─── 2. Dividir en zonas y tomar uno aleatorio de cada zona ──────────────
+    const total = disponibles.length;
+    const tamañoZona = Math.floor(total / cantidad);
+    const mezclados = [];
 
+    for (let i = 0; i < cantidad; i++) {
+      const inicio = i * tamañoZona;
+      const fin = i === cantidad - 1 ? total : inicio + tamañoZona;
+      // índice aleatorio dentro de esta zona
+      const idx = inicio + Math.floor(Math.random() * (fin - inicio));
+      mezclados.push(disponibles[idx]);
+    }
+
+    // ─── 3. Lógica de código dorado (sin cambios) ────────────────────────────
     let indexDorado = -1;
-
     if (doradosEntregados < HITOS_DORADOS.length) {
       const siguienteHito = HITOS_DORADOS[doradosEntregados];
       if (vendidos < siguienteHito && (vendidos + cantidad) >= siguienteHito) {
@@ -42,22 +49,18 @@ async function generarCodigos(cantidad, referencia) {
       }
     }
 
+    // ─── 4. Actualizar en BD (anti-repetición igual que antes) ───────────────
     const resultado = [];
 
     for (let i = 0; i < mezclados.length; i++) {
       const c = mezclados[i];
       const esDorado = i === indexDorado;
 
-      // 🔒 Solo actualiza si sigue disponible (anti-repetición)
       const { data: actualizado, error: errorUpdate } = await supabase
         .from('codigos')
-        .update({
-          vendido: true,
-          referencia,
-          dorado: esDorado
-        })
+        .update({ vendido: true, referencia, dorado: esDorado })
         .eq('codigo', c.codigo)
-        .eq('vendido', false)  // ← solo si no fue vendido por otra transacción
+        .eq('vendido', false)
         .select('codigo');
 
       if (errorUpdate) {
@@ -65,7 +68,6 @@ async function generarCodigos(cantidad, referencia) {
         continue;
       }
 
-      // Si no se actualizó es porque ya fue vendido — saltar
       if (!actualizado || actualizado.length === 0) {
         console.log("⚠️ Código ya vendido, saltando:", c.codigo);
         continue;
@@ -74,7 +76,6 @@ async function generarCodigos(cantidad, referencia) {
       resultado.push({ codigo: c.codigo, dorado: esDorado });
     }
 
-    // Si no alcanzaron los códigos únicos, avisar
     if (resultado.length < cantidad) {
       console.warn(`⚠️ Solo se pudieron asignar ${resultado.length} de ${cantidad} códigos`);
     }

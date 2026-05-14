@@ -479,7 +479,7 @@ input.error { border-color: #f87171; }
   <p class="subtitle">  Participa por  <span style="color:var(--gold)">$15.000.000 COP</span></p>
 
   <div class="badge-wrap">
-    <span class="badge">💎 4 códigos dorados · $500.000 c/u</span>
+    <span class="badge">💎 6 códigos dorados · $500.000 c/u</span>
   </div>
 
   <!-- Progreso -->
@@ -495,7 +495,7 @@ input.error { border-color: #f87171; }
 
   <!-- Dorados entregados -->
   <div id="seccionDorados">
-    <div class="sec-label">🎫 Códigos dorados entregados ($500.000 COP)</div>
+    <div class="sec-label">🎫 Códigos dorados entregados</div>
     <div id="listaDorados"></div>
   </div>
 
@@ -866,6 +866,72 @@ function limpiarError(input, id) {
 
 });
 
+
+// ===============================
+// PROMO EN TIEMPO REAL
+// ===============================
+const PRECIOS_BASE = { 4: 20000, 8: 40000, 16: 80000 };
+
+async function verificarPromo() {
+  try {
+    const res = await fetch(`${API_URL}/api/admin/promo-activa`);
+    if (!res.ok) return;
+    const promo = await res.json();
+
+    const cards = document.querySelectorAll(".card");
+    cards.forEach(card => {
+      const cantidad = Number(card.dataset.cantidad);
+      const precioEl = card.querySelector(".card-price");
+      const labelEl  = card.querySelector(".card-label");
+
+      if (promo.activa) {
+        // Calcular precio promo proporcional al paquete
+        const precioPromo = Math.floor((promo.precio_normal / 4) * cantidad);
+        const precioBase  = PRECIOS_BASE[cantidad];
+
+        precioEl.innerHTML = `
+          <span style="text-decoration:line-through;opacity:.5;font-size:.8rem;">$${precioBase.toLocaleString('es-CO')}</span><br>
+          <span style="color:var(--gold);">$${precioPromo.toLocaleString('es-CO')}</span>
+        `;
+
+        // Mostrar badge promo en el primer card
+        if (cantidad === 4) {
+          let badge = document.getElementById('badge-promo');
+          if (!badge) {
+            badge = document.createElement('div');
+            badge.id = 'badge-promo';
+            badge.style.cssText = `
+              background:rgba(245,197,24,.15);
+              border:1px solid rgba(245,197,24,.4);
+              border-radius:8px;
+              padding:8px 12px;
+              margin-bottom:12px;
+              font-size:.82rem;
+              color:#fde68a;
+              text-align:center;
+              line-height:1.5;
+            `;
+            const grid = document.querySelector('.cards-grid');
+            grid.parentNode.insertBefore(badge, grid);
+          }
+          const expira = new Date(promo.expira_en);
+          const hora = expira.toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit' });
+          badge.innerHTML = `🔥 <strong>Promoción activa</strong> hasta las ${hora} · Código dorado vale $${promo.precio_dorado.toLocaleString('es-CO')}`;
+        }
+      } else {
+        // Restaurar precio base
+        precioEl.textContent = `$${PRECIOS_BASE[cantidad].toLocaleString('es-CO')}`;
+        const badge = document.getElementById('badge-promo');
+        if (badge) badge.remove();
+      }
+    });
+  } catch (e) {
+    console.error("Error verificando promo:", e);
+  }
+}
+
+verificarPromo();
+setInterval(verificarPromo, 30000); // revisar cada 30 segundos
 
 // ===============================
 // VERIFICAR STOCK
