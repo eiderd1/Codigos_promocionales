@@ -461,6 +461,7 @@ input.error { border-color: #f87171; }
   body { padding-bottom: env(safe-area-inset-bottom); }
 }
 </style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 </head>
 
 <body>
@@ -622,8 +623,21 @@ input.error { border-color: #f87171; }
       id="btnPagar"
       disabled
     >
-      🔒 Pagar ahora
+      📲 Generar QR para pagar
     </button>
+
+    <!-- QR de pago -->
+    <div id="qrContainer" style="display:none; margin-top:20px; text-align:center; background:#0f172a; border:2px solid var(--gold); border-radius:var(--radius); padding:20px;">
+      <p style="color:var(--gold); font-weight:700; font-size:1rem; margin:0 0 6px;">📲 Escanea con la cámara de tu celular</p>
+      <p style="color:#9ca3af; font-size:.8rem; margin:0 0 16px;">No necesitas ninguna app especial</p>
+      <div id="qrCode" style="background:white; padding:12px; border-radius:10px; display:inline-block;"></div>
+      <p style="color:#9ca3af; font-size:.75rem; margin:14px 0 4px;">O abre el link directamente:</p>
+      <a id="qrLink" href="#" target="_blank" style="color:var(--gold); font-size:.8rem; word-break:break-all;"></a>
+      <div style="margin-top:16px;">
+        <button onclick="document.getElementById('qrContainer').style.display='none'; document.getElementById('btnPagar').style.display='block'; procesandoPago=false;" style="background:transparent; border:1px solid #374151; color:#9ca3af; padding:8px 16px; border-radius:8px; cursor:pointer; font-size:.8rem;">✕ Cancelar y volver</button>
+      </div>
+    </div>
+
   </div>
 
   <hr class="divider">
@@ -1179,31 +1193,42 @@ btnPagar.addEventListener("click", async () => {
 
     }
 
-    // WOMPI
+    // QR
     const params = new URLSearchParams({
-
-      "public-key":
-        data.publicKey,
-
-      "currency":
-        "COP",
-
-      "amount-in-cents":
-        data.tx.amount_in_cents,
-
-      "reference":
-        data.tx.reference,
-
-      "signature:integrity":
-        data.tx.signature.integrity,
-
-      "redirect-url":
-        `${API_URL}/gracias.html`
-
+      "public-key":          data.publicKey,
+      "currency":            "COP",
+      "amount-in-cents":     data.tx.amount_in_cents,
+      "reference":           data.tx.reference,
+      "signature:integrity": data.tx.signature.integrity,
+      "redirect-url":        `${API_URL}/gracias.html`
     });
 
-    window.location.href =
-      `https://checkout.wompi.co/p/?${params.toString()}`;
+    const urlPago = `https://checkout.wompi.co/p/?${params.toString()}`;
+
+    const qrContainer = document.getElementById("qrContainer");
+    const qrCodeDiv   = document.getElementById("qrCode");
+    const qrLink      = document.getElementById("qrLink");
+
+    qrCodeDiv.innerHTML = "";
+
+    new QRCode(qrCodeDiv, {
+      text:         urlPago,
+      width:        200,
+      height:       200,
+      colorDark:    "#000000",
+      colorLight:   "#ffffff",
+      correctLevel: QRCode.CorrectLevel.M
+    });
+
+    qrLink.href        = urlPago;
+    qrLink.textContent = urlPago.slice(0, 55) + "...";
+
+    casino.style.display = "none";
+    btnPagar.style.display = "none";
+    btnPagar.classList.remove("loading");
+    qrContainer.style.display = "block";
+    qrContainer.scrollIntoView({ behavior: "smooth", block: "center" });
+    procesandoPago = false;
 
   } catch (error) {
 
