@@ -22,6 +22,14 @@
   -webkit-touch-callout: none;
 }
 
+.codes-list, .code-chip {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+
 :root {
   --gold: #f5c518;
   --orange: #f97316;
@@ -876,6 +884,49 @@ function limpiarError(input, id) {
 
 
 // ===============================
+// PROMO ACTIVA (solo muestra aviso, no cambia precios)
+// ===============================
+async function verificarPromo() {
+  try {
+    const res = await fetch(`${API_URL}/api/admin/promo-activa`);
+    if (!res.ok) return;
+    const promo = await res.json();
+
+    let badge = document.getElementById('badge-promo');
+
+    if (promo.activa) {
+      if (!badge) {
+        badge = document.createElement('div');
+        badge.id = 'badge-promo';
+        badge.style.cssText = `
+          background:rgba(245,197,24,.15);
+          border:1px solid rgba(245,197,24,.4);
+          border-radius:8px;
+          padding:8px 12px;
+          margin-bottom:12px;
+          font-size:.82rem;
+          color:#fde68a;
+          text-align:center;
+          line-height:1.5;
+        `;
+        const grid = document.querySelector('.cards-grid');
+        grid.parentNode.insertBefore(badge, grid);
+      }
+      const expira = new Date(promo.expira_en);
+      const hora = expira.toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit' });
+      badge.innerHTML = `🔥 <strong>Promoción activa</strong> hasta las ${hora} · Si te cae el código dorado ganas $${promo.precio_dorado.toLocaleString('es-CO')}`;
+    } else {
+      if (badge) badge.remove();
+    }
+  } catch (e) {
+    console.error("Error verificando promo:", e);
+  }
+}
+
+verificarPromo();
+setInterval(verificarPromo, 30000);
+
+// ===============================
 // VERIFICAR STOCK
 // ===============================
 async function verificarStock() {
@@ -1392,6 +1443,35 @@ document.getElementById('resultado').addEventListener('touchstart', function(e) 
 document.getElementById('resultado').addEventListener('touchend', function() {
   window.getSelection()?.removeAllRanges();
 });
+
+
+// ===============================
+// BLOQUEAR COPIA DE CODIGOS
+// ===============================
+document.addEventListener('copy', function(e) {
+  const sel = window.getSelection();
+  if (!sel) return;
+  const node = sel.anchorNode;
+  if (!node) return;
+  const resultado = document.getElementById('resultado');
+  if (resultado && resultado.contains(node.parentElement)) {
+    e.preventDefault();
+    e.clipboardData && e.clipboardData.setData('text/plain', '');
+  }
+});
+
+document.getElementById('resultado').addEventListener('contextmenu', function(e) {
+  e.preventDefault();
+});
+
+document.getElementById('resultado').addEventListener('touchstart', function() {
+  this.style.webkitUserSelect = 'none';
+}, { passive: true });
+
+document.getElementById('resultado').addEventListener('touchend', function() {
+  window.getSelection()?.removeAllRanges();
+});
+
 
 });
 </script>
