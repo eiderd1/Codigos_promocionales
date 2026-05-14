@@ -868,70 +868,47 @@ function limpiarError(input, id) {
 
 
 // ===============================
-// PROMO EN TIEMPO REAL
+// PROMO ACTIVA (solo muestra aviso, no cambia precios)
 // ===============================
-const PRECIOS_BASE = { 4: 20000, 8: 40000, 16: 80000 };
-
 async function verificarPromo() {
   try {
     const res = await fetch(`${API_URL}/api/admin/promo-activa`);
     if (!res.ok) return;
     const promo = await res.json();
 
-    const cards = document.querySelectorAll(".card");
-    cards.forEach(card => {
-      const cantidad = Number(card.dataset.cantidad);
-      const precioEl = card.querySelector(".card-price");
-      const labelEl  = card.querySelector(".card-label");
+    let badge = document.getElementById('badge-promo');
 
-      if (promo.activa) {
-        // Calcular precio promo proporcional al paquete
-        const precioPromo = Math.floor((promo.precio_normal / 4) * cantidad);
-        const precioBase  = PRECIOS_BASE[cantidad];
-
-        precioEl.innerHTML = `
-          <span style="text-decoration:line-through;opacity:.5;font-size:.8rem;">$${precioBase.toLocaleString('es-CO')}</span><br>
-          <span style="color:var(--gold);">$${precioPromo.toLocaleString('es-CO')}</span>
+    if (promo.activa) {
+      if (!badge) {
+        badge = document.createElement('div');
+        badge.id = 'badge-promo';
+        badge.style.cssText = `
+          background:rgba(245,197,24,.15);
+          border:1px solid rgba(245,197,24,.4);
+          border-radius:8px;
+          padding:8px 12px;
+          margin-bottom:12px;
+          font-size:.82rem;
+          color:#fde68a;
+          text-align:center;
+          line-height:1.5;
         `;
-
-        // Mostrar badge promo en el primer card
-        if (cantidad === 4) {
-          let badge = document.getElementById('badge-promo');
-          if (!badge) {
-            badge = document.createElement('div');
-            badge.id = 'badge-promo';
-            badge.style.cssText = `
-              background:rgba(245,197,24,.15);
-              border:1px solid rgba(245,197,24,.4);
-              border-radius:8px;
-              padding:8px 12px;
-              margin-bottom:12px;
-              font-size:.82rem;
-              color:#fde68a;
-              text-align:center;
-              line-height:1.5;
-            `;
-            const grid = document.querySelector('.cards-grid');
-            grid.parentNode.insertBefore(badge, grid);
-          }
-          const expira = new Date(promo.expira_en);
-          const hora = expira.toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit' });
-          badge.innerHTML = `🔥 <strong>Promoción activa</strong> hasta las ${hora} · Código dorado vale $${promo.precio_dorado.toLocaleString('es-CO')}`;
-        }
-      } else {
-        // Restaurar precio base
-        precioEl.textContent = `$${PRECIOS_BASE[cantidad].toLocaleString('es-CO')}`;
-        const badge = document.getElementById('badge-promo');
-        if (badge) badge.remove();
+        const grid = document.querySelector('.cards-grid');
+        grid.parentNode.insertBefore(badge, grid);
       }
-    });
+      const expira = new Date(promo.expira_en);
+      const hora = expira.toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit' });
+      badge.innerHTML = `🔥 <strong>Promoción activa</strong> hasta las ${hora} · Si te cae el código dorado ganas $${promo.precio_dorado.toLocaleString('es-CO')}`;
+    } else {
+      if (badge) badge.remove();
+    }
   } catch (e) {
     console.error("Error verificando promo:", e);
   }
 }
 
 verificarPromo();
-setInterval(verificarPromo, 30000); // revisar cada 30 segundos
+setInterval(verificarPromo, 30000);
 
 // ===============================
 // VERIFICAR STOCK

@@ -44,13 +44,8 @@ router.post('/crear-transaccion', async (req, res) => {
     }
     */
 
-    // ── Verificar promoción activa ────────────────────────────
-    const promo = await getPromoActiva();
-
-    // ── Precios (promo o base) ────────────────────────────────
-    // Sin promo: $5.000 por código → $20.000 x4 / $40.000 x8 / $80.000 x16
-    // Con promo: se usa precio_normal de la tabla promociones (siempre es para paquete de 4)
-    const precioPorCodigo = promo ? Math.floor(promo.precio_normal / 4) : 5000;
+    // ── Precios base (precio por código individual) ───────────
+    const precioPorCodigo = 5000; // $5.000 por código = $20.000 x 4, $40.000 x 8, $80.000 x 16
 
     const cantidadesValidas = [4, 8, 16];
     if (!cantidadesValidas.includes(Number(cantidad))) {
@@ -137,6 +132,9 @@ router.post('/crear-transaccion', async (req, res) => {
     };
 
     // El frontend usa 'ajustado' para mostrar aviso si se redujo la cantidad
+    // Verificar si hay promo activa para informar al frontend
+    const promo = await getPromoActiva();
+
     res.json({
       publicKey:          PUBLIC_KEY,
       tx,
@@ -145,8 +143,7 @@ router.post('/crear-transaccion', async (req, res) => {
       montoTotal:         monto,
       ajustado:           cantidadFinal < Number(cantidad),
       promoActiva:        promo ? {
-        precioNormal: promo.precio_normal,
-        precioDorado: promo.precio_dorado,
+        precioDorado: promo.precio_dorado,  // ej: 1500000
         expiraEn:     promo.expira_en
       } : null
     });
