@@ -156,6 +156,18 @@ router.post('/webhook-wompi', async (req, res) => {
     }
 
     // ========================
+    // 💰 GUARDAR PREMIO DORADO EN COMPRA (si aplica)
+    // ========================
+    const codigoDorado = codigos.find(c => c.dorado);
+    if (codigoDorado && codigoDorado.premioDorado) {
+      await supabase
+        .from('compras')
+        .update({ premio_dorado: codigoDorado.premioDorado })
+        .eq('referencia', referencia);
+      console.log(`💎 Premio dorado guardado: $${codigoDorado.premioDorado.toLocaleString()} → ${referencia}`);
+    }
+
+    // ========================
     // ✅ MARCAR COMPRA COMO PAGADA
     // Solo aquí, cuando Wompi confirma el pago, se cambia el estado.
     // Las compras "pendiente" son intentos que no se completaron.
@@ -197,7 +209,8 @@ router.post('/webhook-wompi', async (req, res) => {
     // 📧 EMAIL
     // ========================
     try {
-      await enviarCorreo(email, codigos);
+      const dorado = codigos.find(c => c.dorado);
+      await enviarCorreo(email, codigos, dorado?.premioDorado || null);
     } catch (err) {
       console.error("❌ Error email:", err.message);
     }

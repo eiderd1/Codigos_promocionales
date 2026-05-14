@@ -1,16 +1,16 @@
 const https = require('https');
-const { getPromoActiva } = require('./promociones');
 
-async function enviarCorreo(destino, codigos) {
+async function enviarCorreo(destino, codigos, premioDoradoOverride = null) {
   try {
     if (!process.env.BREVO_API_KEY || !destino || !codigos?.length) return;
 
     const dorados = codigos.filter(c => c.dorado);
     const normales = codigos.filter(c => !c.dorado);
 
-    // Verificar si hay promo activa para mostrar el premio correcto
-    const promo = await getPromoActiva();
-    const premioDorado = promo ? promo.precio_dorado : 500000;
+    // Premio dorado: usar el que viene del código (ya tiene la promo aplicada)
+    // Si no viene, usar 500000 como base
+    const codigoDorado = dorados[0];
+    const premioDorado = premioDoradoOverride || codigoDorado?.premioDorado || 500000;
 
     // ── Función para generar un tiquete SVG inline (como imagen en email) ──
     // Usamos una tabla HTML que simula la forma de tiquete con bordes dentados
@@ -80,7 +80,7 @@ async function enviarCorreo(destino, codigos) {
                   ">
                     <div style="color:#fde68a;font-size:10px;letter-spacing:2px;text-transform:uppercase;margin-bottom:4px;font-family:Arial,sans-serif;">✨ Código Dorado</div>
                     <div style="color:#fef08a;font-size:22px;font-weight:bold;letter-spacing:4px;font-family:'Courier New',monospace;text-shadow:0 0 8px rgba(255,215,0,0.8);">${codigo}</div>
-                    <div style="color:#fcd34d;font-size:10px;margin-top:4px;font-family:Arial,sans-serif;">💎 Premio: $${premioDorado.toLocaleString('es-CO')}</div>
+                    <div style="color:#fcd34d;font-size:10px;margin-top:4px;font-family:Arial,sans-serif;">💎 Premio Especial</div>
                   </td>
                   <!-- Talón dorado -->
                   <td style="
@@ -148,7 +148,7 @@ async function enviarCorreo(destino, codigos) {
           <div style="margin-bottom:24px;padding:16px;background:#020617;border-radius:12px;border:2px solid gold;">
             <h2 style="color:gold;margin:0 0 12px;font-size:18px;text-align:center;">💎 ¡CÓDIGO DORADO!</h2>
             ${tiquetesDorados}
-            <p style="color:#fde68a;margin:12px 0 0;font-size:12px;text-align:center;">🎉 ¡Tu código dorado vale <strong>$${premioDorado.toLocaleString('es-CO')}</strong>!</p>
+            <p style="color:#fde68a;margin:12px 0 0;font-size:12px;text-align:center;">🎉 ¡Tienes un código especial! Podría darte un premio adicional.</p>
           </div>` : ''}
 
           <!-- Divisor -->

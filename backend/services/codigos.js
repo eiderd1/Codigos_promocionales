@@ -1,6 +1,7 @@
 const supabase = require('../config/supabase');
+const { getPromoActiva } = require('./promociones');
 
-const HITOS_DORADOS = [300, 1000, 5000, 8000, 9000, 9999];
+const HITOS_DORADOS = [5000, 8000, 9000, 9999];
 
 async function generarCodigos(cantidad, referencia) {
   try {
@@ -49,7 +50,11 @@ async function generarCodigos(cantidad, referencia) {
       }
     }
 
-    // ─── 4. Actualizar en BD (anti-repetición igual que antes) ───────────────
+    // ─── 4. Consultar promo activa para guardar el premio ───────────────────────
+    const promo = await getPromoActiva();
+    const premioDorado = promo ? promo.precio_dorado : 500000;
+
+    // ─── 5. Actualizar en BD (anti-repetición igual que antes) ───────────────
     const resultado = [];
 
     for (let i = 0; i < mezclados.length; i++) {
@@ -58,7 +63,7 @@ async function generarCodigos(cantidad, referencia) {
 
       const { data: actualizado, error: errorUpdate } = await supabase
         .from('codigos')
-        .update({ vendido: true, referencia, dorado: esDorado })
+        .update({ vendido: true, referencia, dorado: esDorado, premio_dorado: esDorado ? premioDorado : null })
         .eq('codigo', c.codigo)
         .eq('vendido', false)
         .select('codigo');
@@ -73,7 +78,7 @@ async function generarCodigos(cantidad, referencia) {
         continue;
       }
 
-      resultado.push({ codigo: c.codigo, dorado: esDorado });
+      resultado.push({ codigo: c.codigo, dorado: esDorado, premioDorado: esDorado ? premioDorado : null });
     }
 
     if (resultado.length < cantidad) {
