@@ -14,6 +14,14 @@
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
+.codes-list, .code-chip {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+
 :root {
   --gold: #f5c518;
   --orange: #f97316;
@@ -479,7 +487,7 @@ input.error { border-color: #f87171; }
   <p class="subtitle">  Participa por  <span style="color:var(--gold)">$15.000.000 COP</span></p>
 
   <div class="badge-wrap">
-    <span class="badge">💎 6 códigos dorados · $500.000 c/u</span>
+    <span class="badge">💎 4 códigos dorados · $500.000 c/u</span>
   </div>
 
   <!-- Progreso -->
@@ -495,7 +503,7 @@ input.error { border-color: #f87171; }
 
   <!-- Dorados entregados -->
   <div id="seccionDorados">
-    <div class="sec-label">🎫 Códigos dorados entregados</div>
+    <div class="sec-label">🎫 Códigos dorados entregados ($500.000 COP)</div>
     <div id="listaDorados"></div>
   </div>
 
@@ -622,7 +630,7 @@ input.error { border-color: #f87171; }
   <div
     id="resultado"
     class="codes-list"
-    style="-webkit-user-select:none;user-select:none;"
+    style="-webkit-user-select:none;user-select:none;-moz-user-select:none;-ms-user-select:none;pointer-events:none;"
   ></div>
 
   <div id="btnReenviarDiv" style="display:none; margin-top:10px;">
@@ -866,49 +874,6 @@ function limpiarError(input, id) {
 
 });
 
-
-// ===============================
-// PROMO ACTIVA (solo muestra aviso, no cambia precios)
-// ===============================
-async function verificarPromo() {
-  try {
-    const res = await fetch(`${API_URL}/api/admin/promo-activa`);
-    if (!res.ok) return;
-    const promo = await res.json();
-
-    let badge = document.getElementById('badge-promo');
-
-    if (promo.activa) {
-      if (!badge) {
-        badge = document.createElement('div');
-        badge.id = 'badge-promo';
-        badge.style.cssText = `
-          background:rgba(245,197,24,.15);
-          border:1px solid rgba(245,197,24,.4);
-          border-radius:8px;
-          padding:8px 12px;
-          margin-bottom:12px;
-          font-size:.82rem;
-          color:#fde68a;
-          text-align:center;
-          line-height:1.5;
-        `;
-        const grid = document.querySelector('.cards-grid');
-        grid.parentNode.insertBefore(badge, grid);
-      }
-      const expira = new Date(promo.expira_en);
-      const hora = expira.toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit' });
-      badge.innerHTML = `🔥 <strong>Promoción activa</strong> hasta las ${hora} · Si te cae el código dorado ganas $${promo.precio_dorado.toLocaleString('es-CO')}`;
-    } else {
-      if (badge) badge.remove();
-    }
-  } catch (e) {
-    console.error("Error verificando promo:", e);
-  }
-}
-
-verificarPromo();
-setInterval(verificarPromo, 30000);
 
 // ===============================
 // VERIFICAR STOCK
@@ -1394,6 +1359,39 @@ if (url.searchParams.get("status") === "success") {
   );
 
 }
+
+
+
+// ===============================
+// BLOQUEAR COPIA DE CODIGOS
+// ===============================
+document.addEventListener('copy', function(e) {
+  const sel = window.getSelection();
+  if (!sel) return;
+  const node = sel.anchorNode;
+  if (!node) return;
+
+  // Si la selección está dentro de #resultado, bloquear
+  const resultado = document.getElementById('resultado');
+  if (resultado && resultado.contains(node.parentElement)) {
+    e.preventDefault();
+    e.clipboardData && e.clipboardData.setData('text/plain', '');
+  }
+});
+
+// Bloquear clic derecho solo en la sección de códigos
+document.getElementById('resultado').addEventListener('contextmenu', function(e) {
+  e.preventDefault();
+});
+
+// Bloquear long-press en móvil (selección táctil)
+document.getElementById('resultado').addEventListener('touchstart', function(e) {
+  this.style.webkitUserSelect = 'none';
+}, { passive: true });
+
+document.getElementById('resultado').addEventListener('touchend', function() {
+  window.getSelection()?.removeAllRanges();
+});
 
 });
 </script>
