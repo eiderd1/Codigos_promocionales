@@ -22,14 +22,6 @@
   -webkit-touch-callout: none;
 }
 
-.codes-list, .code-chip {
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
-  -webkit-touch-callout: none;
-}
-
 :root {
   --gold: #f5c518;
   --orange: #f97316;
@@ -461,7 +453,6 @@ input.error { border-color: #f87171; }
   body { padding-bottom: env(safe-area-inset-bottom); }
 }
 </style>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 </head>
 
 <body>
@@ -529,17 +520,17 @@ input.error { border-color: #f87171; }
     <div class="card" data-cantidad="4">
       <div class="card-qty">4</div>
       <div class="card-label">códigos</div>
-      <div class="card-price">$20.000</div>
+      <div class="card-price">$15.000</div>
     </div>
     <div class="card" data-cantidad="8">
       <div class="card-qty">8</div>
       <div class="card-label">códigos</div>
-      <div class="card-price">$40.000</div>
+      <div class="card-price">$30.000</div>
     </div>
     <div class="card" data-cantidad="16">
       <div class="card-qty">16</div>
       <div class="card-label">códigos</div>
-      <div class="card-price">$80.000</div>
+      <div class="card-price">$60.000</div>
     </div>
   </div>
 
@@ -623,20 +614,8 @@ input.error { border-color: #f87171; }
       id="btnPagar"
       disabled
     >
-      📲 Generar QR para pagar
+      💳 Ir a pagar con Wompi
     </button>
-
-    <!-- QR de pago -->
-    <div id="qrContainer" style="display:none; margin-top:20px; text-align:center; background:#0f172a; border:2px solid var(--gold); border-radius:var(--radius); padding:20px;">
-      <p style="color:var(--gold); font-weight:700; font-size:1rem; margin:0 0 6px;">📲 Escanea con la cámara de tu celular</p>
-      <p style="color:#9ca3af; font-size:.8rem; margin:0 0 16px;">No necesitas ninguna app especial</p>
-      <div id="qrCode" style="background:white; padding:12px; border-radius:10px; display:inline-block;"></div>
-      <p style="color:#9ca3af; font-size:.75rem; margin:14px 0 4px;">O abre el link directamente:</p>
-      <a id="qrLink" href="#" target="_blank" style="color:var(--gold); font-size:.8rem; word-break:break-all;"></a>
-      <div style="margin-top:16px;">
-        <button onclick="document.getElementById('qrContainer').style.display='none'; document.getElementById('btnPagar').style.display='block'; procesandoPago=false;" style="background:transparent; border:1px solid #374151; color:#9ca3af; padding:8px 16px; border-radius:8px; cursor:pointer; font-size:.8rem;">✕ Cancelar y volver</button>
-      </div>
-    </div>
 
   </div>
 
@@ -687,7 +666,7 @@ input.error { border-color: #f87171; }
     </div>
     <div class="terminos-card">
       <h4>🎟️ Fecha de validación</h4>
-      El sorteo se realiza cuando se vendan el <strong>100% de los códigos</strong> disponibles, usando el resultado de la <strong>Lotería de Medellín</strong> del día del cierre.
+      El premio se realiza cuando se vendan el <strong>100% de los códigos</strong> disponibles, usando el resultado de la <strong>Lotería de Medellín</strong> del día del cierre.
     </div>
     <div class="terminos-card">
       <h4>⚖️ Transparencia y validación</h4>
@@ -781,17 +760,12 @@ let procesandoPago = false;
 const cards = document.querySelectorAll(".card");
 const form = document.getElementById("form");
 const btnPagar = document.getElementById("btnPagar");
-const casino =
-  document.getElementById("loadingPago");
+const casino = document.getElementById("loadingPago");
 
-const checkboxTerminos =
-  document.getElementById("acepto");
+const checkboxTerminos = document.getElementById("acepto");
 
 checkboxTerminos.addEventListener("change", () => {
-
-  btnPagar.disabled =
-    !checkboxTerminos.checked;
-
+  btnPagar.disabled = !checkboxTerminos.checked;
 });
 
 
@@ -799,18 +773,13 @@ checkboxTerminos.addEventListener("change", () => {
 // TOGGLE TERMINOS
 // ===============================
 window.toggleTerminos = function () {
-
   const body = document.getElementById("terminosContent");
   const btn = document.querySelector(".btn-terminos");
-
   const abierto = body.style.display === "block";
-
   body.style.display = abierto ? "none" : "block";
-
   btn.innerHTML = abierto
     ? "📋 Ver Términos y Condiciones ▼"
     : "📋 Ocultar Términos y Condiciones ▲";
-
   btn.style.color = abierto ? "" : "var(--gold)";
   btn.style.borderColor = abierto ? "" : "var(--gold)";
 };
@@ -846,68 +815,42 @@ function limpiarError(input, id) {
 // LIMPIAR ERRORES AUTOMATICO
 // ===============================
 ["nombre", "cedula", "telefono", "correo"].forEach(id => {
-
   const input = document.getElementById(id);
 
-  // SOLO NUMEROS
   if (id === "cedula" || id === "telefono") {
-
     input.addEventListener("input", () => {
-
-      input.value =
-        input.value.replace(/\D/g, "");
-
+      input.value = input.value.replace(/\D/g, "");
     });
-
   }
 
   input.addEventListener("input", () => {
-
     const value = input.value.trim();
-
     switch(id) {
-
       case "correo":
-        if (esCorreoValido(value)) {
-          limpiarError(input, "err-correo");
-        }
-      break;
-
+        if (esCorreoValido(value)) limpiarError(input, "err-correo");
+        break;
       case "telefono":
-        if (esTelefonoValido(value)) {
-          limpiarError(input, "err-telefono");
-        }
-      break;
-
+        if (esTelefonoValido(value)) limpiarError(input, "err-telefono");
+        break;
       case "cedula":
-        if (esCedulaValida(value)) {
-          limpiarError(input, "err-cedula");
-        }
-      break;
-
+        if (esCedulaValida(value)) limpiarError(input, "err-cedula");
+        break;
       default:
-        if (value.length >= 2) {
-          limpiarError(input, "err-" + id);
-        }
-
+        if (value.length >= 2) limpiarError(input, "err-" + id);
     }
-
   });
-
 });
 
 
 // ===============================
-// PROMO ACTIVA (solo muestra aviso, no cambia precios)
+// PROMO ACTIVA
 // ===============================
 async function verificarPromo() {
   try {
     const res = await fetch(`${API_URL}/api/admin/promo-activa`);
     if (!res.ok) return;
     const promo = await res.json();
-
     let badge = document.getElementById('badge-promo');
-
     if (promo.activa) {
       if (!badge) {
         badge = document.createElement('div');
@@ -940,70 +883,37 @@ async function verificarPromo() {
 verificarPromo();
 setInterval(verificarPromo, 30000);
 
+
 // ===============================
 // VERIFICAR STOCK
 // ===============================
 async function verificarStock() {
-
   try {
-
     const res = await fetch(`${API_URL}/api/progreso`);
-
     if (!res.ok) throw new Error();
-
     const data = await res.json();
+    const porcentaje = Math.min(Number(data.porcentaje || 0), 100);
+    document.getElementById("barraProgreso").style.width = porcentaje + "%";
+    document.getElementById("txtProgreso").textContent = porcentaje.toFixed(2) + "%";
 
-    const porcentaje = Math.min(
-      Number(data.porcentaje || 0),
-      100
-    );
-
-    document.getElementById("barraProgreso").style.width =
-      porcentaje + "%";
-
-    document.getElementById("txtProgreso").textContent =
-      porcentaje.toFixed(2) + "%";
-
-    // STOCK AGOTADO
     if (Number(data.disponibles || 0) <= 0) {
-
-      cards.forEach(card => {
-        card.classList.add("disabled");
-      });
-
+      cards.forEach(card => card.classList.add("disabled"));
       form.style.display = "none";
-
       document.getElementById("avisoStock").style.display = "block";
-
-      document.getElementById("avisoStock").innerHTML =
-        "🚫 Todos los códigos fueron vendidos.";
-
+      document.getElementById("avisoStock").innerHTML = "🚫 Todos los códigos fueron vendidos.";
     }
 
-    // CODIGOS DORADOS
-    const resDorados = await fetch(
-      `${API_URL}/api/admin/codigos-dorados`
-    );
-
+    const resDorados = await fetch(`${API_URL}/api/admin/codigos-dorados`);
     if (!resDorados.ok) return;
-
     const dorados = await resDorados.json();
 
     if (Array.isArray(dorados) && dorados.length > 0) {
-
-      document.getElementById("seccionDorados").style.display =
-        "block";
-
+      document.getElementById("seccionDorados").style.display = "block";
       const lista = document.getElementById("listaDorados");
-
       lista.innerHTML = "";
-
       dorados.forEach(item => {
-
         const span = document.createElement("span");
-
         span.innerHTML = `✨ ${item.codigo}`;
-
         span.style.cssText = `
           background: linear-gradient(135deg,gold,orange);
           color:#000;
@@ -1013,19 +923,12 @@ async function verificarStock() {
           font-size:.85rem;
           box-shadow:0 0 12px rgba(255,215,0,.5);
         `;
-
         lista.appendChild(span);
-
       });
-
     }
-
   } catch (error) {
-
     console.error("Error verificando stock:", error);
-
   }
-
 }
 
 verificarStock();
@@ -1035,43 +938,26 @@ verificarStock();
 // SELECCIONAR PAQUETE
 // ===============================
 cards.forEach(card => {
-
   card.addEventListener("click", () => {
-
     if (card.classList.contains("disabled")) return;
-
     cards.forEach(c => {
       c.classList.remove("selected");
       c.classList.remove("disabled");
     });
-
     card.classList.add("selected");
-
     cards.forEach(c => {
-      if (c !== card) {
-        c.classList.add("disabled");
-      }
+      if (c !== card) c.classList.add("disabled");
     });
-
     cantidadSeleccionada = Number(card.dataset.cantidad);
-
     form.style.display = "block";
-
-    document.getElementById("avisoStock").style.display =
-      "none";
-
-    form.scrollIntoView({
-      behavior: "smooth",
-      block: "start"
-    });
-
+    document.getElementById("avisoStock").style.display = "none";
+    form.scrollIntoView({ behavior: "smooth", block: "start" });
   });
-
 });
 
 
 // ===============================
-// PAGAR
+// PAGAR — redirección directa a Wompi
 // ===============================
 btnPagar.addEventListener("click", async () => {
 
@@ -1082,118 +968,76 @@ btnPagar.addEventListener("click", async () => {
     return;
   }
 
-  const nombre = document.getElementById("nombre");
-  const cedula = document.getElementById("cedula");
-  const telefono = document.getElementById("telefono");
-  const correo = document.getElementById("correo");
+  const nombre    = document.getElementById("nombre");
+  const cedula    = document.getElementById("cedula");
+  const telefono  = document.getElementById("telefono");
+  const correo    = document.getElementById("correo");
   const direccion = document.getElementById("direccion");
-  const acepto = document.getElementById("acepto");
+  const acepto    = document.getElementById("acepto");
 
   let valido = true;
 
-  // NOMBRE
   if (nombre.value.trim().length < 2) {
-    mostrarError(nombre, "err-nombre");
-    valido = false;
+    mostrarError(nombre, "err-nombre"); valido = false;
   }
-
-  // CEDULA
   if (!esCedulaValida(cedula.value.trim())) {
-    mostrarError(cedula, "err-cedula");
-    valido = false;
+    mostrarError(cedula, "err-cedula"); valido = false;
   }
-
-  // TELEFONO
   if (!esTelefonoValido(telefono.value.trim())) {
-    mostrarError(telefono, "err-telefono");
-    valido = false;
+    mostrarError(telefono, "err-telefono"); valido = false;
   }
-
-  // CORREO
   if (!esCorreoValido(correo.value.trim())) {
-    mostrarError(correo, "err-correo");
-    valido = false;
+    mostrarError(correo, "err-correo"); valido = false;
   }
 
   if (!valido) return;
 
-  // VALIDAR TERMINOS
   if (!acepto.checked) {
-    alert(
-      "Debes aceptar los términos y condiciones"
-    );
+    alert("Debes aceptar los términos y condiciones");
     return;
   }
 
   procesandoPago = true;
-
   btnPagar.disabled = true;
   btnPagar.classList.add("loading");
-
   casino.style.display = "flex";
 
   try {
 
-    const response = await fetch(
-      `${API_URL}/api/crear-transaccion`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
+    const response = await fetch(`${API_URL}/api/crear-transaccion`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        cliente: {
+          nombre:    nombre.value.trim(),
+          cedula:    cedula.value.trim(),
+          telefono:  telefono.value.trim(),
+          correo:    correo.value.trim(),
+          direccion: direccion.value.trim()
         },
-        body: JSON.stringify({
-
-          cliente: {
-            nombre: nombre.value.trim(),
-            cedula: cedula.value.trim(),
-            telefono: telefono.value.trim(),
-            correo: correo.value.trim(),
-            direccion: direccion.value.trim()
-          },
-
-          cantidad: cantidadSeleccionada
-
-        })
-      }
-    );
+        cantidad: cantidadSeleccionada
+      })
+    });
 
     const data = await response.json();
 
     if (!response.ok) {
-
-      throw new Error(
-        data.error || "No se pudo iniciar el pago"
-      );
-
+      throw new Error(data.error || "No se pudo iniciar el pago");
     }
 
     // AJUSTE STOCK
     if (data.ajustado) {
-
       const aviso = document.getElementById("avisoStock");
-
       aviso.style.display = "block";
-
       aviso.innerHTML = `
-        ⚠️ Solo quedan
-        <strong>${data.cantidadFinal}</strong>
-        códigos disponibles.<br><br>
-
+        ⚠️ Solo quedan <strong>${data.cantidadFinal}</strong> códigos disponibles.<br><br>
         Pedido ajustado automáticamente.<br>
-
-        Total:
-        <strong>
-          $${data.montoTotal.toLocaleString("es-CO")} COP
-        </strong>
+        Total: <strong>$${data.montoTotal.toLocaleString("es-CO")} COP</strong>
       `;
-
-      await new Promise(resolve =>
-        setTimeout(resolve, 2500)
-      );
-
+      await new Promise(resolve => setTimeout(resolve, 2500));
     }
 
-    // QR
+    // REDIRECCIÓN DIRECTA A WOMPI
     const params = new URLSearchParams({
       "public-key":          data.publicKey,
       "currency":            "COP",
@@ -1203,50 +1047,16 @@ btnPagar.addEventListener("click", async () => {
       "redirect-url":        `${API_URL}/gracias.html`
     });
 
-    const urlPago = `https://checkout.wompi.co/p/?${params.toString()}`;
-
-    const qrContainer = document.getElementById("qrContainer");
-    const qrCodeDiv   = document.getElementById("qrCode");
-    const qrLink      = document.getElementById("qrLink");
-
-    qrCodeDiv.innerHTML = "";
-
-    new QRCode(qrCodeDiv, {
-      text:         urlPago,
-      width:        200,
-      height:       200,
-      colorDark:    "#000000",
-      colorLight:   "#ffffff",
-      correctLevel: QRCode.CorrectLevel.M
-    });
-
-    qrLink.href        = urlPago;
-    qrLink.textContent = urlPago.slice(0, 55) + "...";
-
-    casino.style.display = "none";
-    btnPagar.style.display = "none";
-    btnPagar.classList.remove("loading");
-    qrContainer.style.display = "block";
-    qrContainer.scrollIntoView({ behavior: "smooth", block: "center" });
-    procesandoPago = false;
+    window.location.href = `https://checkout.wompi.co/p/?${params.toString()}`;
 
   } catch (error) {
 
     console.error(error);
-
-    alert(
-      error.message ||
-      "Error procesando el pago"
-    );
-
+    alert(error.message || "Error procesando el pago");
     casino.style.display = "none";
-
     btnPagar.disabled = false;
-
     btnPagar.classList.remove("loading");
-
     procesandoPago = false;
-
     verificarStock();
 
   }
@@ -1258,104 +1068,41 @@ btnPagar.addEventListener("click", async () => {
 // CONSULTAR CODIGOS
 // ===============================
 window.consultar = async function () {
-
-  const valor =
-    document.getElementById("buscar")
-    .value
-    .trim();
-
-  if (!valor) {
-    alert("Ingresa correo o cédula");
-    return;
-  }
-
+  const valor = document.getElementById("buscar").value.trim();
+  if (!valor) { alert("Ingresa correo o cédula"); return; }
   datoActual = valor;
-
-  const resultado =
-    document.getElementById("resultado");
-
-  resultado.innerHTML =
-    `<span style="color:var(--muted)">
-      🔍 Buscando...
-    </span>`;
-
-  document.getElementById(
-    "btnReenviarDiv"
-  ).style.display = "none";
-
-  document.getElementById(
-    "msgReenvio"
-  ).textContent = "";
+  const resultado = document.getElementById("resultado");
+  resultado.innerHTML = `<span style="color:var(--muted)">🔍 Buscando...</span>`;
+  document.getElementById("btnReenviarDiv").style.display = "none";
+  document.getElementById("msgReenvio").textContent = "";
 
   try {
-
-    const response = await fetch(
-      `${API_URL}/api/mis-codigos`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          dato: valor
-        })
-      }
-    );
-
+    const response = await fetch(`${API_URL}/api/mis-codigos`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ dato: valor })
+    });
     const data = await response.json();
-
     resultado.innerHTML = "";
 
-    if (
-      !data.codigos ||
-      data.codigos.length === 0
-    ) {
-
-      resultado.innerHTML = `
-        <span style="color:var(--muted)">
-          ❌ No se encontraron códigos
-        </span>
-      `;
-
+    if (!data.codigos || data.codigos.length === 0) {
+      resultado.innerHTML = `<span style="color:var(--muted)">❌ No se encontraron códigos</span>`;
       return;
     }
 
     data.codigos.forEach((codigo, index) => {
-
       const chip = document.createElement("div");
-
-      chip.className =
-        "code-chip" +
-        (codigo.dorado ? " dorado" : "");
-
-      chip.innerHTML =
-        codigo.dorado
-          ? `✨ ${codigo.codigo} ✨`
-          : codigo.codigo;
-
-      chip.style.animationDelay =
-        `${index * 70}ms`;
-
+      chip.className = "code-chip" + (codigo.dorado ? " dorado" : "");
+      chip.innerHTML = codigo.dorado ? `✨ ${codigo.codigo} ✨` : codigo.codigo;
+      chip.style.animationDelay = `${index * 70}ms`;
       resultado.appendChild(chip);
-
     });
 
-    document.getElementById(
-      "btnReenviarDiv"
-    ).style.display = "block";
-
+    document.getElementById("btnReenviarDiv").style.display = "block";
   } catch (error) {
-
     console.error(error);
-
-    resultado.innerHTML = `
-      <span style="color:#f87171">
-        ❌ Error consultando códigos
-      </span>
-    `;
-
+    resultado.innerHTML = `<span style="color:#f87171">❌ Error consultando códigos</span>`;
   }
-
 };
 
 
@@ -1363,42 +1110,20 @@ window.consultar = async function () {
 // REENVIAR CORREO
 // ===============================
 window.reenviarCorreo = async function () {
-
   if (!datoActual) return;
-
-  const msg =
-    document.getElementById("msgReenvio");
-
+  const msg = document.getElementById("msgReenvio");
   msg.textContent = "📨 Enviando correo...";
-
   try {
-
-    const response = await fetch(
-      `${API_URL}/api/reenviar-correo`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          dato: datoActual
-        })
-      }
-    );
-
+    const response = await fetch(`${API_URL}/api/reenviar-correo`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ dato: datoActual })
+    });
     const data = await response.json();
-
-    msg.textContent =
-      data.mensaje ||
-      "✅ Correo reenviado correctamente";
-
+    msg.textContent = data.mensaje || "✅ Correo reenviado correctamente";
   } catch {
-
-    msg.textContent =
-      "❌ Error reenviando correo";
-
+    msg.textContent = "❌ Error reenviando correo";
   }
-
 };
 
 
@@ -1408,66 +1133,15 @@ window.reenviarCorreo = async function () {
 const url = new URL(window.location.href);
 
 if (url.searchParams.get("status") === "success") {
-
-  document.getElementById("success")
-    .style.display = "block";
-
+  document.getElementById("success").style.display = "block";
   casino.style.display = "none";
-
   btnPagar.disabled = false;
-
   btnPagar.classList.remove("loading");
-
   procesandoPago = false;
-
-  window.scrollTo({
-    top: 0,
-    behavior: "smooth"
-  });
-
-  // LIMPIAR URL
+  window.scrollTo({ top: 0, behavior: "smooth" });
   url.searchParams.delete("status");
-
-  window.history.replaceState(
-    {},
-    document.title,
-    url.pathname
-  );
-
+  window.history.replaceState({}, document.title, url.pathname);
 }
-
-
-
-// ===============================
-// BLOQUEAR COPIA DE CODIGOS
-// ===============================
-document.addEventListener('copy', function(e) {
-  const sel = window.getSelection();
-  if (!sel) return;
-  const node = sel.anchorNode;
-  if (!node) return;
-
-  // Si la selección está dentro de #resultado, bloquear
-  const resultado = document.getElementById('resultado');
-  if (resultado && resultado.contains(node.parentElement)) {
-    e.preventDefault();
-    e.clipboardData && e.clipboardData.setData('text/plain', '');
-  }
-});
-
-// Bloquear clic derecho solo en la sección de códigos
-document.getElementById('resultado').addEventListener('contextmenu', function(e) {
-  e.preventDefault();
-});
-
-// Bloquear long-press en móvil (selección táctil)
-document.getElementById('resultado').addEventListener('touchstart', function(e) {
-  this.style.webkitUserSelect = 'none';
-}, { passive: true });
-
-document.getElementById('resultado').addEventListener('touchend', function() {
-  window.getSelection()?.removeAllRanges();
-});
 
 
 // ===============================
@@ -1496,7 +1170,6 @@ document.getElementById('resultado').addEventListener('touchstart', function() {
 document.getElementById('resultado').addEventListener('touchend', function() {
   window.getSelection()?.removeAllRanges();
 });
-
 
 });
 </script>
