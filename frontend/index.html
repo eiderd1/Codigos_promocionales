@@ -501,10 +501,478 @@ input.error { border-color: #f87171; }
 @supports (padding-bottom: env(safe-area-inset-bottom)) {
   body { padding-bottom: env(safe-area-inset-bottom); }
 }
+
+/* ── ADMIN TRIGGER ───────────────────── */
+#adminTrigger {
+  position: fixed;
+  top: 14px;
+  right: 14px;
+  width: 40px;
+  height: 40px;
+  background: rgba(255,255,255,.06);
+  border: 1px solid rgba(255,255,255,.1);
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  cursor: pointer;
+  z-index: 8000;
+  backdrop-filter: blur(6px);
+  transition: background .2s;
+}
+#adminTrigger:hover { background: rgba(255,255,255,.12); }
+#adminTrigger span {
+  display: block;
+  width: 18px;
+  height: 2px;
+  background: rgba(255,255,255,.6);
+  border-radius: 2px;
+  transition: background .2s;
+}
+#adminTrigger:hover span { background: var(--gold); }
+
+/* ── ADMIN OVERLAY ───────────────────── */
+#adminOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.7);
+  z-index: 9000;
+  display: none;
+  backdrop-filter: blur(4px);
+  animation: fadeIn .2s ease;
+}
+
+/* ── ADMIN DRAWER ────────────────────── */
+#adminDrawer {
+  position: fixed;
+  top: 0;
+  right: -100%;
+  width: min(420px, 100vw);
+  height: 100dvh;
+  background: #0d1117;
+  border-left: 1px solid rgba(245,197,24,.15);
+  z-index: 9500;
+  display: flex;
+  flex-direction: column;
+  transition: right .32s cubic-bezier(.4,0,.2,1);
+  overflow: hidden;
+}
+#adminDrawer.open { right: 0; }
+
+.adm-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid rgba(245,197,24,.15);
+  flex-shrink: 0;
+}
+.adm-title { font-size: 15px; font-weight: 700; color: var(--gold); }
+#admClose {
+  width: 32px; height: 32px;
+  background: rgba(255,255,255,.06);
+  border: none;
+  border-radius: 8px;
+  color: var(--muted);
+  font-size: 18px;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+}
+#admClose:hover { background: rgba(245,197,24,.15); color: var(--gold); }
+
+.adm-tabs {
+  display: flex;
+  gap: 4px;
+  padding: 12px 16px 8px;
+  border-bottom: 1px solid rgba(255,255,255,.06);
+  flex-shrink: 0;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.adm-tabs::-webkit-scrollbar { display: none; }
+.adm-tab {
+  padding: 6px 12px;
+  border-radius: 8px;
+  border: none;
+  background: transparent;
+  color: rgba(255,255,255,.4);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all .15s;
+}
+.adm-tab:hover { background: rgba(255,255,255,.06); color: var(--muted); }
+.adm-tab.active { background: rgba(245,197,24,.12); color: var(--gold); }
+
+.adm-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px 20px;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(245,197,24,.2) transparent;
+}
+
+/* ── ADMIN LOGIN ─────────────────────── */
+#admLogin { display: flex; flex-direction: column; gap: 12px; }
+#admLogin p { font-size: 13px; color: var(--muted); }
+#admSecretInput {
+  width: 100%;
+  padding: 11px 14px;
+  background: #1a2235;
+  border: 1.5px solid #374151;
+  border-radius: 10px;
+  color: var(--text);
+  font-size: 14px;
+  outline: none;
+}
+#admSecretInput:focus { border-color: var(--gold); }
+#admLoginBtn {
+  padding: 11px;
+  background: linear-gradient(135deg, var(--gold), var(--orange));
+  border: none;
+  border-radius: 10px;
+  color: #000;
+  font-weight: 700;
+  font-size: 14px;
+  cursor: pointer;
+}
+#admLoginBtn:hover { opacity: .9; }
+#admLoginErr { font-size: 12px; color: #f87171; min-height: 16px; }
+
+/* ── ADMIN PANEL ─────────────────────── */
+#admPanel { display: none; }
+.adm-section { display: none; }
+.adm-section.active { display: block; }
+
+.adm-metric-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+.adm-metric {
+  background: #1a2235;
+  border-radius: 10px;
+  padding: 14px;
+}
+.adm-metric-label { font-size: 11px; color: var(--muted); margin-bottom: 5px; text-transform: uppercase; letter-spacing: .04em; }
+.adm-metric-value { font-size: 22px; font-weight: 700; color: var(--text); line-height: 1; }
+.adm-metric-sub { font-size: 11px; color: #4b5563; margin-top: 3px; }
+
+.adm-progress-wrap {
+  background: #1a2235;
+  border-radius: 10px;
+  padding: 14px;
+  margin-bottom: 16px;
+}
+.adm-progress-bar-bg {
+  background: #0f172a;
+  border-radius: 999px;
+  height: 8px;
+  overflow: hidden;
+  margin: 8px 0 6px;
+}
+.adm-progress-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--gold), var(--orange));
+  border-radius: 999px;
+  transition: width .8s ease;
+}
+.adm-progress-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  color: #4b5563;
+}
+
+.adm-card {
+  background: #1a2235;
+  border-radius: 10px;
+  padding: 14px;
+  margin-bottom: 12px;
+}
+
+.adm-field { margin-bottom: 10px; }
+.adm-field label { display: block; font-size: 11px; color: var(--muted); margin-bottom: 5px; text-transform: uppercase; letter-spacing: .04em; }
+.adm-field input {
+  width: 100%;
+  padding: 9px 12px;
+  background: #0f172a;
+  border: 1.5px solid #374151;
+  border-radius: 8px;
+  color: var(--text);
+  font-size: 13px;
+  outline: none;
+}
+.adm-field input:focus { border-color: var(--gold); }
+
+.adm-btn-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+.adm-btn {
+  padding: 8px 14px;
+  border-radius: 8px;
+  border: 1px solid #374151;
+  background: #1a2235;
+  color: var(--text);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all .15s;
+}
+.adm-btn:hover { background: #243047; border-color: var(--gold); color: var(--gold); }
+.adm-btn-primary {
+  background: linear-gradient(135deg, var(--gold), var(--orange));
+  border-color: transparent;
+  color: #000;
+}
+.adm-btn-primary:hover { opacity: .88; color: #000; border-color: transparent; }
+.adm-btn-danger { border-color: #7f1d1d; color: #f87171; }
+.adm-btn-danger:hover { background: rgba(248,113,113,.1); border-color: #f87171; color: #f87171; }
+.adm-btn-export { border-color: #14532d; color: #4ade80; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; }
+.adm-btn-export:hover { background: rgba(74,222,128,.08); border-color: #4ade80; color: #4ade80; }
+
+.adm-msg {
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 12px;
+  margin-top: 10px;
+}
+.adm-msg-ok  { background: rgba(74,222,128,.1);  color: #4ade80; }
+.adm-msg-err { background: rgba(248,113,113,.1); color: #f87171; }
+.adm-msg-info { background: rgba(245,197,24,.1); color: var(--gold); }
+
+.adm-table-wrap {
+  background: #0f172a;
+  border-radius: 8px;
+  overflow: hidden;
+  margin-top: 10px;
+}
+.adm-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+.adm-table th {
+  padding: 8px 12px;
+  text-align: left;
+  color: var(--muted);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  border-bottom: 1px solid rgba(255,255,255,.06);
+  background: #1a2235;
+}
+.adm-table td { padding: 9px 12px; border-bottom: 1px solid rgba(255,255,255,.04); }
+.adm-table tr:last-child td { border-bottom: none; }
+.adm-table tr:hover td { background: rgba(255,255,255,.02); }
+
+.adm-badge-gold { background: rgba(245,197,24,.15); color: var(--gold); padding: 2px 7px; border-radius: 999px; font-size: 10px; font-weight: 700; }
+.adm-badge-ok   { background: rgba(74,222,128,.12);  color: #4ade80;     padding: 2px 7px; border-radius: 999px; font-size: 10px; font-weight: 700; }
+
+.adm-state { text-align: center; padding: 28px 16px; color: #4b5563; font-size: 13px; }
+.adm-spin { display: inline-block; animation: spin .7s linear infinite; font-size: 20px; margin-bottom: 6px; }
+
+.adm-promo-active {
+  background: rgba(74,222,128,.08);
+  border: 1px solid rgba(74,222,128,.25);
+  border-radius: 10px;
+  padding: 14px;
+  margin-bottom: 14px;
+}
+.adm-promo-inactive {
+  background: rgba(255,255,255,.03);
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: 10px;
+  padding: 14px;
+  margin-bottom: 14px;
+  color: var(--muted);
+  font-size: 13px;
+}
+.adm-promo-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 12px;
+}
+.adm-promo-lbl { font-size: 10px; color: #4ade80; margin-bottom: 2px; text-transform: uppercase; }
+.adm-promo-val { font-size: 14px; font-weight: 700; color: #4ade80; }
+
+.adm-logout-btn {
+  width: 100%;
+  padding: 9px;
+  background: transparent;
+  border: 1px solid #7f1d1d;
+  border-radius: 8px;
+  color: #f87171;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 8px;
+  transition: background .15s;
+}
+.adm-logout-btn:hover { background: rgba(248,113,113,.08); }
 </style>
 </head>
 
 <body>
+
+<!-- ══════════ ADMIN TRIGGER ══════════ -->
+<div id="adminTrigger" onclick="admOpen()" title="Admin">
+  <span></span><span></span><span></span>
+</div>
+
+<!-- ══════════ ADMIN OVERLAY ══════════ -->
+<div id="adminOverlay" onclick="admClose()"></div>
+
+<!-- ══════════ ADMIN DRAWER ══════════ -->
+<div id="adminDrawer">
+  <div class="adm-header">
+    <span class="adm-title">⚙️ Panel Admin</span>
+    <button id="admClose" onclick="admClose()">✕</button>
+  </div>
+
+  <!-- LOGIN -->
+  <div class="adm-body" id="admLoginWrap">
+    <div id="admLogin">
+      <p>Ingresa la clave de administrador</p>
+      <input type="password" id="admSecretInput" placeholder="••••••••" autocomplete="current-password">
+      <button id="admLoginBtn" onclick="admDoLogin()">🔐 Ingresar</button>
+      <div id="admLoginErr"></div>
+    </div>
+  </div>
+
+  <!-- PANEL (oculto hasta login) -->
+  <div id="admPanel" style="display:none;flex-direction:column;height:100%;">
+    <div class="adm-tabs">
+      <button class="adm-tab active" onclick="admTab('dash')">📊 Dashboard</button>
+      <button class="adm-tab" onclick="admTab('dorados')">⭐ Dorados</button>
+      <button class="adm-tab" onclick="admTab('compras')">🧾 Compras</button>
+      <button class="adm-tab" onclick="admTab('promo')">📣 Promo</button>
+      <button class="adm-tab" onclick="admTab('correo')">✉️ Correo</button>
+      <button class="adm-tab" onclick="admTab('exportar')">📥 Exportar</button>
+    </div>
+    <div class="adm-body">
+
+      <!-- DASHBOARD -->
+      <div id="adm-dash" class="adm-section active">
+        <div class="adm-metric-grid">
+          <div class="adm-metric">
+            <div class="adm-metric-label">Vendidos</div>
+            <div class="adm-metric-value" id="adm-d-vend">—</div>
+            <div class="adm-metric-sub" id="adm-d-disp">cargando...</div>
+          </div>
+          <div class="adm-metric">
+            <div class="adm-metric-label">Total</div>
+            <div class="adm-metric-value">10,000</div>
+            <div class="adm-metric-sub">capacidad máx.</div>
+          </div>
+          <div class="adm-metric">
+            <div class="adm-metric-label">Progreso</div>
+            <div class="adm-metric-value" id="adm-d-pct">—</div>
+            <div class="adm-metric-sub">del total</div>
+          </div>
+          <div class="adm-metric">
+            <div class="adm-metric-label">Dorados</div>
+            <div class="adm-metric-value" id="adm-d-dor">—</div>
+            <div class="adm-metric-sub">vendidos</div>
+          </div>
+        </div>
+        <div class="adm-progress-wrap">
+          <div style="font-size:12px;font-weight:600;margin-bottom:4px;color:var(--muted)">Progreso de ventas</div>
+          <div class="adm-progress-bar-bg">
+            <div class="adm-progress-bar-fill" id="adm-bar" style="width:0%"></div>
+          </div>
+          <div class="adm-progress-labels">
+            <span id="adm-bar-l">0 vendidos</span>
+            <span>10,000 total</span>
+          </div>
+        </div>
+        <div class="adm-btn-row">
+          <button class="adm-btn" onclick="admLoadDash()">↺ Actualizar</button>
+          <button class="adm-logout-btn" onclick="admLogout()">Cerrar sesión</button>
+        </div>
+      </div>
+
+      <!-- DORADOS -->
+      <div id="adm-dorados" class="adm-section">
+        <div id="adm-dorados-content">
+          <div class="adm-state"><div class="adm-spin">⟳</div><br>Cargando...</div>
+        </div>
+      </div>
+
+      <!-- COMPRAS -->
+      <div id="adm-compras" class="adm-section">
+        <div class="adm-card">
+          <div class="adm-field">
+            <label>Email o cédula</label>
+            <input type="text" id="adm-buscar" placeholder="cliente@email.com o 1234567890"
+              onkeydown="if(event.key==='Enter') admBuscar()">
+          </div>
+          <div class="adm-btn-row">
+            <button class="adm-btn adm-btn-primary" onclick="admBuscar()">🔍 Buscar</button>
+          </div>
+        </div>
+        <div id="adm-compras-result"></div>
+      </div>
+
+      <!-- PROMO -->
+      <div id="adm-promo" class="adm-section">
+        <div id="adm-promo-status">
+          <div class="adm-state"><div class="adm-spin">⟳</div><br>Cargando...</div>
+        </div>
+        <div style="font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin:16px 0 10px;">Activar nueva</div>
+        <div class="adm-card">
+          <div class="adm-field">
+            <label>Premio dorado (COP)</label>
+            <input type="number" id="adm-p-dor" value="500000">
+          </div>
+          <div class="adm-field">
+            <label>Precio por código (COP)</label>
+            <input type="number" id="adm-p-nor" value="3750">
+          </div>
+          <div class="adm-field">
+            <label>Expira el</label>
+            <input type="datetime-local" id="adm-p-exp">
+          </div>
+          <div class="adm-btn-row">
+            <button class="adm-btn adm-btn-primary" onclick="admActivarPromo()">📣 Activar</button>
+            <button class="adm-btn adm-btn-danger" onclick="admDesactivarPromo()">✕ Desactivar</button>
+          </div>
+          <div id="adm-promo-msg"></div>
+        </div>
+      </div>
+
+      <!-- CORREO -->
+      <div id="adm-correo" class="adm-section">
+        <div class="adm-card">
+          <div class="adm-field">
+            <label>Email o cédula</label>
+            <input type="text" id="adm-reenviar" placeholder="cliente@email.com o 1234567890"
+              onkeydown="if(event.key==='Enter') admReenviar()">
+          </div>
+          <div class="adm-btn-row">
+            <button class="adm-btn adm-btn-primary" onclick="admReenviar()">✉️ Reenviar correo</button>
+          </div>
+          <div id="adm-correo-msg"></div>
+        </div>
+      </div>
+
+      <!-- EXPORTAR -->
+      <div id="adm-exportar" class="adm-section">
+        <div class="adm-card">
+          <p style="font-size:13px;color:var(--muted);margin-bottom:14px;line-height:1.6;">
+            Descarga un Excel con todos los códigos dorados vendidos.
+          </p>
+          <div class="adm-btn-row">
+            <a class="adm-btn adm-btn-export" id="adm-export-link" href="#" onclick="admExportar(event)">
+              📥 ganadores.xlsx
+            </a>
+          </div>
+          <div id="adm-export-msg"></div>
+        </div>
+      </div>
+
+    </div><!-- /adm-body -->
+  </div><!-- /admPanel -->
+</div><!-- /adminDrawer -->
 
 <div id="loadingPago">
   <div class="casino-inner">
@@ -1070,6 +1538,279 @@ document.getElementById('resultado').addEventListener('touchstart', function() {
 document.getElementById('resultado').addEventListener('touchend', function() { window.getSelection()?.removeAllRanges(); });
 
 });
+</script>
+
+<!-- ══════════════════════════════════════════════
+     ADMIN SCRIPT — separado del DOMContentLoaded
+══════════════════════════════════════════════ -->
+<script>
+(function() {
+  let ADM_TOKEN = '';
+  const BASE = window.location.origin;
+
+  function admFmt(n) { return Number(n).toLocaleString('es-CO'); }
+
+  // ── Abrir / cerrar drawer ─────────────────────
+  window.admOpen = function() {
+    document.getElementById('adminDrawer').classList.add('open');
+    document.getElementById('adminOverlay').style.display = 'block';
+    document.body.style.overflow = 'hidden';
+    if (!ADM_TOKEN) {
+      setTimeout(() => document.getElementById('admSecretInput').focus(), 350);
+    }
+  };
+
+  window.admClose = function() {
+    document.getElementById('adminDrawer').classList.remove('open');
+    document.getElementById('adminOverlay').style.display = 'none';
+    document.body.style.overflow = '';
+  };
+
+  // Cerrar con Escape
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') admClose(); });
+
+  // ── Login ─────────────────────────────────────
+  window.admDoLogin = async function() {
+    const token = document.getElementById('admSecretInput').value.trim();
+    const errEl = document.getElementById('admLoginErr');
+    if (!token) { errEl.textContent = 'Ingresa la clave'; return; }
+    errEl.textContent = '';
+    try {
+      const r = await fetch(BASE + '/api/admin/promo-activa', {
+        headers: { 'Content-Type': 'application/json', 'x-admin-token': token }
+      });
+      if (r.status === 401) { errEl.textContent = '❌ Clave incorrecta'; return; }
+      ADM_TOKEN = token;
+      document.getElementById('admLoginWrap').style.display = 'none';
+      const panel = document.getElementById('admPanel');
+      panel.style.display = 'flex';
+      admLoadDash();
+    } catch(e) {
+      errEl.textContent = 'Error de conexión';
+    }
+  };
+
+  document.getElementById('admSecretInput').addEventListener('keydown', e => {
+    if (e.key === 'Enter') admDoLogin();
+  });
+
+  window.admLogout = function() {
+    ADM_TOKEN = '';
+    document.getElementById('admPanel').style.display = 'none';
+    document.getElementById('admLoginWrap').style.display = 'block';
+    document.getElementById('admSecretInput').value = '';
+    document.getElementById('admLoginErr').textContent = '';
+  };
+
+  // ── Tabs ──────────────────────────────────────
+  window.admTab = function(tab) {
+    document.querySelectorAll('.adm-section').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.adm-tab').forEach(b => b.classList.remove('active'));
+    document.getElementById('adm-' + tab).classList.add('active');
+    const idx = ['dash','dorados','compras','promo','correo','exportar'].indexOf(tab);
+    document.querySelectorAll('.adm-tab')[idx].classList.add('active');
+    if (tab === 'dash')    admLoadDash();
+    if (tab === 'dorados') admLoadDorados();
+    if (tab === 'promo')   admLoadPromo();
+  };
+
+  // ── Dashboard ─────────────────────────────────
+  window.admLoadDash = async function() {
+    document.getElementById('adm-d-vend').textContent = '…';
+    document.getElementById('adm-d-pct').textContent = '…';
+    try {
+      const r = await fetch(BASE + '/api/progreso');
+      const d = await r.json();
+      document.getElementById('adm-d-vend').textContent = admFmt(d.vendidos);
+      document.getElementById('adm-d-disp').textContent = admFmt(d.disponibles) + ' disponibles';
+      document.getElementById('adm-d-pct').textContent = d.porcentaje + '%';
+      document.getElementById('adm-bar').style.width = d.porcentaje + '%';
+      document.getElementById('adm-bar-l').textContent = admFmt(d.vendidos) + ' vendidos';
+    } catch(e) {}
+    try {
+      const r2 = await fetch(BASE + '/api/admin/codigos-dorados', {
+        headers: { 'x-admin-token': ADM_TOKEN }
+      });
+      const d2 = await r2.json();
+      document.getElementById('adm-d-dor').textContent = Array.isArray(d2) ? admFmt(d2.length) : '—';
+    } catch(e) {}
+  };
+
+  // ── Dorados ───────────────────────────────────
+  window.admLoadDorados = async function() {
+    const el = document.getElementById('adm-dorados-content');
+    el.innerHTML = '<div class="adm-state"><div class="adm-spin">⟳</div><br>Cargando...</div>';
+    try {
+      const r = await fetch(BASE + '/api/admin/codigos-dorados', {
+        headers: { 'x-admin-token': ADM_TOKEN }
+      });
+      const d = await r.json();
+      if (!d.length) { el.innerHTML = '<div class="adm-state">Sin dorados vendidos aún</div>'; return; }
+      const rows = d.map((x, i) =>
+        `<tr>
+          <td style="color:#4b5563;font-size:11px">${i+1}</td>
+          <td style="font-family:monospace;font-size:12px;color:var(--gold)">⭐ ${x.codigo}</td>
+          <td><span class="adm-badge-gold">Dorado</span></td>
+        </tr>`
+      ).join('');
+      el.innerHTML = `
+        <p style="font-size:12px;color:var(--muted);margin-bottom:10px">${d.length} código(s) dorado(s)</p>
+        <div class="adm-table-wrap">
+          <table class="adm-table">
+            <thead><tr><th>#</th><th>Código</th><th>Tipo</th></tr></thead>
+            <tbody>${rows}</tbody>
+          </table>
+        </div>`;
+    } catch(e) {
+      el.innerHTML = '<div class="adm-msg adm-msg-err">Error cargando</div>';
+    }
+  };
+
+  // ── Buscar compras ────────────────────────────
+  window.admBuscar = async function() {
+    const dato = document.getElementById('adm-buscar').value.trim();
+    const el   = document.getElementById('adm-compras-result');
+    if (!dato) { el.innerHTML = '<div class="adm-msg adm-msg-err">Ingresa email o cédula</div>'; return; }
+    el.innerHTML = '<div class="adm-state"><div class="adm-spin">⟳</div><br>Buscando...</div>';
+    try {
+      const r = await fetch(BASE + '/api/mis-codigos', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'x-admin-token': ADM_TOKEN },
+        body: JSON.stringify({ dato })
+      });
+      const d = await r.json();
+      if (!d.codigos || !d.codigos.length) {
+        el.innerHTML = '<div class="adm-msg adm-msg-err">Sin códigos para este dato</div>';
+        return;
+      }
+      const rows = d.codigos.map(x =>
+        `<tr>
+          <td style="font-family:monospace;font-size:12px;${x.dorado ? 'color:var(--gold)' : ''}">${x.dorado ? '⭐ ' : ''}${x.codigo}</td>
+          <td>${x.dorado ? '<span class="adm-badge-gold">Dorado</span>' : '<span class="adm-badge-ok">Normal</span>'}</td>
+        </tr>`
+      ).join('');
+      el.innerHTML = `
+        <p style="font-size:12px;color:var(--muted);margin-bottom:10px">${d.codigos.length} código(s) para <strong style="color:var(--text)">${dato}</strong></p>
+        <div class="adm-table-wrap">
+          <table class="adm-table">
+            <thead><tr><th>Código</th><th>Tipo</th></tr></thead>
+            <tbody>${rows}</tbody>
+          </table>
+        </div>`;
+    } catch(e) {
+      el.innerHTML = '<div class="adm-msg adm-msg-err">Error de conexión</div>';
+    }
+  };
+
+  // ── Promoción ─────────────────────────────────
+  window.admLoadPromo = async function() {
+    const el = document.getElementById('adm-promo-status');
+    el.innerHTML = '<div class="adm-state"><div class="adm-spin">⟳</div><br>Cargando...</div>';
+    try {
+      const r = await fetch(BASE + '/api/admin/promo-activa', {
+        headers: { 'x-admin-token': ADM_TOKEN }
+      });
+      const d = await r.json();
+      if (!d.activa) {
+        el.innerHTML = '<div class="adm-promo-inactive">⚪ Sin promoción activa</div>';
+        return;
+      }
+      const exp = d.expira_en ? new Date(d.expira_en).toLocaleString('es-CO') : '—';
+      el.innerHTML = `
+        <div class="adm-promo-active">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
+            <span class="adm-badge-ok">Activa</span>
+            <span style="font-size:13px;font-weight:700;color:#4ade80">En curso</span>
+          </div>
+          <div class="adm-promo-grid">
+            <div><div class="adm-promo-lbl">Premio dorado</div><div class="adm-promo-val">$${admFmt(d.precio_dorado)}</div></div>
+            <div><div class="adm-promo-lbl">Precio/código</div><div class="adm-promo-val">$${admFmt(d.precio_normal||'—')}</div></div>
+            <div style="grid-column:1/-1"><div class="adm-promo-lbl">Expira</div><div style="font-size:12px;color:#4ade80">${exp}</div></div>
+          </div>
+        </div>`;
+    } catch(e) {
+      el.innerHTML = '<div class="adm-msg adm-msg-err">Error cargando</div>';
+    }
+  };
+
+  window.admActivarPromo = async function() {
+    const pd  = document.getElementById('adm-p-dor').value;
+    const pn  = document.getElementById('adm-p-nor').value;
+    const exp = document.getElementById('adm-p-exp').value;
+    const el  = document.getElementById('adm-promo-msg');
+    if (!pd || !pn || !exp) { el.innerHTML = '<div class="adm-msg adm-msg-err">Completa todos los campos</div>'; return; }
+    el.innerHTML = '<div class="adm-msg adm-msg-info">Activando...</div>';
+    try {
+      const r = await fetch(BASE + '/api/admin/activar-promo', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'x-admin-token': ADM_TOKEN },
+        body: JSON.stringify({ precioDorado: Number(pd), precioNormal: Number(pn), expiraEn: new Date(exp).toISOString() })
+      });
+      if (r.ok) {
+        el.innerHTML = '<div class="adm-msg adm-msg-ok">✓ Promoción activada</div>';
+        admLoadPromo();
+      } else {
+        const d = await r.json();
+        el.innerHTML = `<div class="adm-msg adm-msg-err">${d.error || 'Error'}</div>`;
+      }
+    } catch(e) {
+      el.innerHTML = '<div class="adm-msg adm-msg-err">Error de conexión</div>';
+    }
+  };
+
+  window.admDesactivarPromo = async function() {
+    const el = document.getElementById('adm-promo-msg');
+    el.innerHTML = '<div class="adm-msg adm-msg-info">Desactivando...</div>';
+    try {
+      const r = await fetch(BASE + '/api/admin/desactivar-promo', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'x-admin-token': ADM_TOKEN }
+      });
+      if (r.ok) {
+        el.innerHTML = '<div class="adm-msg adm-msg-ok">Promoción desactivada</div>';
+        admLoadPromo();
+      } else {
+        el.innerHTML = '<div class="adm-msg adm-msg-err">Error</div>';
+      }
+    } catch(e) {
+      el.innerHTML = '<div class="adm-msg adm-msg-err">Error de conexión</div>';
+    }
+  };
+
+  // ── Reenviar correo ───────────────────────────
+  window.admReenviar = async function() {
+    const dato = document.getElementById('adm-reenviar').value.trim();
+    const el   = document.getElementById('adm-correo-msg');
+    if (!dato) { el.innerHTML = '<div class="adm-msg adm-msg-err">Ingresa email o cédula</div>'; return; }
+    el.innerHTML = '<div class="adm-msg adm-msg-info">Enviando...</div>';
+    try {
+      const r = await fetch(BASE + '/api/reenviar-correo', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'x-admin-token': ADM_TOKEN },
+        body: JSON.stringify({ dato })
+      });
+      const d = await r.json();
+      if (d.ok) {
+        el.innerHTML = `<div class="adm-msg adm-msg-ok">✓ ${d.mensaje}</div>`;
+      } else {
+        el.innerHTML = `<div class="adm-msg adm-msg-err">${d.mensaje || 'No se pudo enviar'}</div>`;
+      }
+    } catch(e) {
+      el.innerHTML = '<div class="adm-msg adm-msg-err">Error de conexión</div>';
+    }
+  };
+
+  // ── Exportar ──────────────────────────────────
+  window.admExportar = function(e) {
+    e.preventDefault();
+    const el = document.getElementById('adm-export-msg');
+    el.innerHTML = '<div class="adm-msg adm-msg-info">Preparando descarga...</div>';
+    const url = BASE + '/api/admin/exportar?token=' + encodeURIComponent(ADM_TOKEN);
+    const a = document.createElement('a');
+    a.href = url; a.download = 'ganadores.xlsx'; a.click();
+    setTimeout(() => el.innerHTML = '', 3000);
+  };
+})();
 </script>
 </body>
 </html>
