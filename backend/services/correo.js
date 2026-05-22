@@ -107,7 +107,7 @@ async function enviarCorreo(destino, codigos, premioDoradoOverride = null) {
 
     // ── Links WhatsApp ───────────────────────────────────────
     const mensajeCompartir = encodeURIComponent(
-      `🎟️ *Mis códigos del sorteo EiderTech Soluciones*\n\n` +
+      `🎟️ *Mis códigos del Evento EiderTech Soluciones*\n\n` +
       codigos.map(c => c.dorado ? `✨ ${c.codigo} ✨ (DORADO)` : `🎟️ ${c.codigo}`).join('\n') +
       `\n\n💰 Premio: $15.000.000 COP\n🍀 ¡Suerte a todos!`
     );
