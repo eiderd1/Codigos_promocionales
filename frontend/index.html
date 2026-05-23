@@ -728,6 +728,8 @@ input.error { border-color: #f87171; }
       <button class="adm-tab" onclick="admTab('dorados')">⭐ Dorados</button>
       <button class="adm-tab" onclick="admTab('promo')">📣 Promo</button>
       <button class="adm-tab" onclick="admTab('correo')">✉️ Correo</button>
+      <button class="adm-tab" onclick="admTab('config')">⚙️ Config</button>
+      <button class="adm-tab" onclick="admTab('seguridad')">🔒 Seguridad</button>
       <button class="adm-tab" onclick="admTab('exportar')">📥 Exportar</button>
     </div>
     <div class="adm-body">
@@ -836,8 +838,11 @@ input.error { border-color: #f87171; }
         </div>
       </div>
 
-      <!-- ── CORREO ── -->
+
+      <!-- ── CORREO MASIVO + PLANTILLA ── -->
       <div id="adm-correo" class="adm-section">
+        <!-- Reenviar -->
+        <div class="adm-section-lbl">Reenviar correo individual</div>
         <div class="adm-card">
           <div class="adm-field">
             <label>Email o cédula del cliente</label>
@@ -845,11 +850,120 @@ input.error { border-color: #f87171; }
               onkeydown="if(event.key==='Enter') admReenviar()">
           </div>
           <div class="adm-btn-row">
-            <button class="adm-btn adm-btn-primary" onclick="admReenviar()">✉️ Reenviar correo</button>
+            <button class="adm-btn adm-btn-primary" onclick="admReenviar()">✉️ Reenviar</button>
           </div>
           <div id="adm-correo-msg"></div>
         </div>
+
+        <!-- Correo masivo -->
+        <div class="adm-section-lbl">Correo masivo a todos los compradores</div>
+        <div class="adm-card">
+          <div style="background:rgba(248,113,113,.08);border:1px solid rgba(248,113,113,.2);border-radius:7px;padding:8px 11px;margin-bottom:10px;font-size:11px;color:#f87171;">
+            ⚠️ Esto enviará un correo a <strong id="adm-masivo-count">—</strong> compradores con compra pagada.
+          </div>
+          <div class="adm-field">
+            <label>Asunto</label>
+            <input type="text" id="adm-masivo-asunto" placeholder="Ej: 📢 Aviso importante del sorteo">
+          </div>
+          <div class="adm-field">
+            <label>Mensaje (HTML permitido)</label>
+            <textarea id="adm-masivo-msg" rows="6" style="width:100%;padding:8px 11px;background:#0f172a;border:1.5px solid #374151;border-radius:7px;color:var(--text);font-size:12px;outline:none;resize:vertical;font-family:inherit;" placeholder="Escribe el mensaje aquí..."></textarea>
+          </div>
+          <div class="adm-field">
+            <label>Vista previa</label>
+            <div id="adm-masivo-preview" style="background:#0f172a;border:1px solid #374151;border-radius:7px;padding:10px;font-size:12px;color:var(--muted);min-height:50px;max-height:150px;overflow-y:auto;"></div>
+          </div>
+          <div class="adm-btn-row">
+            <button class="adm-btn" onclick="admPreviewMasivo()">👁 Vista previa</button>
+            <button class="adm-btn adm-btn-primary" onclick="admEnviarMasivo()">📤 Enviar a todos</button>
+          </div>
+          <div id="adm-masivo-res"></div>
+        </div>
+
+        <!-- Plantilla del correo automático -->
+        <div class="adm-section-lbl">Pie de página del correo automático</div>
+        <div class="adm-card">
+          <p style="font-size:11px;color:var(--muted);margin-bottom:10px;line-height:1.5">Este texto aparece al final del correo que reciben los compradores al pagar.</p>
+          <div class="adm-field">
+            <label>Texto personalizado</label>
+            <textarea id="adm-plantilla-pie" rows="3" style="width:100%;padding:8px 11px;background:#0f172a;border:1.5px solid #374151;border-radius:7px;color:var(--text);font-size:12px;outline:none;resize:vertical;font-family:inherit;" placeholder="Ej: 🏆 El sorteo se realiza el 30 de junio. ¡Mucha suerte!"></textarea>
+          </div>
+          <div class="adm-btn-row">
+            <button class="adm-btn adm-btn-primary" onclick="admGuardarPlantilla()">💾 Guardar</button>
+          </div>
+          <div id="adm-plantilla-msg"></div>
+        </div>
       </div>
+
+      <!-- ── CONFIG ── -->
+      <div id="adm-config" class="adm-section">
+        <div class="adm-section-lbl">Ventas</div>
+        <div class="adm-card">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+            <div>
+              <div style="font-size:12px;font-weight:600;color:var(--text)">Estado de ventas</div>
+              <div style="font-size:10px;color:var(--muted);margin-top:2px">Activa o pausa la venta de códigos</div>
+            </div>
+            <label style="position:relative;width:44px;height:24px;cursor:pointer">
+              <input type="checkbox" id="adm-switch-ventas" onchange="admToggleVentas(this.checked)"
+                style="opacity:0;width:0;height:0;position:absolute">
+              <span id="adm-switch-track" style="position:absolute;inset:0;border-radius:999px;background:#374151;transition:background .2s">
+                <span id="adm-switch-thumb" style="position:absolute;top:3px;left:3px;width:18px;height:18px;background:white;border-radius:50%;transition:transform .2s"></span>
+              </span>
+            </label>
+          </div>
+          <div id="adm-ventas-estado" style="font-size:11px;color:var(--muted)">Cargando...</div>
+        </div>
+
+        <div class="adm-section-lbl">Precio por código</div>
+        <div class="adm-card">
+          <div class="adm-field">
+            <label>Precio individual (COP) — actual en el servidor</label>
+            <input type="number" id="adm-precio-codigo" placeholder="3750">
+          </div>
+          <p style="font-size:10px;color:#4b5563;margin-bottom:8px;line-height:1.5">Paquetes: 4 cód = precio×4 · 8 cód = precio×8 · 16 cód = precio×16</p>
+          <div class="adm-btn-row">
+            <button class="adm-btn adm-btn-primary" onclick="admGuardarPrecio()">💾 Guardar precio</button>
+          </div>
+          <div id="adm-precio-msg"></div>
+        </div>
+
+        <div class="adm-section-lbl">Aviso en la página principal</div>
+        <div class="adm-card">
+          <div class="adm-field">
+            <label>Mensaje de aviso (vacío = sin aviso)</label>
+            <input type="text" id="adm-aviso-texto" placeholder="Ej: 🔧 Mantenimiento esta noche a las 10pm">
+          </div>
+          <div class="adm-field">
+            <label>Color</label>
+            <select id="adm-aviso-color">
+              <option value="gold">🟡 Dorado (info)</option>
+              <option value="green">🟢 Verde (éxito)</option>
+              <option value="red">🔴 Rojo (urgente)</option>
+              <option value="blue">🔵 Azul (neutro)</option>
+            </select>
+          </div>
+          <div class="adm-btn-row">
+            <button class="adm-btn adm-btn-primary" onclick="admGuardarAviso()">📢 Publicar aviso</button>
+            <button class="adm-btn adm-btn-danger" onclick="admQuitarAviso()">✕ Quitar aviso</button>
+          </div>
+          <div id="adm-aviso-msg"></div>
+        </div>
+      </div>
+
+      <!-- ── SEGURIDAD ── -->
+      <div id="adm-seguridad" class="adm-section">
+        <div class="adm-section-lbl">Log de accesos al admin</div>
+        <div id="adm-log-content">
+          <div class="adm-state"><div class="adm-spin">⟳</div><br>Cargando...</div>
+        </div>
+
+        <div class="adm-section-lbl" style="margin-top:16px">Historial de promociones</div>
+        <div id="adm-historial-content">
+          <div class="adm-state"><div class="adm-spin">⟳</div><br>Cargando...</div>
+        </div>
+      </div>
+
 
       <!-- ── EXPORTAR ── -->
       <div id="adm-exportar" class="adm-section">
@@ -1497,7 +1611,7 @@ document.getElementById('resultado').addEventListener('touchend', function() { w
   };
 
   /* ── tabs ──────────────────────────────────── */
-  const TAB_ORDER = ['dash','compradores','dorados','promo','correo','exportar'];
+  const TAB_ORDER = ['dash','compradores','dorados','promo','correo','config','seguridad','exportar'];
   window.admTab = function(tab) {
     document.querySelectorAll('.adm-section').forEach(s => s.classList.remove('active'));
     document.querySelectorAll('.adm-tab').forEach(b => b.classList.remove('active'));
@@ -1507,6 +1621,9 @@ document.getElementById('resultado').addEventListener('touchend', function() { w
     if (tab === 'compradores') admLoadCompradores();
     if (tab === 'dorados')     admLoadDorados();
     if (tab === 'promo')       admLoadPromo();
+    if (tab === 'config')      admLoadConfig();
+    if (tab === 'seguridad')   admLoadSeguridad();
+    if (tab === 'correo')      admLoadCorreoCount();
   };
 
   /* ── dashboard ─────────────────────────────── */
@@ -1763,337 +1880,252 @@ document.getElementById('resultado').addEventListener('touchend', function() { w
   }
   window.admExportar = function(e) { e.preventDefault(); admDescargar('/api/admin/exportar', 'ganadores.xlsx'); };
   window.admExportarCompradores = function(e) { e.preventDefault(); admDescargar('/api/admin/exportar-compradores', 'compradores.xlsx'); };
-})();
-</script>
-});
-</script>
 
-<!-- ══════════════════════════════════════
-     ADMIN SCRIPT
-══════════════════════════════════════ -->
-<script>
-(function() {
-  let ADM_TOKEN = '';
-  let admAllCompradores = [];
-  let admFiltroActivo = 'todos';
-  const BASE = window.location.origin;
-  const fmt = n => Number(n).toLocaleString('es-CO');
 
-  /* ── open / close ──────────────────────────── */
-  window.admOpen = function() {
-    document.getElementById('adminDrawer').classList.add('open');
-    document.getElementById('adminOverlay').style.display = 'block';
-    document.body.style.overflow = 'hidden';
-    if (!ADM_TOKEN) setTimeout(() => document.getElementById('admSecretInput').focus(), 320);
-  };
-  window.admClose = function() {
-    document.getElementById('adminDrawer').classList.remove('open');
-    document.getElementById('adminOverlay').style.display = 'none';
-    document.body.style.overflow = '';
-  };
-  document.addEventListener('keydown', e => { if (e.key === 'Escape') admClose(); });
-
-  /* ── login ─────────────────────────────────── */
-  window.admDoLogin = async function() {
-    const token = document.getElementById('admSecretInput').value.trim();
-    const errEl = document.getElementById('admLoginErr');
-    if (!token) { errEl.textContent = 'Ingresa la clave'; return; }
-    errEl.textContent = 'Verificando...';
-    try {
-      const r = await fetch(BASE + '/api/admin/verificar', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'x-admin-token': token }
-      });
-      if (r.status === 401) { errEl.textContent = '❌ Clave incorrecta'; return; }
-      if (r.status === 500) { errEl.textContent = '⚠️ ADMIN_SECRET no configurado en el servidor'; return; }
-      if (!r.ok) { errEl.textContent = '❌ Error del servidor'; return; }
-      const d = await r.json();
-      if (!d.ok) { errEl.textContent = '❌ Clave incorrecta'; return; }
-      ADM_TOKEN = token;
-      document.getElementById('admLoginWrap').style.display = 'none';
-      const panel = document.getElementById('admPanel');
-      panel.style.display = 'flex';
-      admLoadDash();
-    } catch(e) { errEl.textContent = 'Error de conexión'; }
-  };
-  document.getElementById('admSecretInput').addEventListener('keydown', e => {
-    if (e.key === 'Enter') admDoLogin();
-  });
-  window.admLogout = function() {
-    ADM_TOKEN = '';
-    document.getElementById('admPanel').style.display = 'none';
-    document.getElementById('admLoginWrap').style.display = 'block';
-    document.getElementById('admSecretInput').value = '';
-    document.getElementById('admLoginErr').textContent = '';
-  };
-
-  /* ── tabs ──────────────────────────────────── */
-  const TAB_ORDER = ['dash','compradores','dorados','promo','correo','exportar'];
-  window.admTab = function(tab) {
-    document.querySelectorAll('.adm-section').forEach(s => s.classList.remove('active'));
-    document.querySelectorAll('.adm-tab').forEach(b => b.classList.remove('active'));
-    document.getElementById('adm-' + tab).classList.add('active');
-    document.querySelectorAll('.adm-tab')[TAB_ORDER.indexOf(tab)].classList.add('active');
-    if (tab === 'dash')        admLoadDash();
-    if (tab === 'compradores') admLoadCompradores();
-    if (tab === 'dorados')     admLoadDorados();
-    if (tab === 'promo')       admLoadPromo();
-  };
-
-  /* ── dashboard ─────────────────────────────── */
-  window.admLoadDash = async function() {
-    ['adm-d-vend','adm-d-pct','adm-i-pagadas','adm-i-total','adm-i-pend','adm-i-ultima']
-      .forEach(id => { const el = document.getElementById(id); if(el) el.textContent = '…'; });
-
-    // Progreso
-    try {
-      const r = await fetch(BASE + '/api/progreso');
-      const d = await r.json();
-      document.getElementById('adm-d-vend').textContent = fmt(d.vendidos);
-      document.getElementById('adm-d-disp').textContent = fmt(d.disponibles) + ' disponibles';
-      document.getElementById('adm-d-pct').textContent  = d.porcentaje + '%';
-      document.getElementById('adm-bar').style.width    = d.porcentaje + '%';
-      document.getElementById('adm-bar-l').textContent  = fmt(d.vendidos) + ' vendidos';
-    } catch(e) {}
-
-    // Dorados count
-    try {
-      const r2 = await fetch(BASE + '/api/admin/codigos-dorados', { headers: { 'x-admin-token': ADM_TOKEN } });
-      const d2 = await r2.json();
-      document.getElementById('adm-d-dor').textContent = Array.isArray(d2) ? fmt(d2.length) : '—';
-    } catch(e) {}
-
-    // Compras stats
-    try {
-      const r3 = await fetch(BASE + '/api/admin/compras-stats', { headers: { 'x-admin-token': ADM_TOKEN } });
-      const d3 = await r3.json();
-      document.getElementById('adm-i-pagadas').textContent = fmt(d3.pagadas) + ' compras';
-      document.getElementById('adm-i-total').textContent   = '$' + fmt(d3.ingresos);
-      document.getElementById('adm-i-pend').textContent    = fmt(d3.pendientes) + ' pendientes';
-      if (d3.ultima) {
-        const f = new Date(d3.ultima);
-        document.getElementById('adm-i-ultima').textContent = f.toLocaleDateString('es-CO') + ' ' + f.toLocaleTimeString('es-CO',{hour:'2-digit',minute:'2-digit'});
-      }
-    } catch(e) {}
-  };
-
-  /* ── compradores ───────────────────────────── */
-  window.admLoadCompradores = async function() {
-    const el = document.getElementById('adm-compradores-content');
-    el.innerHTML = '<div class="adm-state"><div class="adm-spin">⟳</div><br>Cargando...</div>';
+  /* ── correo masivo ─────────────────────────── */
+  window.admLoadCorreoCount = async function() {
     try {
       const r = await fetch(BASE + '/api/admin/compradores', { headers: { 'x-admin-token': ADM_TOKEN } });
       const d = await r.json();
-      admAllCompradores = d.compradores || [];
-      admRenderCompradores();
-    } catch(e) {
-      document.getElementById('adm-compradores-content').innerHTML = '<div class="adm-msg adm-msg-err">Error cargando compradores</div>';
-    }
-  };
-
-  window.admSetFiltro = function(filtro) {
-    admFiltroActivo = filtro;
-    ['todos','pagado','pendiente'].forEach(f => {
-      const btn = document.getElementById('adm-filter-' + f);
-      if (btn) btn.style.color = f === filtro ? 'var(--gold)' : '';
-      if (btn) btn.style.borderColor = f === filtro ? 'var(--gold)' : '';
-    });
-    admRenderCompradores();
-  };
-
-  window.admFiltrarCompradores = function() { admRenderCompradores(); };
-
-  function admRenderCompradores() {
-    const el     = document.getElementById('adm-compradores-content');
-    const buscar = (document.getElementById('adm-comp-buscar').value || '').toLowerCase();
-    let lista    = admAllCompradores;
-
-    if (admFiltroActivo !== 'todos') {
-      lista = lista.filter(c => c.estado === admFiltroActivo);
-    }
-    if (buscar) {
-      lista = lista.filter(c =>
-        (c.nombre  || '').toLowerCase().includes(buscar) ||
-        (c.correo  || '').toLowerCase().includes(buscar) ||
-        (c.cedula  || '').toLowerCase().includes(buscar) ||
-        (c.telefono|| '').toLowerCase().includes(buscar)
-      );
-    }
-
-    if (!lista.length) {
-      el.innerHTML = '<div class="adm-state">Sin resultados</div>';
-      return;
-    }
-
-    const rows = lista.map(c => {
-      const chips = (c.codigos || []).map(cod =>
-        `<span class="adm-chip${cod.dorado ? ' gold' : ''}">${cod.dorado ? '⭐' : ''}${cod.codigo}</span>`
-      ).join('');
-      const fecha = c.fecha ? new Date(c.fecha).toLocaleDateString('es-CO') : '—';
-      const badge = c.estado === 'pagado'
-        ? '<span class="adm-badge-ok">Pagado</span>'
-        : '<span class="adm-badge-pend">Pendiente</span>';
-      const doradoTag = (c.codigos || []).some(x => x.dorado)
-        ? ' <span class="adm-badge-gold">⭐</span>' : '';
-      return `
-        <tr>
-          <td>
-            <div style="font-weight:600;font-size:11px;color:var(--text)">${c.nombre || '—'}${doradoTag}</div>
-            <div style="font-size:10px;color:var(--muted);margin-top:1px">${c.correo || '—'}</div>
-            <div style="font-size:10px;color:#4b5563">${c.cedula ? 'CC: '+c.cedula : ''} ${c.telefono || ''}</div>
-          </td>
-          <td style="text-align:right">
-            <div>${badge}</div>
-            <div style="font-size:10px;color:var(--muted);margin-top:2px">${c.cantidad} cód.</div>
-            <div style="font-size:10px;color:#4b5563">${fecha}</div>
-          </td>
-        </tr>
-        <tr>
-          <td colspan="2" style="padding-top:0;padding-bottom:10px">
-            <div class="adm-chip-list">${chips || '<span style="font-size:10px;color:#4b5563">Sin códigos asignados</span>'}</div>
-          </td>
-        </tr>`;
-    }).join('');
-
-    el.innerHTML = `
-      <p style="font-size:10px;color:var(--muted);margin-bottom:8px">${lista.length} compra(s)</p>
-      <div class="adm-table-wrap">
-        <table class="adm-table">
-          <thead><tr><th>Cliente</th><th style="text-align:right">Estado</th></tr></thead>
-          <tbody>${rows}</tbody>
-        </table>
-      </div>`;
-  }
-
-  /* ── dorados ───────────────────────────────── */
-  window.admLoadDorados = async function() {
-    const el = document.getElementById('adm-dorados-content');
-    el.innerHTML = '<div class="adm-state"><div class="adm-spin">⟳</div><br>Cargando...</div>';
+      const pagados = (d.compradores || []).filter(c => c.estado === 'pagado');
+      const el = document.getElementById('adm-masivo-count');
+      if (el) el.textContent = pagados.length;
+    } catch(e) {}
+    // load plantilla
     try {
-      const r = await fetch(BASE + '/api/admin/codigos-dorados', { headers: { 'x-admin-token': ADM_TOKEN } });
-      const d = await r.json();
-      if (!d.length) { el.innerHTML = '<div class="adm-state">Sin dorados vendidos aún</div>'; return; }
-      const rows = d.map((x, i) => `
-        <tr>
-          <td style="color:#4b5563;font-size:10px">${i+1}</td>
-          <td style="font-family:monospace;color:var(--gold)">⭐ ${x.codigo}</td>
-          <td><span class="adm-badge-gold">Dorado</span></td>
-        </tr>`).join('');
-      el.innerHTML = `
-        <p style="font-size:11px;color:var(--muted);margin-bottom:8px">${d.length} código(s) dorado(s) vendido(s)</p>
-        <div class="adm-table-wrap">
-          <table class="adm-table">
-            <thead><tr><th>#</th><th>Código</th><th>Tipo</th></tr></thead>
-            <tbody>${rows}</tbody>
-          </table>
-        </div>`;
-    } catch(e) { el.innerHTML = '<div class="adm-msg adm-msg-err">Error cargando</div>'; }
+      const r2 = await fetch(BASE + '/api/admin/config', { headers: { 'x-admin-token': ADM_TOKEN } });
+      const d2 = await r2.json();
+      const pie = document.getElementById('adm-plantilla-pie');
+      if (pie && d2.correo_pie) pie.value = d2.correo_pie;
+    } catch(e) {}
   };
 
-  /* ── promo ─────────────────────────────────── */
-  window.admLoadPromo = async function() {
-    const el = document.getElementById('adm-promo-status');
-    el.innerHTML = '<div class="adm-state"><div class="adm-spin">⟳</div><br>Cargando...</div>';
-    try {
-      const r = await fetch(BASE + '/api/admin/promo-activa', { headers: { 'x-admin-token': ADM_TOKEN } });
-      const d = await r.json();
-      if (!d.activa) {
-        el.innerHTML = '<div class="adm-promo-inactive">⚪ Sin promoción activa actualmente</div>';
-        return;
-      }
-      const exp = d.expira_en ? new Date(d.expira_en).toLocaleString('es-CO') : '—';
-      el.innerHTML = `
-        <div class="adm-promo-active">
-          <div style="display:flex;align-items:center;gap:7px;margin-bottom:3px">
-            <span class="adm-badge-ok">Activa</span>
-            <span style="font-size:12px;font-weight:700;color:#4ade80">En curso</span>
-          </div>
-          <div class="adm-promo-grid">
-            <div><div class="adm-promo-lbl">Premio dorado</div><div class="adm-promo-val">$${fmt(d.precio_dorado)}</div></div>
-            <div><div class="adm-promo-lbl">Precio/código</div><div class="adm-promo-val">$${fmt(d.precio_normal||0)}</div></div>
-            <div style="grid-column:1/-1">
-              <div class="adm-promo-lbl">Expira</div>
-              <div style="font-size:11px;color:#4ade80">${exp}</div>
-            </div>
-          </div>
-        </div>`;
-    } catch(e) { el.innerHTML = '<div class="adm-msg adm-msg-err">Error</div>'; }
+  window.admPreviewMasivo = function() {
+    const msg = document.getElementById('adm-masivo-msg').value;
+    const prev = document.getElementById('adm-masivo-preview');
+    prev.innerHTML = msg || '<span style="color:#4b5563">Sin contenido</span>';
   };
 
-  window.admActivarPromo = async function() {
-    const pd = document.getElementById('adm-p-dor').value;
-    const pn = document.getElementById('adm-p-nor').value;
-    const ex = document.getElementById('adm-p-exp').value;
-    const el = document.getElementById('adm-promo-msg');
-    if (!pd || !pn || !ex) { el.innerHTML = '<div class="adm-msg adm-msg-err">Completa todos los campos</div>'; return; }
-    el.innerHTML = '<div class="adm-msg adm-msg-info">Activando...</div>';
+  window.admEnviarMasivo = async function() {
+    const asunto = document.getElementById('adm-masivo-asunto').value.trim();
+    const msg    = document.getElementById('adm-masivo-msg').value.trim();
+    const el     = document.getElementById('adm-masivo-res');
+    if (!asunto || !msg) { el.innerHTML = '<div class="adm-msg adm-msg-err">Completa asunto y mensaje</div>'; return; }
+    if (!confirm('¿Confirmas enviar este correo a TODOS los compradores?')) return;
+    el.innerHTML = '<div class="adm-msg adm-msg-info">Enviando... puede tardar unos segundos</div>';
     try {
-      const r = await fetch(BASE + '/api/admin/activar-promo', {
+      const r = await fetch(BASE + '/api/admin/correo-masivo', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'x-admin-token': ADM_TOKEN },
-        body: JSON.stringify({ precioDorado: Number(pd), precioNormal: Number(pn), expiraEn: new Date(ex).toISOString() })
+        body: JSON.stringify({ asunto, mensaje: msg })
       });
-      if (r.ok) {
-        el.innerHTML = '<div class="adm-msg adm-msg-ok">✓ Promoción activada</div>';
-        admLoadPromo();
-        // Recargar badge de promo en la página principal
-        if (typeof verificarPromo === 'function') verificarPromo();
+      const d = await r.json();
+      if (d.ok) {
+        el.innerHTML = `<div class="adm-msg adm-msg-ok">✓ Enviado a ${d.enviados} comprador(es)</div>`;
       } else {
-        const d = await r.json();
-        el.innerHTML = `<div class="adm-msg adm-msg-err">${d.error || 'Error'}</div>`;
+        el.innerHTML = `<div class="adm-msg adm-msg-err">${d.error || 'Error enviando'}</div>`;
       }
     } catch(e) { el.innerHTML = '<div class="adm-msg adm-msg-err">Error de conexión</div>'; }
   };
 
-  window.admDesactivarPromo = async function() {
-    const el = document.getElementById('adm-promo-msg');
-    el.innerHTML = '<div class="adm-msg adm-msg-info">Desactivando...</div>';
+  window.admGuardarPlantilla = async function() {
+    const pie = document.getElementById('adm-plantilla-pie').value;
+    const el  = document.getElementById('adm-plantilla-msg');
+    el.innerHTML = '<div class="adm-msg adm-msg-info">Guardando...</div>';
     try {
-      const r = await fetch(BASE + '/api/admin/desactivar-promo', {
+      const r = await fetch(BASE + '/api/admin/config', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'x-admin-token': ADM_TOKEN }
+        headers: { 'Content-Type': 'application/json', 'x-admin-token': ADM_TOKEN },
+        body: JSON.stringify({ correo_pie: pie })
       });
-      if (r.ok) {
-        el.innerHTML = '<div class="adm-msg adm-msg-ok">Promoción desactivada</div>';
-        admLoadPromo();
-        if (typeof verificarPromo === 'function') verificarPromo();
+      const d = await r.json();
+      el.innerHTML = d.ok ? '<div class="adm-msg adm-msg-ok">✓ Guardado</div>' : '<div class="adm-msg adm-msg-err">Error guardando</div>';
+    } catch(e) { el.innerHTML = '<div class="adm-msg adm-msg-err">Error de conexión</div>'; }
+  };
+
+  /* ── config ────────────────────────────────── */
+  window.admLoadConfig = async function() {
+    try {
+      const r = await fetch(BASE + '/api/admin/config', { headers: { 'x-admin-token': ADM_TOKEN } });
+      const d = await r.json();
+      // ventas switch
+      const sw = document.getElementById('adm-switch-ventas');
+      const track = document.getElementById('adm-switch-track');
+      const thumb = document.getElementById('adm-switch-thumb');
+      const estado = document.getElementById('adm-ventas-estado');
+      if (sw) {
+        const activo = d.ventas_activas !== false;
+        sw.checked = activo;
+        track.style.background = activo ? '#16a34a' : '#374151';
+        thumb.style.transform   = activo ? 'translateX(20px)' : 'translateX(0)';
+        if (estado) estado.textContent = activo ? '✅ Ventas activas' : '🔴 Ventas pausadas';
+      }
+      // precio
+      const precio = document.getElementById('adm-precio-codigo');
+      if (precio && d.precio_codigo) precio.value = d.precio_codigo;
+      // aviso
+      const aviso = document.getElementById('adm-aviso-texto');
+      const color = document.getElementById('adm-aviso-color');
+      if (aviso && d.aviso_texto) aviso.value = d.aviso_texto;
+      if (color && d.aviso_color) color.value = d.aviso_color;
+    } catch(e) {}
+  };
+
+  window.admToggleVentas = async function(activo) {
+    const track = document.getElementById('adm-switch-track');
+    const thumb = document.getElementById('adm-switch-thumb');
+    const estado = document.getElementById('adm-ventas-estado');
+    track.style.background = activo ? '#16a34a' : '#374151';
+    thumb.style.transform   = activo ? 'translateX(20px)' : 'translateX(0)';
+    try {
+      await fetch(BASE + '/api/admin/config', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'x-admin-token': ADM_TOKEN },
+        body: JSON.stringify({ ventas_activas: activo })
+      });
+      if (estado) estado.textContent = activo ? '✅ Ventas activas' : '🔴 Ventas pausadas';
+    } catch(e) {}
+  };
+
+  window.admGuardarPrecio = async function() {
+    const precio = document.getElementById('adm-precio-codigo').value;
+    const el = document.getElementById('adm-precio-msg');
+    if (!precio || isNaN(Number(precio))) { el.innerHTML = '<div class="adm-msg adm-msg-err">Precio inválido</div>'; return; }
+    el.innerHTML = '<div class="adm-msg adm-msg-info">Guardando...</div>';
+    try {
+      const r = await fetch(BASE + '/api/admin/config', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'x-admin-token': ADM_TOKEN },
+        body: JSON.stringify({ precio_codigo: Number(precio) })
+      });
+      const d = await r.json();
+      el.innerHTML = d.ok ? '<div class="adm-msg adm-msg-ok">✓ Precio actualizado</div>' : '<div class="adm-msg adm-msg-err">Error</div>';
+    } catch(e) { el.innerHTML = '<div class="adm-msg adm-msg-err">Error de conexión</div>'; }
+  };
+
+  window.admGuardarAviso = async function() {
+    const texto = document.getElementById('adm-aviso-texto').value.trim();
+    const color = document.getElementById('adm-aviso-color').value;
+    const el = document.getElementById('adm-aviso-msg');
+    if (!texto) { el.innerHTML = '<div class="adm-msg adm-msg-err">Escribe un mensaje</div>'; return; }
+    el.innerHTML = '<div class="adm-msg adm-msg-info">Publicando...</div>';
+    try {
+      const r = await fetch(BASE + '/api/admin/config', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'x-admin-token': ADM_TOKEN },
+        body: JSON.stringify({ aviso_texto: texto, aviso_color: color })
+      });
+      const d = await r.json();
+      if (d.ok) {
+        el.innerHTML = '<div class="adm-msg adm-msg-ok">✓ Aviso publicado</div>';
+        admMostrarAvisoPublico(texto, color);
       } else {
         el.innerHTML = '<div class="adm-msg adm-msg-err">Error</div>';
       }
     } catch(e) { el.innerHTML = '<div class="adm-msg adm-msg-err">Error de conexión</div>'; }
   };
 
-  /* ── correo ────────────────────────────────── */
-  window.admReenviar = async function() {
-    const dato = document.getElementById('adm-reenviar').value.trim();
-    const el   = document.getElementById('adm-correo-msg');
-    if (!dato) { el.innerHTML = '<div class="adm-msg adm-msg-err">Ingresa email o cédula</div>'; return; }
-    el.innerHTML = '<div class="adm-msg adm-msg-info">Enviando...</div>';
+  window.admQuitarAviso = async function() {
+    const el = document.getElementById('adm-aviso-msg');
     try {
-      const r = await fetch(BASE + '/api/reenviar-correo', {
+      await fetch(BASE + '/api/admin/config', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'x-admin-token': ADM_TOKEN },
-        body: JSON.stringify({ dato })
+        body: JSON.stringify({ aviso_texto: '', aviso_color: 'gold' })
       });
-      const d = await r.json();
-      el.innerHTML = d.ok
-        ? `<div class="adm-msg adm-msg-ok">✓ ${d.mensaje}</div>`
-        : `<div class="adm-msg adm-msg-err">${d.mensaje || 'No se pudo enviar'}</div>`;
-    } catch(e) { el.innerHTML = '<div class="adm-msg adm-msg-err">Error de conexión</div>'; }
+      el.innerHTML = '<div class="adm-msg adm-msg-ok">Aviso quitado</div>';
+      const avEl = document.getElementById('aviso-publico');
+      if (avEl) avEl.remove();
+    } catch(e) {}
   };
 
-  /* ── exportar ──────────────────────────────── */
-  function admDescargar(path, filename) {
-    const el = document.getElementById('adm-export-msg');
-    el.innerHTML = '<div class="adm-msg adm-msg-info">Preparando...</div>';
-    const a = document.createElement('a');
-    a.href = BASE + path + '?token=' + encodeURIComponent(ADM_TOKEN);
-    a.download = filename;
-    a.click();
-    setTimeout(() => el.innerHTML = '', 3000);
+  function admMostrarAvisoPublico(texto, color) {
+    const colors = {
+      gold:  { bg: 'rgba(245,197,24,.12)',  border: 'rgba(245,197,24,.4)',  text: '#f5c518' },
+      green: { bg: 'rgba(74,222,128,.12)',  border: 'rgba(74,222,128,.4)',  text: '#4ade80' },
+      red:   { bg: 'rgba(248,113,113,.12)', border: 'rgba(248,113,113,.4)', text: '#f87171' },
+      blue:  { bg: 'rgba(96,165,250,.12)',  border: 'rgba(96,165,250,.4)',  text: '#60a5fa' },
+    };
+    const c = colors[color] || colors.gold;
+    let avEl = document.getElementById('aviso-publico');
+    if (!avEl) {
+      avEl = document.createElement('div');
+      avEl.id = 'aviso-publico';
+      const page = document.querySelector('.page');
+      if (page) page.insertBefore(avEl, page.firstChild);
+    }
+    avEl.style.cssText = `background:${c.bg};border:1px solid ${c.border};color:${c.text};border-radius:10px;padding:10px 14px;margin-bottom:14px;font-size:13px;font-weight:600;text-align:center;`;
+    avEl.textContent = texto;
   }
-  window.admExportar = function(e) { e.preventDefault(); admDescargar('/api/admin/exportar', 'ganadores.xlsx'); };
-  window.admExportarCompradores = function(e) { e.preventDefault(); admDescargar('/api/admin/exportar-compradores', 'compradores.xlsx'); };
+
+  // Load aviso on page load
+  (async function() {
+    try {
+      const r = await fetch(BASE + '/api/config-publica');
+      const d = await r.json();
+      if (d.aviso_texto) admMostrarAvisoPublico(d.aviso_texto, d.aviso_color || 'gold');
+      if (d.ventas_activas === false) {
+        document.querySelectorAll('.card').forEach(c => c.classList.add('disabled'));
+        const form = document.getElementById('form');
+        if (form) form.style.display = 'none';
+        const aviso = document.getElementById('avisoStock');
+        if (aviso) { aviso.style.display = 'block'; aviso.innerHTML = '🔴 Las ventas están temporalmente pausadas.'; }
+      }
+    } catch(e) {}
+  })();
+
+  /* ── seguridad ─────────────────────────────── */
+  window.admLoadSeguridad = async function() {
+    admLoadLog();
+    admLoadHistorialPromo();
+  };
+
+  async function admLoadLog() {
+    const el = document.getElementById('adm-log-content');
+    el.innerHTML = '<div class="adm-state"><div class="adm-spin">⟳</div><br>Cargando...</div>';
+    try {
+      const r = await fetch(BASE + '/api/admin/log-accesos', { headers: { 'x-admin-token': ADM_TOKEN } });
+      const d = await r.json();
+      if (!d.logs?.length) { el.innerHTML = '<div class="adm-state">Sin registros aún</div>'; return; }
+      const rows = d.logs.map(l => {
+        const f = new Date(l.fecha).toLocaleString('es-CO');
+        const badge = l.exito ? '<span class="adm-badge-ok">OK</span>' : '<span class="adm-badge-fail">FALLO</span>';
+        return `<tr>
+          <td>${badge}</td>
+          <td style="font-size:10px;color:var(--muted)">${f}</td>
+          <td style="font-size:10px;font-family:monospace;color:#4b5563">${l.ip || '—'}</td>
+        </tr>`;
+      }).join('');
+      el.innerHTML = `<div class="adm-table-wrap"><table class="adm-table">
+        <thead><tr><th>Estado</th><th>Fecha</th><th>IP</th></tr></thead>
+        <tbody>${rows}</tbody>
+      </table></div>`;
+    } catch(e) { el.innerHTML = '<div class="adm-msg adm-msg-err">Error cargando</div>'; }
+  }
+
+  async function admLoadHistorialPromo() {
+    const el = document.getElementById('adm-historial-content');
+    el.innerHTML = '<div class="adm-state"><div class="adm-spin">⟳</div><br>Cargando...</div>';
+    try {
+      const r = await fetch(BASE + '/api/admin/historial-promos', { headers: { 'x-admin-token': ADM_TOKEN } });
+      const d = await r.json();
+      if (!d.promos?.length) { el.innerHTML = '<div class="adm-state">Sin historial</div>'; return; }
+      const rows = d.promos.map(p => {
+        const badge = p.activa ? '<span class="adm-badge-ok">Activa</span>' : '<span style="font-size:9px;color:#4b5563">Inactiva</span>';
+        const exp = p.expira_en ? new Date(p.expira_en).toLocaleString('es-CO') : '—';
+        return `<tr>
+          <td>${badge}</td>
+          <td style="color:var(--gold);font-size:11px">$${fmt(p.precio_dorado)}</td>
+          <td style="font-size:10px;color:var(--muted)">${exp}</td>
+        </tr>`;
+      }).join('');
+      el.innerHTML = `<div class="adm-table-wrap"><table class="adm-table">
+        <thead><tr><th>Estado</th><th>Premio dorado</th><th>Expiraba</th></tr></thead>
+        <tbody>${rows}</tbody>
+      </table></div>`;
+    } catch(e) { el.innerHTML = '<div class="adm-msg adm-msg-err">Error cargando</div>'; }
+  }
+
 })();
 </script>
 </body>

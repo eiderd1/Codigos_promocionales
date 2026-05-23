@@ -1,5 +1,12 @@
 const https = require('https');
 
+// Importar config del admin (se actualiza en tiempo real)
+let _adminConfig = null;
+function getAdminConfig() {
+  try { _adminConfig = require('../routes/admin').CONFIG; } catch(e) {}
+  return _adminConfig || {};
+}
+
 async function enviarCorreo(destino, codigos, premioDoradoOverride = null) {
   try {
     if (!process.env.BREVO_API_KEY || !destino || !codigos?.length) return;
@@ -187,6 +194,7 @@ async function enviarCorreo(destino, codigos, premioDoradoOverride = null) {
             Guarda este correo como comprobante de tu compra.<br>
             📧 infoeidertechsoluciones@gmail.com &nbsp;|&nbsp; EiderTech Soluciones
           </p>
+          ${(function(){ try{ const cfg=require('../routes/admin').CONFIG; return cfg&&cfg.correo_pie?`<p style="text-align:center;color:#f5c518;font-size:12px;margin:8px 0 0;font-weight:600">${cfg.correo_pie}</p>`:''; }catch(e){return '';} })()}
 
         </div>
       </div>
