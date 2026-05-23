@@ -501,7 +501,6 @@ input.error { border-color: #f87171; }
 @supports (padding-bottom: env(safe-area-inset-bottom)) {
   body { padding-bottom: env(safe-area-inset-bottom); }
 }
-
 /* ── ADMIN TRIGGER ───────────────────── */
 #adminTrigger {
   position: fixed;
@@ -527,13 +526,11 @@ input.error { border-color: #f87171; }
   display: block;
   width: 18px;
   height: 2px;
-  background: rgba(255,255,255,.6);
+  background: rgba(255,255,255,.5);
   border-radius: 2px;
   transition: background .2s;
 }
 #adminTrigger:hover span { background: var(--gold); }
-
-/* ── ADMIN OVERLAY ───────────────────── */
 #adminOverlay {
   position: fixed;
   inset: 0;
@@ -541,274 +538,160 @@ input.error { border-color: #f87171; }
   z-index: 9000;
   display: none;
   backdrop-filter: blur(4px);
-  animation: fadeIn .2s ease;
 }
-
-/* ── ADMIN DRAWER ────────────────────── */
 #adminDrawer {
   position: fixed;
   top: 0;
   right: -100%;
-  width: min(420px, 100vw);
+  width: min(440px, 100vw);
   height: 100dvh;
   background: #0d1117;
   border-left: 1px solid rgba(245,197,24,.15);
   z-index: 9500;
   display: flex;
   flex-direction: column;
-  transition: right .32s cubic-bezier(.4,0,.2,1);
+  transition: right .3s cubic-bezier(.4,0,.2,1);
   overflow: hidden;
 }
 #adminDrawer.open { right: 0; }
-
 .adm-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 16px 20px;
+  padding: 14px 18px;
   border-bottom: 1px solid rgba(245,197,24,.15);
   flex-shrink: 0;
 }
-.adm-title { font-size: 15px; font-weight: 700; color: var(--gold); }
+.adm-title { font-size: 14px; font-weight: 700; color: var(--gold); }
 #admClose {
-  width: 32px; height: 32px;
+  width: 30px; height: 30px;
   background: rgba(255,255,255,.06);
-  border: none;
-  border-radius: 8px;
-  color: var(--muted);
-  font-size: 18px;
-  cursor: pointer;
-  display: flex; align-items: center; justify-content: center;
+  border: none; border-radius: 8px;
+  color: var(--muted); font-size: 16px;
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
 }
 #admClose:hover { background: rgba(245,197,24,.15); color: var(--gold); }
-
 .adm-tabs {
-  display: flex;
-  gap: 4px;
-  padding: 12px 16px 8px;
-  border-bottom: 1px solid rgba(255,255,255,.06);
-  flex-shrink: 0;
-  overflow-x: auto;
-  scrollbar-width: none;
+  display: flex; gap: 3px;
+  padding: 10px 14px 6px;
+  border-bottom: 1px solid rgba(255,255,255,.05);
+  flex-shrink: 0; overflow-x: auto; scrollbar-width: none;
 }
 .adm-tabs::-webkit-scrollbar { display: none; }
 .adm-tab {
-  padding: 6px 12px;
-  border-radius: 8px;
-  border: none;
-  background: transparent;
-  color: rgba(255,255,255,.4);
-  font-size: 12px;
-  font-weight: 600;
-  cursor: pointer;
-  white-space: nowrap;
-  transition: all .15s;
+  padding: 5px 10px; border-radius: 7px; border: none;
+  background: transparent; color: rgba(255,255,255,.35);
+  font-size: 11px; font-weight: 600; cursor: pointer;
+  white-space: nowrap; transition: all .15s;
 }
 .adm-tab:hover { background: rgba(255,255,255,.06); color: var(--muted); }
 .adm-tab.active { background: rgba(245,197,24,.12); color: var(--gold); }
-
 .adm-body {
-  flex: 1;
-  overflow-y: auto;
-  padding: 16px 20px;
-  scrollbar-width: thin;
-  scrollbar-color: rgba(245,197,24,.2) transparent;
+  flex: 1; overflow-y: auto; padding: 14px 18px;
+  scrollbar-width: thin; scrollbar-color: rgba(245,197,24,.2) transparent;
 }
-
-/* ── ADMIN LOGIN ─────────────────────── */
-#admLogin { display: flex; flex-direction: column; gap: 12px; }
+#admLogin { display: flex; flex-direction: column; gap: 10px; }
 #admLogin p { font-size: 13px; color: var(--muted); }
 #admSecretInput {
-  width: 100%;
-  padding: 11px 14px;
-  background: #1a2235;
-  border: 1.5px solid #374151;
-  border-radius: 10px;
-  color: var(--text);
-  font-size: 14px;
-  outline: none;
+  width: 100%; padding: 10px 13px;
+  background: #1a2235; border: 1.5px solid #374151;
+  border-radius: 9px; color: var(--text); font-size: 14px; outline: none;
 }
 #admSecretInput:focus { border-color: var(--gold); }
 #admLoginBtn {
-  padding: 11px;
-  background: linear-gradient(135deg, var(--gold), var(--orange));
-  border: none;
-  border-radius: 10px;
-  color: #000;
-  font-weight: 700;
-  font-size: 14px;
-  cursor: pointer;
+  padding: 10px; background: linear-gradient(135deg,var(--gold),var(--orange));
+  border: none; border-radius: 9px; color: #000;
+  font-weight: 700; font-size: 14px; cursor: pointer;
 }
 #admLoginBtn:hover { opacity: .9; }
-#admLoginErr { font-size: 12px; color: #f87171; min-height: 16px; }
-
-/* ── ADMIN PANEL ─────────────────────── */
-#admPanel { display: none; }
+#admLoginErr { font-size: 12px; color: #f87171; min-height: 14px; }
 .adm-section { display: none; }
 .adm-section.active { display: block; }
-
 .adm-metric-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-  margin-bottom: 16px;
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 8px; margin-bottom: 14px;
 }
 .adm-metric {
-  background: #1a2235;
-  border-radius: 10px;
-  padding: 14px;
+  background: #1a2235; border-radius: 9px; padding: 12px;
 }
-.adm-metric-label { font-size: 11px; color: var(--muted); margin-bottom: 5px; text-transform: uppercase; letter-spacing: .04em; }
-.adm-metric-value { font-size: 22px; font-weight: 700; color: var(--text); line-height: 1; }
-.adm-metric-sub { font-size: 11px; color: #4b5563; margin-top: 3px; }
-
-.adm-progress-wrap {
-  background: #1a2235;
-  border-radius: 10px;
-  padding: 14px;
-  margin-bottom: 16px;
+.adm-metric-label { font-size: 10px; color: var(--muted); margin-bottom: 4px; text-transform: uppercase; letter-spacing: .04em; }
+.adm-metric-value { font-size: 20px; font-weight: 700; color: var(--text); line-height: 1; }
+.adm-metric-sub { font-size: 10px; color: #4b5563; margin-top: 2px; }
+.adm-progress-wrap { background: #1a2235; border-radius: 9px; padding: 12px; margin-bottom: 14px; }
+.adm-bar-bg { background: #0f172a; border-radius: 999px; height: 7px; overflow: hidden; margin: 6px 0 5px; }
+.adm-bar-fill { height: 100%; background: linear-gradient(90deg,var(--gold),var(--orange)); border-radius: 999px; transition: width .8s ease; }
+.adm-bar-labels { display: flex; justify-content: space-between; font-size: 10px; color: #4b5563; }
+.adm-card { background: #1a2235; border-radius: 9px; padding: 13px; margin-bottom: 11px; }
+.adm-field { margin-bottom: 9px; }
+.adm-field label { display: block; font-size: 10px; color: var(--muted); margin-bottom: 4px; text-transform: uppercase; letter-spacing: .04em; }
+.adm-field input, .adm-field select {
+  width: 100%; padding: 8px 11px;
+  background: #0f172a; border: 1.5px solid #374151;
+  border-radius: 7px; color: var(--text); font-size: 12px; outline: none;
 }
-.adm-progress-bar-bg {
-  background: #0f172a;
-  border-radius: 999px;
-  height: 8px;
-  overflow: hidden;
-  margin: 8px 0 6px;
-}
-.adm-progress-bar-fill {
-  height: 100%;
-  background: linear-gradient(90deg, var(--gold), var(--orange));
-  border-radius: 999px;
-  transition: width .8s ease;
-}
-.adm-progress-labels {
-  display: flex;
-  justify-content: space-between;
-  font-size: 11px;
-  color: #4b5563;
-}
-
-.adm-card {
-  background: #1a2235;
-  border-radius: 10px;
-  padding: 14px;
-  margin-bottom: 12px;
-}
-
-.adm-field { margin-bottom: 10px; }
-.adm-field label { display: block; font-size: 11px; color: var(--muted); margin-bottom: 5px; text-transform: uppercase; letter-spacing: .04em; }
-.adm-field input {
-  width: 100%;
-  padding: 9px 12px;
-  background: #0f172a;
-  border: 1.5px solid #374151;
-  border-radius: 8px;
-  color: var(--text);
-  font-size: 13px;
-  outline: none;
-}
-.adm-field input:focus { border-color: var(--gold); }
-
-.adm-btn-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+.adm-field input:focus, .adm-field select:focus { border-color: var(--gold); }
+.adm-btn-row { display: flex; gap: 7px; flex-wrap: wrap; margin-top: 10px; }
 .adm-btn {
-  padding: 8px 14px;
-  border-radius: 8px;
-  border: 1px solid #374151;
-  background: #1a2235;
-  color: var(--text);
-  font-size: 12px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all .15s;
+  padding: 7px 13px; border-radius: 7px;
+  border: 1px solid #374151; background: #1a2235;
+  color: var(--text); font-size: 11px; font-weight: 600;
+  cursor: pointer; transition: all .15s; white-space: nowrap;
 }
 .adm-btn:hover { background: #243047; border-color: var(--gold); color: var(--gold); }
-.adm-btn-primary {
-  background: linear-gradient(135deg, var(--gold), var(--orange));
-  border-color: transparent;
-  color: #000;
-}
+.adm-btn-primary { background: linear-gradient(135deg,var(--gold),var(--orange)); border-color: transparent; color: #000; }
 .adm-btn-primary:hover { opacity: .88; color: #000; border-color: transparent; }
 .adm-btn-danger { border-color: #7f1d1d; color: #f87171; }
-.adm-btn-danger:hover { background: rgba(248,113,113,.1); border-color: #f87171; color: #f87171; }
-.adm-btn-export { border-color: #14532d; color: #4ade80; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; }
-.adm-btn-export:hover { background: rgba(74,222,128,.08); border-color: #4ade80; color: #4ade80; }
-
-.adm-msg {
-  padding: 8px 12px;
-  border-radius: 8px;
-  font-size: 12px;
-  margin-top: 10px;
-}
-.adm-msg-ok  { background: rgba(74,222,128,.1);  color: #4ade80; }
-.adm-msg-err { background: rgba(248,113,113,.1); color: #f87171; }
-.adm-msg-info { background: rgba(245,197,24,.1); color: var(--gold); }
-
-.adm-table-wrap {
-  background: #0f172a;
-  border-radius: 8px;
-  overflow: hidden;
-  margin-top: 10px;
-}
-.adm-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+.adm-btn-danger:hover { background: rgba(248,113,113,.1); border-color: #f87171; }
+.adm-btn-green { border-color: #14532d; color: #4ade80; text-decoration: none; display: inline-flex; align-items: center; gap: 5px; }
+.adm-btn-green:hover { background: rgba(74,222,128,.08); border-color: #4ade80; }
+.adm-msg { padding: 7px 11px; border-radius: 7px; font-size: 11px; margin-top: 9px; }
+.adm-msg-ok   { background: rgba(74,222,128,.1);  color: #4ade80; }
+.adm-msg-err  { background: rgba(248,113,113,.1); color: #f87171; }
+.adm-msg-info { background: rgba(245,197,24,.1);  color: var(--gold); }
+.adm-table-wrap { background: #0f172a; border-radius: 7px; overflow: hidden; margin-top: 9px; }
+.adm-table { width: 100%; border-collapse: collapse; font-size: 11px; }
 .adm-table th {
-  padding: 8px 12px;
-  text-align: left;
-  color: var(--muted);
-  font-size: 10px;
-  text-transform: uppercase;
-  letter-spacing: .06em;
-  border-bottom: 1px solid rgba(255,255,255,.06);
-  background: #1a2235;
+  padding: 7px 11px; text-align: left; color: var(--muted);
+  font-size: 9px; text-transform: uppercase; letter-spacing: .06em;
+  border-bottom: 1px solid rgba(255,255,255,.06); background: #1a2235;
 }
-.adm-table td { padding: 9px 12px; border-bottom: 1px solid rgba(255,255,255,.04); }
+.adm-table td { padding: 8px 11px; border-bottom: 1px solid rgba(255,255,255,.04); vertical-align: top; }
 .adm-table tr:last-child td { border-bottom: none; }
 .adm-table tr:hover td { background: rgba(255,255,255,.02); }
-
-.adm-badge-gold { background: rgba(245,197,24,.15); color: var(--gold); padding: 2px 7px; border-radius: 999px; font-size: 10px; font-weight: 700; }
-.adm-badge-ok   { background: rgba(74,222,128,.12);  color: #4ade80;     padding: 2px 7px; border-radius: 999px; font-size: 10px; font-weight: 700; }
-
-.adm-state { text-align: center; padding: 28px 16px; color: #4b5563; font-size: 13px; }
-.adm-spin { display: inline-block; animation: spin .7s linear infinite; font-size: 20px; margin-bottom: 6px; }
-
-.adm-promo-active {
-  background: rgba(74,222,128,.08);
-  border: 1px solid rgba(74,222,128,.25);
-  border-radius: 10px;
-  padding: 14px;
-  margin-bottom: 14px;
-}
-.adm-promo-inactive {
-  background: rgba(255,255,255,.03);
-  border: 1px solid rgba(255,255,255,.08);
-  border-radius: 10px;
-  padding: 14px;
-  margin-bottom: 14px;
-  color: var(--muted);
-  font-size: 13px;
-}
-.adm-promo-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-  margin-top: 12px;
-}
-.adm-promo-lbl { font-size: 10px; color: #4ade80; margin-bottom: 2px; text-transform: uppercase; }
-.adm-promo-val { font-size: 14px; font-weight: 700; color: #4ade80; }
-
+.adm-badge-gold { background: rgba(245,197,24,.15); color: var(--gold); padding: 1px 6px; border-radius: 999px; font-size: 9px; font-weight: 700; }
+.adm-badge-ok   { background: rgba(74,222,128,.12); color: #4ade80;    padding: 1px 6px; border-radius: 999px; font-size: 9px; font-weight: 700; }
+.adm-badge-pend { background: rgba(251,191,36,.12); color: #fbbf24;    padding: 1px 6px; border-radius: 999px; font-size: 9px; font-weight: 700; }
+.adm-badge-fail { background: rgba(248,113,113,.12);color: #f87171;    padding: 1px 6px; border-radius: 999px; font-size: 9px; font-weight: 700; }
+.adm-state { text-align: center; padding: 24px 12px; color: #4b5563; font-size: 12px; }
+.adm-spin { display: inline-block; animation: spin .7s linear infinite; font-size: 18px; margin-bottom: 5px; }
+.adm-promo-active { background: rgba(74,222,128,.08); border: 1px solid rgba(74,222,128,.2); border-radius: 9px; padding: 12px; margin-bottom: 12px; }
+.adm-promo-inactive { background: rgba(255,255,255,.03); border: 1px solid rgba(255,255,255,.07); border-radius: 9px; padding: 12px; margin-bottom: 12px; color: var(--muted); font-size: 12px; }
+.adm-promo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; margin-top: 10px; }
+.adm-promo-lbl { font-size: 9px; color: #4ade80; margin-bottom: 2px; text-transform: uppercase; letter-spacing: .04em; }
+.adm-promo-val { font-size: 13px; font-weight: 700; color: #4ade80; }
+.adm-income-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px; }
+.adm-income-card { background: #1a2235; border-radius: 9px; padding: 12px; }
+.adm-income-lbl { font-size: 9px; color: var(--muted); margin-bottom: 3px; text-transform: uppercase; letter-spacing: .04em; }
+.adm-income-val { font-size: 14px; font-weight: 700; }
+.adm-income-val.gold { color: var(--gold); }
+.adm-income-val.green { color: #4ade80; }
+.adm-income-val.red { color: #f87171; }
+.adm-income-val.blue { color: #60a5fa; }
 .adm-logout-btn {
-  width: 100%;
-  padding: 9px;
-  background: transparent;
-  border: 1px solid #7f1d1d;
-  border-radius: 8px;
-  color: #f87171;
-  font-size: 12px;
-  font-weight: 600;
-  cursor: pointer;
-  margin-top: 8px;
-  transition: background .15s;
+  width: 100%; padding: 8px; background: transparent;
+  border: 1px solid #7f1d1d; border-radius: 8px;
+  color: #f87171; font-size: 11px; font-weight: 600;
+  cursor: pointer; margin-top: 8px; transition: background .15s;
 }
 .adm-logout-btn:hover { background: rgba(248,113,113,.08); }
+.adm-section-lbl { font-size: 10px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; margin: 14px 0 8px; }
+.adm-search-row { display: flex; gap: 7px; margin-bottom: 11px; }
+.adm-search-row input { flex: 1; padding: 8px 11px; background: #1a2235; border: 1.5px solid #374151; border-radius: 7px; color: var(--text); font-size: 12px; outline: none; }
+.adm-search-row input:focus { border-color: var(--gold); }
+.adm-chip-list { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 5px; }
+.adm-chip { display: inline-block; padding: 2px 7px; border-radius: 5px; font-size: 10px; font-weight: 600; font-family: monospace; background: #0f172a; color: var(--muted); border: 1px solid #374151; }
+.adm-chip.gold { background: rgba(245,197,24,.12); color: var(--gold); border-color: rgba(245,197,24,.3); }
+
 </style>
 </head>
 
@@ -818,8 +701,6 @@ input.error { border-color: #f87171; }
 <div id="adminTrigger" onclick="admOpen()" title="Admin">
   <span></span><span></span><span></span>
 </div>
-
-<!-- ══════════ ADMIN OVERLAY ══════════ -->
 <div id="adminOverlay" onclick="admClose()"></div>
 
 <!-- ══════════ ADMIN DRAWER ══════════ -->
@@ -829,7 +710,7 @@ input.error { border-color: #f87171; }
     <button id="admClose" onclick="admClose()">✕</button>
   </div>
 
-  <!-- LOGIN -->
+  <!-- LOGIN SCREEN -->
   <div class="adm-body" id="admLoginWrap">
     <div id="admLogin">
       <p>Ingresa la clave de administrador</p>
@@ -839,25 +720,25 @@ input.error { border-color: #f87171; }
     </div>
   </div>
 
-  <!-- PANEL (oculto hasta login) -->
-  <div id="admPanel" style="display:none;flex-direction:column;height:100%;">
+  <!-- PANEL (visible after login) -->
+  <div id="admPanel" style="display:none;flex-direction:column;overflow:hidden;height:calc(100dvh - 52px)">
     <div class="adm-tabs">
-      <button class="adm-tab active" onclick="admTab('dash')">📊 Dashboard</button>
+      <button class="adm-tab active" onclick="admTab('dash')">📊 Resumen</button>
+      <button class="adm-tab" onclick="admTab('compradores')">👥 Compradores</button>
       <button class="adm-tab" onclick="admTab('dorados')">⭐ Dorados</button>
-      <button class="adm-tab" onclick="admTab('compras')">🧾 Compras</button>
       <button class="adm-tab" onclick="admTab('promo')">📣 Promo</button>
       <button class="adm-tab" onclick="admTab('correo')">✉️ Correo</button>
       <button class="adm-tab" onclick="admTab('exportar')">📥 Exportar</button>
     </div>
     <div class="adm-body">
 
-      <!-- DASHBOARD -->
+      <!-- ── DASHBOARD ── -->
       <div id="adm-dash" class="adm-section active">
         <div class="adm-metric-grid">
           <div class="adm-metric">
             <div class="adm-metric-label">Vendidos</div>
             <div class="adm-metric-value" id="adm-d-vend">—</div>
-            <div class="adm-metric-sub" id="adm-d-disp">cargando...</div>
+            <div class="adm-metric-sub" id="adm-d-disp">...</div>
           </div>
           <div class="adm-metric">
             <div class="adm-metric-label">Total</div>
@@ -872,17 +753,31 @@ input.error { border-color: #f87171; }
           <div class="adm-metric">
             <div class="adm-metric-label">Dorados</div>
             <div class="adm-metric-value" id="adm-d-dor">—</div>
-            <div class="adm-metric-sub">vendidos</div>
+            <div class="adm-metric-sub">entregados</div>
           </div>
         </div>
         <div class="adm-progress-wrap">
-          <div style="font-size:12px;font-weight:600;margin-bottom:4px;color:var(--muted)">Progreso de ventas</div>
-          <div class="adm-progress-bar-bg">
-            <div class="adm-progress-bar-fill" id="adm-bar" style="width:0%"></div>
+          <div style="font-size:11px;font-weight:600;margin-bottom:3px;color:var(--muted)">Progreso de ventas</div>
+          <div class="adm-bar-bg"><div class="adm-bar-fill" id="adm-bar" style="width:0%"></div></div>
+          <div class="adm-bar-labels"><span id="adm-bar-l">0 vendidos</span><span>10,000 total</span></div>
+        </div>
+        <div class="adm-section-lbl">Ingresos estimados</div>
+        <div class="adm-income-grid">
+          <div class="adm-income-card">
+            <div class="adm-income-lbl">Compras pagadas</div>
+            <div class="adm-income-val green" id="adm-i-pagadas">—</div>
           </div>
-          <div class="adm-progress-labels">
-            <span id="adm-bar-l">0 vendidos</span>
-            <span>10,000 total</span>
+          <div class="adm-income-card">
+            <div class="adm-income-lbl">Ingresos totales</div>
+            <div class="adm-income-val gold" id="adm-i-total">—</div>
+          </div>
+          <div class="adm-income-card">
+            <div class="adm-income-lbl">Pendientes</div>
+            <div class="adm-income-val red" id="adm-i-pend">—</div>
+          </div>
+          <div class="adm-income-card">
+            <div class="adm-income-lbl">Última compra</div>
+            <div class="adm-income-val blue" id="adm-i-ultima" style="font-size:11px">—</div>
           </div>
         </div>
         <div class="adm-btn-row">
@@ -891,34 +786,35 @@ input.error { border-color: #f87171; }
         </div>
       </div>
 
-      <!-- DORADOS -->
+      <!-- ── COMPRADORES ── -->
+      <div id="adm-compradores" class="adm-section">
+        <div class="adm-search-row">
+          <input type="text" id="adm-comp-buscar" placeholder="Buscar por nombre, email, cédula..."
+            oninput="admFiltrarCompradores()" autocomplete="off">
+        </div>
+        <div style="display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap">
+          <button class="adm-btn active" id="adm-filter-todos"    onclick="admSetFiltro('todos')">Todos</button>
+          <button class="adm-btn"        id="adm-filter-pagado"   onclick="admSetFiltro('pagado')">✅ Pagados</button>
+          <button class="adm-btn"        id="adm-filter-pendiente" onclick="admSetFiltro('pendiente')">⏳ Pendientes</button>
+        </div>
+        <div id="adm-compradores-content">
+          <div class="adm-state"><div class="adm-spin">⟳</div><br>Cargando...</div>
+        </div>
+      </div>
+
+      <!-- ── DORADOS ── -->
       <div id="adm-dorados" class="adm-section">
         <div id="adm-dorados-content">
           <div class="adm-state"><div class="adm-spin">⟳</div><br>Cargando...</div>
         </div>
       </div>
 
-      <!-- COMPRAS -->
-      <div id="adm-compras" class="adm-section">
-        <div class="adm-card">
-          <div class="adm-field">
-            <label>Email o cédula</label>
-            <input type="text" id="adm-buscar" placeholder="cliente@email.com o 1234567890"
-              onkeydown="if(event.key==='Enter') admBuscar()">
-          </div>
-          <div class="adm-btn-row">
-            <button class="adm-btn adm-btn-primary" onclick="admBuscar()">🔍 Buscar</button>
-          </div>
-        </div>
-        <div id="adm-compras-result"></div>
-      </div>
-
-      <!-- PROMO -->
+      <!-- ── PROMO ── -->
       <div id="adm-promo" class="adm-section">
         <div id="adm-promo-status">
           <div class="adm-state"><div class="adm-spin">⟳</div><br>Cargando...</div>
         </div>
-        <div style="font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin:16px 0 10px;">Activar nueva</div>
+        <div class="adm-section-lbl" style="margin-top:14px">Activar nueva promoción</div>
         <div class="adm-card">
           <div class="adm-field">
             <label>Premio dorado (COP)</label>
@@ -934,17 +830,17 @@ input.error { border-color: #f87171; }
           </div>
           <div class="adm-btn-row">
             <button class="adm-btn adm-btn-primary" onclick="admActivarPromo()">📣 Activar</button>
-            <button class="adm-btn adm-btn-danger" onclick="admDesactivarPromo()">✕ Desactivar</button>
+            <button class="adm-btn adm-btn-danger"  onclick="admDesactivarPromo()">✕ Desactivar</button>
           </div>
           <div id="adm-promo-msg"></div>
         </div>
       </div>
 
-      <!-- CORREO -->
+      <!-- ── CORREO ── -->
       <div id="adm-correo" class="adm-section">
         <div class="adm-card">
           <div class="adm-field">
-            <label>Email o cédula</label>
+            <label>Email o cédula del cliente</label>
             <input type="text" id="adm-reenviar" placeholder="cliente@email.com o 1234567890"
               onkeydown="if(event.key==='Enter') admReenviar()">
           </div>
@@ -955,24 +851,23 @@ input.error { border-color: #f87171; }
         </div>
       </div>
 
-      <!-- EXPORTAR -->
+      <!-- ── EXPORTAR ── -->
       <div id="adm-exportar" class="adm-section">
         <div class="adm-card">
-          <p style="font-size:13px;color:var(--muted);margin-bottom:14px;line-height:1.6;">
-            Descarga un Excel con todos los códigos dorados vendidos.
+          <p style="font-size:12px;color:var(--muted);margin-bottom:12px;line-height:1.6">
+            Descarga un Excel con todos los códigos dorados vendidos y sus compradores.
           </p>
           <div class="adm-btn-row">
-            <a class="adm-btn adm-btn-export" id="adm-export-link" href="#" onclick="admExportar(event)">
-              📥 ganadores.xlsx
-            </a>
+            <a class="adm-btn adm-btn-green" href="#" onclick="admExportar(event)">📥 ganadores.xlsx</a>
+            <a class="adm-btn adm-btn-green" href="#" onclick="admExportarCompradores(event)">📥 compradores.xlsx</a>
           </div>
           <div id="adm-export-msg"></div>
         </div>
       </div>
 
-    </div><!-- /adm-body -->
-  </div><!-- /admPanel -->
-</div><!-- /adminDrawer -->
+    </div>
+  </div>
+</div>
 
 <div id="loadingPago">
   <div class="casino-inner">
@@ -1539,42 +1434,40 @@ document.getElementById('resultado').addEventListener('touchend', function() { w
 
 });
 </script>
+});
+</script>
 
-<!-- ══════════════════════════════════════════════
-     ADMIN SCRIPT — separado del DOMContentLoaded
-══════════════════════════════════════════════ -->
+<!-- ══════════════════════════════════════
+     ADMIN SCRIPT
+══════════════════════════════════════ -->
 <script>
 (function() {
   let ADM_TOKEN = '';
+  let admAllCompradores = [];
+  let admFiltroActivo = 'todos';
   const BASE = window.location.origin;
+  const fmt = n => Number(n).toLocaleString('es-CO');
 
-  function admFmt(n) { return Number(n).toLocaleString('es-CO'); }
-
-  // ── Abrir / cerrar drawer ─────────────────────
+  /* ── open / close ──────────────────────────── */
   window.admOpen = function() {
     document.getElementById('adminDrawer').classList.add('open');
     document.getElementById('adminOverlay').style.display = 'block';
     document.body.style.overflow = 'hidden';
-    if (!ADM_TOKEN) {
-      setTimeout(() => document.getElementById('admSecretInput').focus(), 350);
-    }
+    if (!ADM_TOKEN) setTimeout(() => document.getElementById('admSecretInput').focus(), 320);
   };
-
   window.admClose = function() {
     document.getElementById('adminDrawer').classList.remove('open');
     document.getElementById('adminOverlay').style.display = 'none';
     document.body.style.overflow = '';
   };
-
-  // Cerrar con Escape
   document.addEventListener('keydown', e => { if (e.key === 'Escape') admClose(); });
 
-  // ── Login ─────────────────────────────────────
+  /* ── login ─────────────────────────────────── */
   window.admDoLogin = async function() {
     const token = document.getElementById('admSecretInput').value.trim();
     const errEl = document.getElementById('admLoginErr');
     if (!token) { errEl.textContent = 'Ingresa la clave'; return; }
-    errEl.textContent = '';
+    errEl.textContent = 'Verificando...';
     try {
       const r = await fetch(BASE + '/api/admin/promo-activa', {
         headers: { 'Content-Type': 'application/json', 'x-admin-token': token }
@@ -1585,15 +1478,11 @@ document.getElementById('resultado').addEventListener('touchend', function() { w
       const panel = document.getElementById('admPanel');
       panel.style.display = 'flex';
       admLoadDash();
-    } catch(e) {
-      errEl.textContent = 'Error de conexión';
-    }
+    } catch(e) { errEl.textContent = 'Error de conexión'; }
   };
-
   document.getElementById('admSecretInput').addEventListener('keydown', e => {
     if (e.key === 'Enter') admDoLogin();
   });
-
   window.admLogout = function() {
     ADM_TOKEN = '';
     document.getElementById('admPanel').style.display = 'none';
@@ -1602,160 +1491,222 @@ document.getElementById('resultado').addEventListener('touchend', function() { w
     document.getElementById('admLoginErr').textContent = '';
   };
 
-  // ── Tabs ──────────────────────────────────────
+  /* ── tabs ──────────────────────────────────── */
+  const TAB_ORDER = ['dash','compradores','dorados','promo','correo','exportar'];
   window.admTab = function(tab) {
     document.querySelectorAll('.adm-section').forEach(s => s.classList.remove('active'));
     document.querySelectorAll('.adm-tab').forEach(b => b.classList.remove('active'));
     document.getElementById('adm-' + tab).classList.add('active');
-    const idx = ['dash','dorados','compras','promo','correo','exportar'].indexOf(tab);
-    document.querySelectorAll('.adm-tab')[idx].classList.add('active');
-    if (tab === 'dash')    admLoadDash();
-    if (tab === 'dorados') admLoadDorados();
-    if (tab === 'promo')   admLoadPromo();
+    document.querySelectorAll('.adm-tab')[TAB_ORDER.indexOf(tab)].classList.add('active');
+    if (tab === 'dash')        admLoadDash();
+    if (tab === 'compradores') admLoadCompradores();
+    if (tab === 'dorados')     admLoadDorados();
+    if (tab === 'promo')       admLoadPromo();
   };
 
-  // ── Dashboard ─────────────────────────────────
+  /* ── dashboard ─────────────────────────────── */
   window.admLoadDash = async function() {
-    document.getElementById('adm-d-vend').textContent = '…';
-    document.getElementById('adm-d-pct').textContent = '…';
+    ['adm-d-vend','adm-d-pct','adm-i-pagadas','adm-i-total','adm-i-pend','adm-i-ultima']
+      .forEach(id => { const el = document.getElementById(id); if(el) el.textContent = '…'; });
+
+    // Progreso
     try {
       const r = await fetch(BASE + '/api/progreso');
       const d = await r.json();
-      document.getElementById('adm-d-vend').textContent = admFmt(d.vendidos);
-      document.getElementById('adm-d-disp').textContent = admFmt(d.disponibles) + ' disponibles';
-      document.getElementById('adm-d-pct').textContent = d.porcentaje + '%';
-      document.getElementById('adm-bar').style.width = d.porcentaje + '%';
-      document.getElementById('adm-bar-l').textContent = admFmt(d.vendidos) + ' vendidos';
+      document.getElementById('adm-d-vend').textContent = fmt(d.vendidos);
+      document.getElementById('adm-d-disp').textContent = fmt(d.disponibles) + ' disponibles';
+      document.getElementById('adm-d-pct').textContent  = d.porcentaje + '%';
+      document.getElementById('adm-bar').style.width    = d.porcentaje + '%';
+      document.getElementById('adm-bar-l').textContent  = fmt(d.vendidos) + ' vendidos';
     } catch(e) {}
+
+    // Dorados count
     try {
-      const r2 = await fetch(BASE + '/api/admin/codigos-dorados', {
-        headers: { 'x-admin-token': ADM_TOKEN }
-      });
+      const r2 = await fetch(BASE + '/api/admin/codigos-dorados', { headers: { 'x-admin-token': ADM_TOKEN } });
       const d2 = await r2.json();
-      document.getElementById('adm-d-dor').textContent = Array.isArray(d2) ? admFmt(d2.length) : '—';
+      document.getElementById('adm-d-dor').textContent = Array.isArray(d2) ? fmt(d2.length) : '—';
+    } catch(e) {}
+
+    // Compras stats
+    try {
+      const r3 = await fetch(BASE + '/api/admin/compras-stats', { headers: { 'x-admin-token': ADM_TOKEN } });
+      const d3 = await r3.json();
+      document.getElementById('adm-i-pagadas').textContent = fmt(d3.pagadas) + ' compras';
+      document.getElementById('adm-i-total').textContent   = '$' + fmt(d3.ingresos);
+      document.getElementById('adm-i-pend').textContent    = fmt(d3.pendientes) + ' pendientes';
+      if (d3.ultima) {
+        const f = new Date(d3.ultima);
+        document.getElementById('adm-i-ultima').textContent = f.toLocaleDateString('es-CO') + ' ' + f.toLocaleTimeString('es-CO',{hour:'2-digit',minute:'2-digit'});
+      }
     } catch(e) {}
   };
 
-  // ── Dorados ───────────────────────────────────
+  /* ── compradores ───────────────────────────── */
+  window.admLoadCompradores = async function() {
+    const el = document.getElementById('adm-compradores-content');
+    el.innerHTML = '<div class="adm-state"><div class="adm-spin">⟳</div><br>Cargando...</div>';
+    try {
+      const r = await fetch(BASE + '/api/admin/compradores', { headers: { 'x-admin-token': ADM_TOKEN } });
+      const d = await r.json();
+      admAllCompradores = d.compradores || [];
+      admRenderCompradores();
+    } catch(e) {
+      document.getElementById('adm-compradores-content').innerHTML = '<div class="adm-msg adm-msg-err">Error cargando compradores</div>';
+    }
+  };
+
+  window.admSetFiltro = function(filtro) {
+    admFiltroActivo = filtro;
+    ['todos','pagado','pendiente'].forEach(f => {
+      const btn = document.getElementById('adm-filter-' + f);
+      if (btn) btn.style.color = f === filtro ? 'var(--gold)' : '';
+      if (btn) btn.style.borderColor = f === filtro ? 'var(--gold)' : '';
+    });
+    admRenderCompradores();
+  };
+
+  window.admFiltrarCompradores = function() { admRenderCompradores(); };
+
+  function admRenderCompradores() {
+    const el     = document.getElementById('adm-compradores-content');
+    const buscar = (document.getElementById('adm-comp-buscar').value || '').toLowerCase();
+    let lista    = admAllCompradores;
+
+    if (admFiltroActivo !== 'todos') {
+      lista = lista.filter(c => c.estado === admFiltroActivo);
+    }
+    if (buscar) {
+      lista = lista.filter(c =>
+        (c.nombre  || '').toLowerCase().includes(buscar) ||
+        (c.correo  || '').toLowerCase().includes(buscar) ||
+        (c.cedula  || '').toLowerCase().includes(buscar) ||
+        (c.telefono|| '').toLowerCase().includes(buscar)
+      );
+    }
+
+    if (!lista.length) {
+      el.innerHTML = '<div class="adm-state">Sin resultados</div>';
+      return;
+    }
+
+    const rows = lista.map(c => {
+      const chips = (c.codigos || []).map(cod =>
+        `<span class="adm-chip${cod.dorado ? ' gold' : ''}">${cod.dorado ? '⭐' : ''}${cod.codigo}</span>`
+      ).join('');
+      const fecha = c.fecha ? new Date(c.fecha).toLocaleDateString('es-CO') : '—';
+      const badge = c.estado === 'pagado'
+        ? '<span class="adm-badge-ok">Pagado</span>'
+        : '<span class="adm-badge-pend">Pendiente</span>';
+      const doradoTag = (c.codigos || []).some(x => x.dorado)
+        ? ' <span class="adm-badge-gold">⭐</span>' : '';
+      return `
+        <tr>
+          <td>
+            <div style="font-weight:600;font-size:11px;color:var(--text)">${c.nombre || '—'}${doradoTag}</div>
+            <div style="font-size:10px;color:var(--muted);margin-top:1px">${c.correo || '—'}</div>
+            <div style="font-size:10px;color:#4b5563">${c.cedula ? 'CC: '+c.cedula : ''} ${c.telefono || ''}</div>
+          </td>
+          <td style="text-align:right">
+            <div>${badge}</div>
+            <div style="font-size:10px;color:var(--muted);margin-top:2px">${c.cantidad} cód.</div>
+            <div style="font-size:10px;color:#4b5563">${fecha}</div>
+          </td>
+        </tr>
+        <tr>
+          <td colspan="2" style="padding-top:0;padding-bottom:10px">
+            <div class="adm-chip-list">${chips || '<span style="font-size:10px;color:#4b5563">Sin códigos asignados</span>'}</div>
+          </td>
+        </tr>`;
+    }).join('');
+
+    el.innerHTML = `
+      <p style="font-size:10px;color:var(--muted);margin-bottom:8px">${lista.length} compra(s)</p>
+      <div class="adm-table-wrap">
+        <table class="adm-table">
+          <thead><tr><th>Cliente</th><th style="text-align:right">Estado</th></tr></thead>
+          <tbody>${rows}</tbody>
+        </table>
+      </div>`;
+  }
+
+  /* ── dorados ───────────────────────────────── */
   window.admLoadDorados = async function() {
     const el = document.getElementById('adm-dorados-content');
     el.innerHTML = '<div class="adm-state"><div class="adm-spin">⟳</div><br>Cargando...</div>';
     try {
-      const r = await fetch(BASE + '/api/admin/codigos-dorados', {
-        headers: { 'x-admin-token': ADM_TOKEN }
-      });
+      const r = await fetch(BASE + '/api/admin/codigos-dorados', { headers: { 'x-admin-token': ADM_TOKEN } });
       const d = await r.json();
       if (!d.length) { el.innerHTML = '<div class="adm-state">Sin dorados vendidos aún</div>'; return; }
-      const rows = d.map((x, i) =>
-        `<tr>
-          <td style="color:#4b5563;font-size:11px">${i+1}</td>
-          <td style="font-family:monospace;font-size:12px;color:var(--gold)">⭐ ${x.codigo}</td>
+      const rows = d.map((x, i) => `
+        <tr>
+          <td style="color:#4b5563;font-size:10px">${i+1}</td>
+          <td style="font-family:monospace;color:var(--gold)">⭐ ${x.codigo}</td>
           <td><span class="adm-badge-gold">Dorado</span></td>
-        </tr>`
-      ).join('');
+        </tr>`).join('');
       el.innerHTML = `
-        <p style="font-size:12px;color:var(--muted);margin-bottom:10px">${d.length} código(s) dorado(s)</p>
+        <p style="font-size:11px;color:var(--muted);margin-bottom:8px">${d.length} código(s) dorado(s) vendido(s)</p>
         <div class="adm-table-wrap">
           <table class="adm-table">
             <thead><tr><th>#</th><th>Código</th><th>Tipo</th></tr></thead>
             <tbody>${rows}</tbody>
           </table>
         </div>`;
-    } catch(e) {
-      el.innerHTML = '<div class="adm-msg adm-msg-err">Error cargando</div>';
-    }
+    } catch(e) { el.innerHTML = '<div class="adm-msg adm-msg-err">Error cargando</div>'; }
   };
 
-  // ── Buscar compras ────────────────────────────
-  window.admBuscar = async function() {
-    const dato = document.getElementById('adm-buscar').value.trim();
-    const el   = document.getElementById('adm-compras-result');
-    if (!dato) { el.innerHTML = '<div class="adm-msg adm-msg-err">Ingresa email o cédula</div>'; return; }
-    el.innerHTML = '<div class="adm-state"><div class="adm-spin">⟳</div><br>Buscando...</div>';
-    try {
-      const r = await fetch(BASE + '/api/mis-codigos', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'x-admin-token': ADM_TOKEN },
-        body: JSON.stringify({ dato })
-      });
-      const d = await r.json();
-      if (!d.codigos || !d.codigos.length) {
-        el.innerHTML = '<div class="adm-msg adm-msg-err">Sin códigos para este dato</div>';
-        return;
-      }
-      const rows = d.codigos.map(x =>
-        `<tr>
-          <td style="font-family:monospace;font-size:12px;${x.dorado ? 'color:var(--gold)' : ''}">${x.dorado ? '⭐ ' : ''}${x.codigo}</td>
-          <td>${x.dorado ? '<span class="adm-badge-gold">Dorado</span>' : '<span class="adm-badge-ok">Normal</span>'}</td>
-        </tr>`
-      ).join('');
-      el.innerHTML = `
-        <p style="font-size:12px;color:var(--muted);margin-bottom:10px">${d.codigos.length} código(s) para <strong style="color:var(--text)">${dato}</strong></p>
-        <div class="adm-table-wrap">
-          <table class="adm-table">
-            <thead><tr><th>Código</th><th>Tipo</th></tr></thead>
-            <tbody>${rows}</tbody>
-          </table>
-        </div>`;
-    } catch(e) {
-      el.innerHTML = '<div class="adm-msg adm-msg-err">Error de conexión</div>';
-    }
-  };
-
-  // ── Promoción ─────────────────────────────────
+  /* ── promo ─────────────────────────────────── */
   window.admLoadPromo = async function() {
     const el = document.getElementById('adm-promo-status');
     el.innerHTML = '<div class="adm-state"><div class="adm-spin">⟳</div><br>Cargando...</div>';
     try {
-      const r = await fetch(BASE + '/api/admin/promo-activa', {
-        headers: { 'x-admin-token': ADM_TOKEN }
-      });
+      const r = await fetch(BASE + '/api/admin/promo-activa', { headers: { 'x-admin-token': ADM_TOKEN } });
       const d = await r.json();
       if (!d.activa) {
-        el.innerHTML = '<div class="adm-promo-inactive">⚪ Sin promoción activa</div>';
+        el.innerHTML = '<div class="adm-promo-inactive">⚪ Sin promoción activa actualmente</div>';
         return;
       }
       const exp = d.expira_en ? new Date(d.expira_en).toLocaleString('es-CO') : '—';
       el.innerHTML = `
         <div class="adm-promo-active">
-          <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
+          <div style="display:flex;align-items:center;gap:7px;margin-bottom:3px">
             <span class="adm-badge-ok">Activa</span>
-            <span style="font-size:13px;font-weight:700;color:#4ade80">En curso</span>
+            <span style="font-size:12px;font-weight:700;color:#4ade80">En curso</span>
           </div>
           <div class="adm-promo-grid">
-            <div><div class="adm-promo-lbl">Premio dorado</div><div class="adm-promo-val">$${admFmt(d.precio_dorado)}</div></div>
-            <div><div class="adm-promo-lbl">Precio/código</div><div class="adm-promo-val">$${admFmt(d.precio_normal||'—')}</div></div>
-            <div style="grid-column:1/-1"><div class="adm-promo-lbl">Expira</div><div style="font-size:12px;color:#4ade80">${exp}</div></div>
+            <div><div class="adm-promo-lbl">Premio dorado</div><div class="adm-promo-val">$${fmt(d.precio_dorado)}</div></div>
+            <div><div class="adm-promo-lbl">Precio/código</div><div class="adm-promo-val">$${fmt(d.precio_normal||0)}</div></div>
+            <div style="grid-column:1/-1">
+              <div class="adm-promo-lbl">Expira</div>
+              <div style="font-size:11px;color:#4ade80">${exp}</div>
+            </div>
           </div>
         </div>`;
-    } catch(e) {
-      el.innerHTML = '<div class="adm-msg adm-msg-err">Error cargando</div>';
-    }
+    } catch(e) { el.innerHTML = '<div class="adm-msg adm-msg-err">Error</div>'; }
   };
 
   window.admActivarPromo = async function() {
-    const pd  = document.getElementById('adm-p-dor').value;
-    const pn  = document.getElementById('adm-p-nor').value;
-    const exp = document.getElementById('adm-p-exp').value;
-    const el  = document.getElementById('adm-promo-msg');
-    if (!pd || !pn || !exp) { el.innerHTML = '<div class="adm-msg adm-msg-err">Completa todos los campos</div>'; return; }
+    const pd = document.getElementById('adm-p-dor').value;
+    const pn = document.getElementById('adm-p-nor').value;
+    const ex = document.getElementById('adm-p-exp').value;
+    const el = document.getElementById('adm-promo-msg');
+    if (!pd || !pn || !ex) { el.innerHTML = '<div class="adm-msg adm-msg-err">Completa todos los campos</div>'; return; }
     el.innerHTML = '<div class="adm-msg adm-msg-info">Activando...</div>';
     try {
       const r = await fetch(BASE + '/api/admin/activar-promo', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'x-admin-token': ADM_TOKEN },
-        body: JSON.stringify({ precioDorado: Number(pd), precioNormal: Number(pn), expiraEn: new Date(exp).toISOString() })
+        body: JSON.stringify({ precioDorado: Number(pd), precioNormal: Number(pn), expiraEn: new Date(ex).toISOString() })
       });
       if (r.ok) {
         el.innerHTML = '<div class="adm-msg adm-msg-ok">✓ Promoción activada</div>';
         admLoadPromo();
+        // Recargar badge de promo en la página principal
+        if (typeof verificarPromo === 'function') verificarPromo();
       } else {
         const d = await r.json();
         el.innerHTML = `<div class="adm-msg adm-msg-err">${d.error || 'Error'}</div>`;
       }
-    } catch(e) {
-      el.innerHTML = '<div class="adm-msg adm-msg-err">Error de conexión</div>';
-    }
+    } catch(e) { el.innerHTML = '<div class="adm-msg adm-msg-err">Error de conexión</div>'; }
   };
 
   window.admDesactivarPromo = async function() {
@@ -1769,15 +1720,14 @@ document.getElementById('resultado').addEventListener('touchend', function() { w
       if (r.ok) {
         el.innerHTML = '<div class="adm-msg adm-msg-ok">Promoción desactivada</div>';
         admLoadPromo();
+        if (typeof verificarPromo === 'function') verificarPromo();
       } else {
         el.innerHTML = '<div class="adm-msg adm-msg-err">Error</div>';
       }
-    } catch(e) {
-      el.innerHTML = '<div class="adm-msg adm-msg-err">Error de conexión</div>';
-    }
+    } catch(e) { el.innerHTML = '<div class="adm-msg adm-msg-err">Error de conexión</div>'; }
   };
 
-  // ── Reenviar correo ───────────────────────────
+  /* ── correo ────────────────────────────────── */
   window.admReenviar = async function() {
     const dato = document.getElementById('adm-reenviar').value.trim();
     const el   = document.getElementById('adm-correo-msg');
@@ -1790,26 +1740,350 @@ document.getElementById('resultado').addEventListener('touchend', function() { w
         body: JSON.stringify({ dato })
       });
       const d = await r.json();
-      if (d.ok) {
-        el.innerHTML = `<div class="adm-msg adm-msg-ok">✓ ${d.mensaje}</div>`;
-      } else {
-        el.innerHTML = `<div class="adm-msg adm-msg-err">${d.mensaje || 'No se pudo enviar'}</div>`;
+      el.innerHTML = d.ok
+        ? `<div class="adm-msg adm-msg-ok">✓ ${d.mensaje}</div>`
+        : `<div class="adm-msg adm-msg-err">${d.mensaje || 'No se pudo enviar'}</div>`;
+    } catch(e) { el.innerHTML = '<div class="adm-msg adm-msg-err">Error de conexión</div>'; }
+  };
+
+  /* ── exportar ──────────────────────────────── */
+  function admDescargar(path, filename) {
+    const el = document.getElementById('adm-export-msg');
+    el.innerHTML = '<div class="adm-msg adm-msg-info">Preparando...</div>';
+    const a = document.createElement('a');
+    a.href = BASE + path + '?token=' + encodeURIComponent(ADM_TOKEN);
+    a.download = filename;
+    a.click();
+    setTimeout(() => el.innerHTML = '', 3000);
+  }
+  window.admExportar = function(e) { e.preventDefault(); admDescargar('/api/admin/exportar', 'ganadores.xlsx'); };
+  window.admExportarCompradores = function(e) { e.preventDefault(); admDescargar('/api/admin/exportar-compradores', 'compradores.xlsx'); };
+})();
+</script>
+});
+</script>
+
+<!-- ══════════════════════════════════════
+     ADMIN SCRIPT
+══════════════════════════════════════ -->
+<script>
+(function() {
+  let ADM_TOKEN = '';
+  let admAllCompradores = [];
+  let admFiltroActivo = 'todos';
+  const BASE = window.location.origin;
+  const fmt = n => Number(n).toLocaleString('es-CO');
+
+  /* ── open / close ──────────────────────────── */
+  window.admOpen = function() {
+    document.getElementById('adminDrawer').classList.add('open');
+    document.getElementById('adminOverlay').style.display = 'block';
+    document.body.style.overflow = 'hidden';
+    if (!ADM_TOKEN) setTimeout(() => document.getElementById('admSecretInput').focus(), 320);
+  };
+  window.admClose = function() {
+    document.getElementById('adminDrawer').classList.remove('open');
+    document.getElementById('adminOverlay').style.display = 'none';
+    document.body.style.overflow = '';
+  };
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') admClose(); });
+
+  /* ── login ─────────────────────────────────── */
+  window.admDoLogin = async function() {
+    const token = document.getElementById('admSecretInput').value.trim();
+    const errEl = document.getElementById('admLoginErr');
+    if (!token) { errEl.textContent = 'Ingresa la clave'; return; }
+    errEl.textContent = 'Verificando...';
+    try {
+      const r = await fetch(BASE + '/api/admin/promo-activa', {
+        headers: { 'Content-Type': 'application/json', 'x-admin-token': token }
+      });
+      if (r.status === 401) { errEl.textContent = '❌ Clave incorrecta'; return; }
+      ADM_TOKEN = token;
+      document.getElementById('admLoginWrap').style.display = 'none';
+      const panel = document.getElementById('admPanel');
+      panel.style.display = 'flex';
+      admLoadDash();
+    } catch(e) { errEl.textContent = 'Error de conexión'; }
+  };
+  document.getElementById('admSecretInput').addEventListener('keydown', e => {
+    if (e.key === 'Enter') admDoLogin();
+  });
+  window.admLogout = function() {
+    ADM_TOKEN = '';
+    document.getElementById('admPanel').style.display = 'none';
+    document.getElementById('admLoginWrap').style.display = 'block';
+    document.getElementById('admSecretInput').value = '';
+    document.getElementById('admLoginErr').textContent = '';
+  };
+
+  /* ── tabs ──────────────────────────────────── */
+  const TAB_ORDER = ['dash','compradores','dorados','promo','correo','exportar'];
+  window.admTab = function(tab) {
+    document.querySelectorAll('.adm-section').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.adm-tab').forEach(b => b.classList.remove('active'));
+    document.getElementById('adm-' + tab).classList.add('active');
+    document.querySelectorAll('.adm-tab')[TAB_ORDER.indexOf(tab)].classList.add('active');
+    if (tab === 'dash')        admLoadDash();
+    if (tab === 'compradores') admLoadCompradores();
+    if (tab === 'dorados')     admLoadDorados();
+    if (tab === 'promo')       admLoadPromo();
+  };
+
+  /* ── dashboard ─────────────────────────────── */
+  window.admLoadDash = async function() {
+    ['adm-d-vend','adm-d-pct','adm-i-pagadas','adm-i-total','adm-i-pend','adm-i-ultima']
+      .forEach(id => { const el = document.getElementById(id); if(el) el.textContent = '…'; });
+
+    // Progreso
+    try {
+      const r = await fetch(BASE + '/api/progreso');
+      const d = await r.json();
+      document.getElementById('adm-d-vend').textContent = fmt(d.vendidos);
+      document.getElementById('adm-d-disp').textContent = fmt(d.disponibles) + ' disponibles';
+      document.getElementById('adm-d-pct').textContent  = d.porcentaje + '%';
+      document.getElementById('adm-bar').style.width    = d.porcentaje + '%';
+      document.getElementById('adm-bar-l').textContent  = fmt(d.vendidos) + ' vendidos';
+    } catch(e) {}
+
+    // Dorados count
+    try {
+      const r2 = await fetch(BASE + '/api/admin/codigos-dorados', { headers: { 'x-admin-token': ADM_TOKEN } });
+      const d2 = await r2.json();
+      document.getElementById('adm-d-dor').textContent = Array.isArray(d2) ? fmt(d2.length) : '—';
+    } catch(e) {}
+
+    // Compras stats
+    try {
+      const r3 = await fetch(BASE + '/api/admin/compras-stats', { headers: { 'x-admin-token': ADM_TOKEN } });
+      const d3 = await r3.json();
+      document.getElementById('adm-i-pagadas').textContent = fmt(d3.pagadas) + ' compras';
+      document.getElementById('adm-i-total').textContent   = '$' + fmt(d3.ingresos);
+      document.getElementById('adm-i-pend').textContent    = fmt(d3.pendientes) + ' pendientes';
+      if (d3.ultima) {
+        const f = new Date(d3.ultima);
+        document.getElementById('adm-i-ultima').textContent = f.toLocaleDateString('es-CO') + ' ' + f.toLocaleTimeString('es-CO',{hour:'2-digit',minute:'2-digit'});
       }
+    } catch(e) {}
+  };
+
+  /* ── compradores ───────────────────────────── */
+  window.admLoadCompradores = async function() {
+    const el = document.getElementById('adm-compradores-content');
+    el.innerHTML = '<div class="adm-state"><div class="adm-spin">⟳</div><br>Cargando...</div>';
+    try {
+      const r = await fetch(BASE + '/api/admin/compradores', { headers: { 'x-admin-token': ADM_TOKEN } });
+      const d = await r.json();
+      admAllCompradores = d.compradores || [];
+      admRenderCompradores();
     } catch(e) {
-      el.innerHTML = '<div class="adm-msg adm-msg-err">Error de conexión</div>';
+      document.getElementById('adm-compradores-content').innerHTML = '<div class="adm-msg adm-msg-err">Error cargando compradores</div>';
     }
   };
 
-  // ── Exportar ──────────────────────────────────
-  window.admExportar = function(e) {
-    e.preventDefault();
-    const el = document.getElementById('adm-export-msg');
-    el.innerHTML = '<div class="adm-msg adm-msg-info">Preparando descarga...</div>';
-    const url = BASE + '/api/admin/exportar?token=' + encodeURIComponent(ADM_TOKEN);
-    const a = document.createElement('a');
-    a.href = url; a.download = 'ganadores.xlsx'; a.click();
-    setTimeout(() => el.innerHTML = '', 3000);
+  window.admSetFiltro = function(filtro) {
+    admFiltroActivo = filtro;
+    ['todos','pagado','pendiente'].forEach(f => {
+      const btn = document.getElementById('adm-filter-' + f);
+      if (btn) btn.style.color = f === filtro ? 'var(--gold)' : '';
+      if (btn) btn.style.borderColor = f === filtro ? 'var(--gold)' : '';
+    });
+    admRenderCompradores();
   };
+
+  window.admFiltrarCompradores = function() { admRenderCompradores(); };
+
+  function admRenderCompradores() {
+    const el     = document.getElementById('adm-compradores-content');
+    const buscar = (document.getElementById('adm-comp-buscar').value || '').toLowerCase();
+    let lista    = admAllCompradores;
+
+    if (admFiltroActivo !== 'todos') {
+      lista = lista.filter(c => c.estado === admFiltroActivo);
+    }
+    if (buscar) {
+      lista = lista.filter(c =>
+        (c.nombre  || '').toLowerCase().includes(buscar) ||
+        (c.correo  || '').toLowerCase().includes(buscar) ||
+        (c.cedula  || '').toLowerCase().includes(buscar) ||
+        (c.telefono|| '').toLowerCase().includes(buscar)
+      );
+    }
+
+    if (!lista.length) {
+      el.innerHTML = '<div class="adm-state">Sin resultados</div>';
+      return;
+    }
+
+    const rows = lista.map(c => {
+      const chips = (c.codigos || []).map(cod =>
+        `<span class="adm-chip${cod.dorado ? ' gold' : ''}">${cod.dorado ? '⭐' : ''}${cod.codigo}</span>`
+      ).join('');
+      const fecha = c.fecha ? new Date(c.fecha).toLocaleDateString('es-CO') : '—';
+      const badge = c.estado === 'pagado'
+        ? '<span class="adm-badge-ok">Pagado</span>'
+        : '<span class="adm-badge-pend">Pendiente</span>';
+      const doradoTag = (c.codigos || []).some(x => x.dorado)
+        ? ' <span class="adm-badge-gold">⭐</span>' : '';
+      return `
+        <tr>
+          <td>
+            <div style="font-weight:600;font-size:11px;color:var(--text)">${c.nombre || '—'}${doradoTag}</div>
+            <div style="font-size:10px;color:var(--muted);margin-top:1px">${c.correo || '—'}</div>
+            <div style="font-size:10px;color:#4b5563">${c.cedula ? 'CC: '+c.cedula : ''} ${c.telefono || ''}</div>
+          </td>
+          <td style="text-align:right">
+            <div>${badge}</div>
+            <div style="font-size:10px;color:var(--muted);margin-top:2px">${c.cantidad} cód.</div>
+            <div style="font-size:10px;color:#4b5563">${fecha}</div>
+          </td>
+        </tr>
+        <tr>
+          <td colspan="2" style="padding-top:0;padding-bottom:10px">
+            <div class="adm-chip-list">${chips || '<span style="font-size:10px;color:#4b5563">Sin códigos asignados</span>'}</div>
+          </td>
+        </tr>`;
+    }).join('');
+
+    el.innerHTML = `
+      <p style="font-size:10px;color:var(--muted);margin-bottom:8px">${lista.length} compra(s)</p>
+      <div class="adm-table-wrap">
+        <table class="adm-table">
+          <thead><tr><th>Cliente</th><th style="text-align:right">Estado</th></tr></thead>
+          <tbody>${rows}</tbody>
+        </table>
+      </div>`;
+  }
+
+  /* ── dorados ───────────────────────────────── */
+  window.admLoadDorados = async function() {
+    const el = document.getElementById('adm-dorados-content');
+    el.innerHTML = '<div class="adm-state"><div class="adm-spin">⟳</div><br>Cargando...</div>';
+    try {
+      const r = await fetch(BASE + '/api/admin/codigos-dorados', { headers: { 'x-admin-token': ADM_TOKEN } });
+      const d = await r.json();
+      if (!d.length) { el.innerHTML = '<div class="adm-state">Sin dorados vendidos aún</div>'; return; }
+      const rows = d.map((x, i) => `
+        <tr>
+          <td style="color:#4b5563;font-size:10px">${i+1}</td>
+          <td style="font-family:monospace;color:var(--gold)">⭐ ${x.codigo}</td>
+          <td><span class="adm-badge-gold">Dorado</span></td>
+        </tr>`).join('');
+      el.innerHTML = `
+        <p style="font-size:11px;color:var(--muted);margin-bottom:8px">${d.length} código(s) dorado(s) vendido(s)</p>
+        <div class="adm-table-wrap">
+          <table class="adm-table">
+            <thead><tr><th>#</th><th>Código</th><th>Tipo</th></tr></thead>
+            <tbody>${rows}</tbody>
+          </table>
+        </div>`;
+    } catch(e) { el.innerHTML = '<div class="adm-msg adm-msg-err">Error cargando</div>'; }
+  };
+
+  /* ── promo ─────────────────────────────────── */
+  window.admLoadPromo = async function() {
+    const el = document.getElementById('adm-promo-status');
+    el.innerHTML = '<div class="adm-state"><div class="adm-spin">⟳</div><br>Cargando...</div>';
+    try {
+      const r = await fetch(BASE + '/api/admin/promo-activa', { headers: { 'x-admin-token': ADM_TOKEN } });
+      const d = await r.json();
+      if (!d.activa) {
+        el.innerHTML = '<div class="adm-promo-inactive">⚪ Sin promoción activa actualmente</div>';
+        return;
+      }
+      const exp = d.expira_en ? new Date(d.expira_en).toLocaleString('es-CO') : '—';
+      el.innerHTML = `
+        <div class="adm-promo-active">
+          <div style="display:flex;align-items:center;gap:7px;margin-bottom:3px">
+            <span class="adm-badge-ok">Activa</span>
+            <span style="font-size:12px;font-weight:700;color:#4ade80">En curso</span>
+          </div>
+          <div class="adm-promo-grid">
+            <div><div class="adm-promo-lbl">Premio dorado</div><div class="adm-promo-val">$${fmt(d.precio_dorado)}</div></div>
+            <div><div class="adm-promo-lbl">Precio/código</div><div class="adm-promo-val">$${fmt(d.precio_normal||0)}</div></div>
+            <div style="grid-column:1/-1">
+              <div class="adm-promo-lbl">Expira</div>
+              <div style="font-size:11px;color:#4ade80">${exp}</div>
+            </div>
+          </div>
+        </div>`;
+    } catch(e) { el.innerHTML = '<div class="adm-msg adm-msg-err">Error</div>'; }
+  };
+
+  window.admActivarPromo = async function() {
+    const pd = document.getElementById('adm-p-dor').value;
+    const pn = document.getElementById('adm-p-nor').value;
+    const ex = document.getElementById('adm-p-exp').value;
+    const el = document.getElementById('adm-promo-msg');
+    if (!pd || !pn || !ex) { el.innerHTML = '<div class="adm-msg adm-msg-err">Completa todos los campos</div>'; return; }
+    el.innerHTML = '<div class="adm-msg adm-msg-info">Activando...</div>';
+    try {
+      const r = await fetch(BASE + '/api/admin/activar-promo', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'x-admin-token': ADM_TOKEN },
+        body: JSON.stringify({ precioDorado: Number(pd), precioNormal: Number(pn), expiraEn: new Date(ex).toISOString() })
+      });
+      if (r.ok) {
+        el.innerHTML = '<div class="adm-msg adm-msg-ok">✓ Promoción activada</div>';
+        admLoadPromo();
+        // Recargar badge de promo en la página principal
+        if (typeof verificarPromo === 'function') verificarPromo();
+      } else {
+        const d = await r.json();
+        el.innerHTML = `<div class="adm-msg adm-msg-err">${d.error || 'Error'}</div>`;
+      }
+    } catch(e) { el.innerHTML = '<div class="adm-msg adm-msg-err">Error de conexión</div>'; }
+  };
+
+  window.admDesactivarPromo = async function() {
+    const el = document.getElementById('adm-promo-msg');
+    el.innerHTML = '<div class="adm-msg adm-msg-info">Desactivando...</div>';
+    try {
+      const r = await fetch(BASE + '/api/admin/desactivar-promo', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'x-admin-token': ADM_TOKEN }
+      });
+      if (r.ok) {
+        el.innerHTML = '<div class="adm-msg adm-msg-ok">Promoción desactivada</div>';
+        admLoadPromo();
+        if (typeof verificarPromo === 'function') verificarPromo();
+      } else {
+        el.innerHTML = '<div class="adm-msg adm-msg-err">Error</div>';
+      }
+    } catch(e) { el.innerHTML = '<div class="adm-msg adm-msg-err">Error de conexión</div>'; }
+  };
+
+  /* ── correo ────────────────────────────────── */
+  window.admReenviar = async function() {
+    const dato = document.getElementById('adm-reenviar').value.trim();
+    const el   = document.getElementById('adm-correo-msg');
+    if (!dato) { el.innerHTML = '<div class="adm-msg adm-msg-err">Ingresa email o cédula</div>'; return; }
+    el.innerHTML = '<div class="adm-msg adm-msg-info">Enviando...</div>';
+    try {
+      const r = await fetch(BASE + '/api/reenviar-correo', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'x-admin-token': ADM_TOKEN },
+        body: JSON.stringify({ dato })
+      });
+      const d = await r.json();
+      el.innerHTML = d.ok
+        ? `<div class="adm-msg adm-msg-ok">✓ ${d.mensaje}</div>`
+        : `<div class="adm-msg adm-msg-err">${d.mensaje || 'No se pudo enviar'}</div>`;
+    } catch(e) { el.innerHTML = '<div class="adm-msg adm-msg-err">Error de conexión</div>'; }
+  };
+
+  /* ── exportar ──────────────────────────────── */
+  function admDescargar(path, filename) {
+    const el = document.getElementById('adm-export-msg');
+    el.innerHTML = '<div class="adm-msg adm-msg-info">Preparando...</div>';
+    const a = document.createElement('a');
+    a.href = BASE + path + '?token=' + encodeURIComponent(ADM_TOKEN);
+    a.download = filename;
+    a.click();
+    setTimeout(() => el.innerHTML = '', 3000);
+  }
+  window.admExportar = function(e) { e.preventDefault(); admDescargar('/api/admin/exportar', 'ganadores.xlsx'); };
+  window.admExportarCompradores = function(e) { e.preventDefault(); admDescargar('/api/admin/exportar-compradores', 'compradores.xlsx'); };
 })();
 </script>
 </body>
