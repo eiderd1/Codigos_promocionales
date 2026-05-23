@@ -19,6 +19,12 @@ function authAdmin(req, res, next) {
 // ════════════════════════════════════════
 // RUTAS PÚBLICAS (sin auth)
 // ════════════════════════════════════════
+// ── POST /api/admin/verificar ← usado por el login del frontend
+// Esta ruta SÍ requiere auth, a diferencia de promo-activa
+router.post('/admin/verificar', authAdmin, (req, res) => {
+  res.json({ ok: true });
+});
+
 
 // GET /api/admin/promo-activa  ← pública, la usa el frontend
 router.get('/admin/promo-activa', async (req, res) => {

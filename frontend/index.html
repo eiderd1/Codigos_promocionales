@@ -1469,10 +1469,15 @@ document.getElementById('resultado').addEventListener('touchend', function() { w
     if (!token) { errEl.textContent = 'Ingresa la clave'; return; }
     errEl.textContent = 'Verificando...';
     try {
-      const r = await fetch(BASE + '/api/admin/promo-activa', {
+      const r = await fetch(BASE + '/api/admin/verificar', {
+        method: 'POST',
         headers: { 'Content-Type': 'application/json', 'x-admin-token': token }
       });
       if (r.status === 401) { errEl.textContent = '❌ Clave incorrecta'; return; }
+      if (r.status === 500) { errEl.textContent = '⚠️ ADMIN_SECRET no configurado en el servidor'; return; }
+      if (!r.ok) { errEl.textContent = '❌ Error del servidor'; return; }
+      const d = await r.json();
+      if (!d.ok) { errEl.textContent = '❌ Clave incorrecta'; return; }
       ADM_TOKEN = token;
       document.getElementById('admLoginWrap').style.display = 'none';
       const panel = document.getElementById('admPanel');
@@ -1795,10 +1800,15 @@ document.getElementById('resultado').addEventListener('touchend', function() { w
     if (!token) { errEl.textContent = 'Ingresa la clave'; return; }
     errEl.textContent = 'Verificando...';
     try {
-      const r = await fetch(BASE + '/api/admin/promo-activa', {
+      const r = await fetch(BASE + '/api/admin/verificar', {
+        method: 'POST',
         headers: { 'Content-Type': 'application/json', 'x-admin-token': token }
       });
       if (r.status === 401) { errEl.textContent = '❌ Clave incorrecta'; return; }
+      if (r.status === 500) { errEl.textContent = '⚠️ ADMIN_SECRET no configurado en el servidor'; return; }
+      if (!r.ok) { errEl.textContent = '❌ Error del servidor'; return; }
+      const d = await r.json();
+      if (!d.ok) { errEl.textContent = '❌ Clave incorrecta'; return; }
       ADM_TOKEN = token;
       document.getElementById('admLoginWrap').style.display = 'none';
       const panel = document.getElementById('admPanel');
