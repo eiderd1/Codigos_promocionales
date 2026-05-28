@@ -50,6 +50,7 @@ app.use('/api', require('./routes/progreso'));
 app.use('/api', require('./routes/admin'));
 app.use('/api', require('./routes/exportar'));
 app.use('/api', require('./routes/mis-codigos'));
+app.use('/api', require('./routes/transferencias'));
 
 // ========================
 // FRONTEND

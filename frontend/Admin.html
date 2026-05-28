@@ -487,6 +487,9 @@
       <button class="nav-item" onclick="showTab('correo')">
         <span class="nav-icon">✉️</span> Correo
       </button>
+      <button class="nav-item" onclick="showTab('transferencias')">
+        <span class="nav-icon">🏦</span> Transferencias
+      </button>
       <button class="nav-item" onclick="showTab('exportar')">
         <span class="nav-icon">📥</span> Exportar
       </button>
@@ -623,6 +626,51 @@
         </div>
       </div>
 
+      <!-- ── TRANSFERENCIAS ── -->
+      <div id="tab-transferencias" class="section">
+        <div class="section-header">
+          <h2>Transferencias bancarias</h2>
+          <p>Revisa y aprueba las compras realizadas por transferencia. Al aprobar se generan los códigos automáticamente y se envían al comprador.</p>
+        </div>
+
+        <!-- Filtros -->
+        <div class="form-card" style="margin-bottom:16px">
+          <div class="form-row" style="margin-bottom:0">
+            <div class="form-field">
+              <label>Filtrar por estado</label>
+              <select id="trf-filtro" onchange="loadTransferencias()">
+                <option value="todas">Todas</option>
+                <option value="transferencia_pendiente" selected>Pendientes</option>
+                <option value="transferencia_aprobada">Aprobadas</option>
+                <option value="transferencia_rechazada">Rechazadas</option>
+              </select>
+            </div>
+            <button class="btn" onclick="loadTransferencias()" style="align-self:flex-end">↺ Actualizar</button>
+          </div>
+        </div>
+
+        <div id="trf-list">
+          <div class="state-loading"><div class="spin">⟳</div><br>Cargando...</div>
+        </div>
+
+        <!-- Modal para aprobar/rechazar -->
+        <div id="trf-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:100;align-items:center;justify-content:center;padding:20px">
+          <div style="background:var(--surface);border-radius:var(--radius-lg);padding:28px;max-width:480px;width:100%;border:0.5px solid var(--border)">
+            <h3 id="modal-title" style="font-size:15px;margin-bottom:16px"></h3>
+            <div style="font-size:13px;color:var(--text2);margin-bottom:14px" id="modal-info"></div>
+            <div class="form-field" style="margin-bottom:16px">
+              <label>Notas del administrador (opcional)</label>
+              <input type="text" id="modal-notas" placeholder="Ej: Confirmado en cuenta Bancolombia">
+            </div>
+            <div style="display:flex;gap:8px">
+              <button id="modal-confirm-btn" class="btn btn-primary" style="flex:1"></button>
+              <button class="btn" onclick="cerrarModal()" style="flex:1">Cancelar</button>
+            </div>
+            <div id="modal-msg" style="margin-top:12px"></div>
+          </div>
+        </div>
+      </div>
+
       <!-- ── EXPORTAR ── -->
       <div id="tab-exportar" class="section">
         <div class="section-header">
@@ -710,12 +758,14 @@
     document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
     document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
     document.getElementById('tab-' + tab).classList.add('active');
-    const idx = ['dashboard','codigos','compras','promo','correo','exportar'].indexOf(tab);
+    const tabs = ['dashboard','codigos','compras','promo','correo','transferencias','exportar'];
+    const idx = tabs.indexOf(tab);
     document.querySelectorAll('.nav-item')[idx].classList.add('active');
 
-    if (tab === 'dashboard') loadDashboard();
-    if (tab === 'codigos')   loadCodigos();
-    if (tab === 'promo')     loadPromo();
+    if (tab === 'dashboard')      loadDashboard();
+    if (tab === 'codigos')        loadCodigos();
+    if (tab === 'promo')          loadPromo();
+    if (tab === 'transferencias') loadTransferencias();
   }
 
   // ══════════════════════════════════
@@ -926,8 +976,142 @@
   }
 
   // ══════════════════════════════════
-  // EXPORTAR
+  // TRANSFERENCIAS BANCARIAS
   // ══════════════════════════════════
+  let _trfPendiente = null; // guarda acción del modal
+
+  async function loadTransferencias() {
+    const el = document.getElementById('trf-list');
+    el.innerHTML = '<div class="state-loading"><div class="spin">⟳</div><br>Cargando...</div>';
+    try {
+      const r = await fetch('/api/admin/transferencias', { headers: headers() });
+      const d = await r.json();
+      const filtro = document.getElementById('trf-filtro').value;
+      let lista = d.transferencias || [];
+      if (filtro !== 'todas') lista = lista.filter(t => t.estado === filtro);
+
+      if (!lista.length) {
+        el.innerHTML = '<div class="state-empty">No hay transferencias en esta categoría</div>';
+        return;
+      }
+
+      const montoXcod = 3750;
+
+      const filas = lista.map(t => {
+        const monto = '$' + (t.cantidad * montoXcod).toLocaleString('es-CO');
+        const fecha = t.fecha ? new Date(t.fecha).toLocaleString('es-CO') : '—';
+        let estadoBadge = '';
+        if (t.estado === 'transferencia_pendiente')  estadoBadge = '<span class="badge badge-pend">⏳ Pendiente</span>';
+        if (t.estado === 'transferencia_aprobada')   estadoBadge = '<span class="badge badge-ok">✅ Aprobada</span>';
+        if (t.estado === 'transferencia_rechazada')  estadoBadge = '<span class="badge badge-err">✕ Rechazada</span>';
+
+        const codsHtml = t.codigos?.length
+          ? t.codigos.map(c => `<span class="code-mono ${c.dorado ? 'gold-code' : ''}" style="margin-right:6px;font-size:12px">${c.dorado ? '⭐' : ''}${c.codigo}</span>`).join('')
+          : '<span style="color:var(--text3);font-size:12px">—</span>';
+
+        const acciones = t.estado === 'transferencia_pendiente' ? `
+          <div style="display:flex;gap:6px;margin-top:6px">
+            <button class="btn btn-primary" style="font-size:12px;padding:5px 10px"
+              onclick="abrirModalAprobar('${t.referencia}','${t.nombre}',${t.cantidad},${t.cantidad * montoXcod})">
+              ✅ Aprobar
+            </button>
+            <button class="btn btn-danger" style="font-size:12px;padding:5px 10px"
+              onclick="abrirModalRechazar('${t.referencia}','${t.nombre}')">
+              ✕ Rechazar
+            </button>
+          </div>` : '';
+
+        return `
+          <div style="background:var(--surface);border:0.5px solid var(--border);border-radius:var(--radius-lg);padding:16px;margin-bottom:12px">
+            <div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:10px">
+              <div>
+                <div style="font-weight:600;font-size:14px">${t.nombre}</div>
+                <div style="font-size:12px;color:var(--text2)">${t.correo} ${t.cedula ? '· CC ' + t.cedula : ''} ${t.telefono ? '· 📱 ' + t.telefono : ''}</div>
+                <div style="font-size:11px;color:var(--text3);margin-top:2px">${fecha}</div>
+              </div>
+              <div style="text-align:right">
+                ${estadoBadge}
+                <div style="font-size:13px;font-weight:600;margin-top:4px">${t.cantidad} códigos · ${monto}</div>
+              </div>
+            </div>
+            <div style="font-size:12px;color:var(--text2);margin-bottom:4px">
+              <strong style="color:var(--text3);text-transform:uppercase;font-size:10px;letter-spacing:.05em">Ref:</strong>
+              <span class="code-mono" style="font-size:12px">${t.referencia}</span>
+            </div>
+            ${t.codigos?.length ? `<div style="margin-bottom:6px">${codsHtml}</div>` : ''}
+            ${t.notas_admin ? `<div style="font-size:12px;background:var(--surface2);border-radius:6px;padding:6px 10px;margin-top:6px;color:var(--text2)">📝 ${t.notas_admin}</div>` : ''}
+            ${acciones}
+          </div>`;
+      }).join('');
+
+      el.innerHTML = `<p style="font-size:13px;color:var(--text2);margin-bottom:12px">${lista.length} transferencia(s)</p>${filas}`;
+    } catch (e) {
+      el.innerHTML = '<div class="msg msg-err">Error cargando transferencias</div>';
+    }
+  }
+
+  function abrirModalAprobar(ref, nombre, cantidad, monto) {
+    _trfPendiente = { accion: 'aprobar', referencia: ref };
+    document.getElementById('modal-title').textContent = '✅ Aprobar transferencia';
+    document.getElementById('modal-info').innerHTML =
+      `<strong>${nombre}</strong> · ${cantidad} códigos · <strong>$${monto.toLocaleString('es-CO')} COP</strong><br>
+       <span style="color:var(--text3);font-size:12px">Se generarán los códigos automáticamente y se enviarán al comprador por correo.</span>`;
+    document.getElementById('modal-notas').value = '';
+    document.getElementById('modal-msg').innerHTML = '';
+    const btn = document.getElementById('modal-confirm-btn');
+    btn.textContent = '✅ Confirmar aprobación';
+    btn.className = 'btn btn-primary';
+    btn.onclick = confirmarModal;
+    document.getElementById('trf-modal').style.display = 'flex';
+  }
+
+  function abrirModalRechazar(ref, nombre) {
+    _trfPendiente = { accion: 'rechazar', referencia: ref };
+    document.getElementById('modal-title').textContent = '✕ Rechazar transferencia';
+    document.getElementById('modal-info').innerHTML =
+      `<strong>${nombre}</strong><br><span style="color:var(--text3);font-size:12px">El cliente NO recibirá códigos. Puedes dejar una nota de por qué se rechazó.</span>`;
+    document.getElementById('modal-notas').value = '';
+    document.getElementById('modal-msg').innerHTML = '';
+    const btn = document.getElementById('modal-confirm-btn');
+    btn.textContent = '✕ Confirmar rechazo';
+    btn.className = 'btn btn-danger';
+    btn.onclick = confirmarModal;
+    document.getElementById('trf-modal').style.display = 'flex';
+  }
+
+  function cerrarModal() {
+    document.getElementById('trf-modal').style.display = 'none';
+    _trfPendiente = null;
+  }
+
+  async function confirmarModal() {
+    if (!_trfPendiente) return;
+    const notas = document.getElementById('modal-notas').value.trim();
+    const msgEl = document.getElementById('modal-msg');
+    msgEl.innerHTML = '<div class="state-loading">Procesando...</div>';
+
+    const endpoint = _trfPendiente.accion === 'aprobar'
+      ? '/api/admin/transferencia-aprobar'
+      : '/api/admin/transferencia-rechazar';
+
+    try {
+      const r = await fetch(endpoint, {
+        method: 'POST',
+        headers: headers(),
+        body: JSON.stringify({ referencia: _trfPendiente.referencia, notas })
+      });
+      const d = await r.json();
+      if (d.ok) {
+        msgEl.innerHTML = `<div class="msg msg-ok">${d.mensaje || '✓ Hecho'}</div>`;
+        setTimeout(() => { cerrarModal(); loadTransferencias(); }, 1800);
+      } else {
+        msgEl.innerHTML = `<div class="msg msg-err">${d.error || 'Error al procesar'}</div>`;
+      }
+    } catch (e) {
+      msgEl.innerHTML = '<div class="msg msg-err">Error de conexión</div>';
+    }
+  }
+
   function exportar(e) {
     e.preventDefault();
     const el = document.getElementById('export-msg');

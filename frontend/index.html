@@ -725,6 +725,7 @@ input.error { border-color: #f87171; }
     <div class="adm-tabs">
       <button class="adm-tab active" onclick="admTab('dash')">📊 Resumen</button>
       <button class="adm-tab" onclick="admTab('compradores')">👥 Compradores</button>
+      <button class="adm-tab" onclick="admTab('transferencias')">🏦 Transferencias</button>
       <button class="adm-tab" onclick="admTab('dorados')">⭐ Dorados</button>
       <button class="adm-tab" onclick="admTab('promo')">📣 Promo</button>
       <button class="adm-tab" onclick="admTab('correo')">✉️ Correo</button>
@@ -801,6 +802,40 @@ input.error { border-color: #f87171; }
         </div>
         <div id="adm-compradores-content">
           <div class="adm-state"><div class="adm-spin">⟳</div><br>Cargando...</div>
+        </div>
+      </div>
+
+      <!-- ── TRANSFERENCIAS ── -->
+      <div id="adm-transferencias" class="adm-section">
+        <div style="display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap;align-items:center">
+          <select id="adm-trf-filtro" onchange="admLoadTransferencias()"
+            style="flex:1;padding:7px 10px;background:#1a2235;border:1.5px solid #374151;border-radius:7px;color:var(--text);font-size:11px;outline:none;">
+            <option value="transferencia_pendiente">⏳ Pendientes</option>
+            <option value="transferencia_aprobada">✅ Aprobadas</option>
+            <option value="transferencia_rechazada">✕ Rechazadas</option>
+            <option value="todas">Todas</option>
+          </select>
+          <button class="adm-btn" onclick="admLoadTransferencias()">↺</button>
+        </div>
+        <div id="adm-trf-content">
+          <div class="adm-state"><div class="adm-spin">⟳</div><br>Cargando...</div>
+        </div>
+        <!-- Modal confirmación -->
+        <div id="adm-trf-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:99999;align-items:center;justify-content:center;padding:16px">
+          <div style="background:#0d1117;border:1px solid rgba(245,197,24,.2);border-radius:14px;padding:22px;max-width:360px;width:100%">
+            <div style="font-size:13px;font-weight:700;color:var(--gold);margin-bottom:10px" id="adm-trf-modal-title"></div>
+            <div style="font-size:11px;color:var(--muted);margin-bottom:12px;line-height:1.5" id="adm-trf-modal-info"></div>
+            <div style="margin-bottom:12px">
+              <label style="font-size:10px;color:var(--muted);display:block;margin-bottom:4px;text-transform:uppercase;letter-spacing:.04em">Nota del admin (opcional)</label>
+              <input type="text" id="adm-trf-modal-notas" placeholder="Ej: Confirmado Bancolombia"
+                style="width:100%;padding:8px 10px;background:#1a2235;border:1.5px solid #374151;border-radius:7px;color:var(--text);font-size:12px;outline:none;box-sizing:border-box">
+            </div>
+            <div style="display:flex;gap:7px">
+              <button id="adm-trf-modal-ok" class="adm-btn adm-btn-primary" style="flex:1;justify-content:center"></button>
+              <button class="adm-btn" style="flex:1;justify-content:center" onclick="admTrfCerrarModal()">Cancelar</button>
+            </div>
+            <div id="adm-trf-modal-msg" style="margin-top:9px"></div>
+          </div>
         </div>
       </div>
 
@@ -1117,6 +1152,14 @@ input.error { border-color: #f87171; }
     <button class="btn btn-primary" id="btnPagar">
       💳 Ir a pagar con Wompi
     </button>
+
+    <button class="btn" id="btnTransferencia" onclick="abrirModalTransferencia()"
+      style="margin-top:10px;background:transparent;border:2px solid #22c55e;color:#22c55e;font-size:.95rem;">
+      🏦 Pagar por transferencia bancaria
+    </button>
+    <p style="font-size:.72rem;color:#4b5563;text-align:center;margin-top:6px;line-height:1.5;">
+      Transfiere al banco y recibe tus códigos una vez confirmemos el pago
+    </p>
 
     <p style="font-size:.72rem;color:#4b5563;text-align:center;margin-top:10px;line-height:1.5;">
       Al comprar aceptas los
@@ -1611,19 +1654,20 @@ document.getElementById('resultado').addEventListener('touchend', function() { w
   };
 
   /* ── tabs ──────────────────────────────────── */
-  const TAB_ORDER = ['dash','compradores','dorados','promo','correo','config','seguridad','exportar'];
+  const TAB_ORDER = ['dash','compradores','transferencias','dorados','promo','correo','config','seguridad','exportar'];
   window.admTab = function(tab) {
     document.querySelectorAll('.adm-section').forEach(s => s.classList.remove('active'));
     document.querySelectorAll('.adm-tab').forEach(b => b.classList.remove('active'));
     document.getElementById('adm-' + tab).classList.add('active');
     document.querySelectorAll('.adm-tab')[TAB_ORDER.indexOf(tab)].classList.add('active');
-    if (tab === 'dash')        admLoadDash();
-    if (tab === 'compradores') admLoadCompradores();
-    if (tab === 'dorados')     admLoadDorados();
-    if (tab === 'promo')       admLoadPromo();
-    if (tab === 'config')      admLoadConfig();
-    if (tab === 'seguridad')   admLoadSeguridad();
-    if (tab === 'correo')      admLoadCorreoCount();
+    if (tab === 'dash')           admLoadDash();
+    if (tab === 'compradores')    admLoadCompradores();
+    if (tab === 'transferencias') admLoadTransferencias();
+    if (tab === 'dorados')        admLoadDorados();
+    if (tab === 'promo')          admLoadPromo();
+    if (tab === 'config')         admLoadConfig();
+    if (tab === 'seguridad')      admLoadSeguridad();
+    if (tab === 'correo')         admLoadCorreoCount();
   };
 
   /* ── dashboard ─────────────────────────────── */
@@ -1679,7 +1723,7 @@ document.getElementById('resultado').addEventListener('touchend', function() { w
 
   window.admSetFiltro = function(filtro) {
     admFiltroActivo = filtro;
-    ['todos','pagado','pendiente'].forEach(f => {
+    ['todos','pagado','pendiente',"transferencia_aprobada","transferencia_rechazada"].forEach(f => {
       const btn = document.getElementById('adm-filter-' + f);
       if (btn) btn.style.color = f === filtro ? 'var(--gold)' : '';
       if (btn) btn.style.borderColor = f === filtro ? 'var(--gold)' : '';
@@ -2074,6 +2118,131 @@ document.getElementById('resultado').addEventListener('touchend', function() { w
     } catch(e) {}
   })();
 
+  /* ── transferencias ────────────────────────── */
+  let _admTrfPendiente = null;
+
+  window.admLoadTransferencias = async function() {
+    const el = document.getElementById('adm-trf-content');
+    el.innerHTML = '<div class="adm-state"><div class="adm-spin">⟳</div><br>Cargando...</div>';
+    try {
+      const r = await fetch(BASE + '/api/admin/transferencias', { headers: { 'x-admin-token': ADM_TOKEN } });
+      const d = await r.json();
+      const filtro = document.getElementById('adm-trf-filtro').value;
+      let lista = d.transferencias || [];
+      if (filtro !== 'todas') lista = lista.filter(t => t.estado === filtro);
+
+      if (!lista.length) {
+        el.innerHTML = '<div class="adm-state">Sin transferencias en esta categoría</div>';
+        return;
+      }
+
+      const precioXcod = 3750;
+      const filas = lista.map(t => {
+        const monto = '$' + (t.cantidad * precioXcod).toLocaleString('es-CO');
+        const fecha = t.fecha ? new Date(t.fecha).toLocaleString('es-CO') : '—';
+        let estadoBadge = '';
+        if (t.estado === 'transferencia_pendiente')  estadoBadge = '<span class="adm-badge-pend">⏳ Pendiente</span>';
+        if (t.estado === 'transferencia_aprobada')   estadoBadge = '<span class="adm-badge-ok">✅ Aprobada</span>';
+        if (t.estado === 'transferencia_rechazada')  estadoBadge = '<span class="adm-badge-fail">✕ Rechazada</span>';
+
+        const codsHtml = t.codigos?.length
+          ? t.codigos.map(c => `<span class="adm-chip ${c.dorado ? 'gold' : ''}">${c.dorado ? '⭐' : ''}${c.codigo}</span>`).join('')
+          : '';
+
+        const btnAprobar = t.estado === 'transferencia_pendiente'
+          ? `<button class="adm-btn adm-btn-primary" style="font-size:10px;padding:4px 9px"
+               onclick="admTrfAbrirAprobar('${t.referencia}','${(t.nombre||'').replace(/'/g,"\\'")}',${t.cantidad},${t.cantidad * precioXcod})">
+               ✅ Aprobar y generar códigos</button>
+             <button class="adm-btn adm-btn-danger" style="font-size:10px;padding:4px 9px"
+               onclick="admTrfAbrirRechazar('${t.referencia}','${(t.nombre||'').replace(/'/g,"\\'")}')">
+               ✕ Rechazar</button>`
+          : '';
+
+        return `<div style="background:#1a2235;border-radius:9px;padding:11px 13px;margin-bottom:9px">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:7px;flex-wrap:wrap">
+            <div>
+              <div style="font-size:12px;font-weight:700;color:var(--text)">${t.nombre || '—'}</div>
+              <div style="font-size:10px;color:var(--muted)">${t.correo || ''} ${t.cedula ? '· CC '+t.cedula : ''} ${t.telefono ? '· 📱 '+t.telefono : ''}</div>
+              <div style="font-size:10px;color:#4b5563;margin-top:1px">${fecha}</div>
+            </div>
+            <div style="text-align:right">
+              ${estadoBadge}
+              <div style="font-size:11px;font-weight:700;color:var(--gold);margin-top:3px">${t.cantidad} cód · ${monto}</div>
+            </div>
+          </div>
+          <div style="font-size:10px;color:#4b5563;margin-bottom:5px">Ref: <span style="font-family:monospace;color:var(--muted)">${t.referencia}</span></div>
+          ${codsHtml ? `<div class="adm-chip-list" style="margin-bottom:6px">${codsHtml}</div>` : ''}
+          ${t.notas_admin ? `<div style="font-size:10px;background:#0f172a;border-radius:5px;padding:5px 8px;color:var(--muted);margin-bottom:6px">📝 ${t.notas_admin}</div>` : ''}
+          ${btnAprobar ? `<div style="display:flex;gap:5px;flex-wrap:wrap;margin-top:6px">${btnAprobar}</div>` : ''}
+        </div>`;
+      }).join('');
+
+      el.innerHTML = `<div style="font-size:10px;color:var(--muted);margin-bottom:8px">${lista.length} transferencia(s)</div>${filas}`;
+    } catch(e) {
+      el.innerHTML = '<div class="adm-msg adm-msg-err">Error cargando transferencias</div>';
+    }
+  };
+
+  window.admTrfAbrirAprobar = function(ref, nombre, cantidad, monto) {
+    _admTrfPendiente = { accion: 'aprobar', referencia: ref };
+    document.getElementById('adm-trf-modal-title').textContent = '✅ Aprobar transferencia';
+    document.getElementById('adm-trf-modal-info').innerHTML =
+      `<strong style="color:var(--text)">${nombre}</strong> · ${cantidad} códigos · <strong style="color:var(--gold)">$${monto.toLocaleString('es-CO')} COP</strong><br>
+       Se generarán los códigos automáticamente y se enviarán al comprador por correo.`;
+    document.getElementById('adm-trf-modal-notas').value = '';
+    document.getElementById('adm-trf-modal-msg').innerHTML = '';
+    const btn = document.getElementById('adm-trf-modal-ok');
+    btn.textContent = '✅ Confirmar y generar códigos';
+    btn.className = 'adm-btn adm-btn-primary';
+    btn.onclick = admTrfConfirmar;
+    document.getElementById('adm-trf-modal').style.display = 'flex';
+  };
+
+  window.admTrfAbrirRechazar = function(ref, nombre) {
+    _admTrfPendiente = { accion: 'rechazar', referencia: ref };
+    document.getElementById('adm-trf-modal-title').textContent = '✕ Rechazar transferencia';
+    document.getElementById('adm-trf-modal-info').innerHTML =
+      `<strong style="color:var(--text)">${nombre}</strong><br>El cliente NO recibirá códigos.`;
+    document.getElementById('adm-trf-modal-notas').value = '';
+    document.getElementById('adm-trf-modal-msg').innerHTML = '';
+    const btn = document.getElementById('adm-trf-modal-ok');
+    btn.textContent = '✕ Confirmar rechazo';
+    btn.className = 'adm-btn adm-btn-danger';
+    btn.onclick = admTrfConfirmar;
+    document.getElementById('adm-trf-modal').style.display = 'flex';
+  };
+
+  window.admTrfCerrarModal = function() {
+    document.getElementById('adm-trf-modal').style.display = 'none';
+    _admTrfPendiente = null;
+  };
+
+  async function admTrfConfirmar() {
+    if (!_admTrfPendiente) return;
+    const notas = document.getElementById('adm-trf-modal-notas').value.trim();
+    const msgEl = document.getElementById('adm-trf-modal-msg');
+    msgEl.innerHTML = '<div class="adm-msg adm-msg-info">Procesando...</div>';
+    const endpoint = _admTrfPendiente.accion === 'aprobar'
+      ? '/api/admin/transferencia-aprobar'
+      : '/api/admin/transferencia-rechazar';
+    try {
+      const r = await fetch(BASE + endpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'x-admin-token': ADM_TOKEN },
+        body: JSON.stringify({ referencia: _admTrfPendiente.referencia, notas })
+      });
+      const d = await r.json();
+      if (d.ok) {
+        msgEl.innerHTML = `<div class="adm-msg adm-msg-ok">${d.mensaje || '✓ Hecho'}</div>`;
+        setTimeout(() => { admTrfCerrarModal(); admLoadTransferencias(); }, 1800);
+      } else {
+        msgEl.innerHTML = `<div class="adm-msg adm-msg-err">${d.error || 'Error al procesar'}</div>`;
+      }
+    } catch(e) {
+      msgEl.innerHTML = '<div class="adm-msg adm-msg-err">Error de conexión</div>';
+    }
+  }
+
   /* ── seguridad ─────────────────────────────── */
   window.admLoadSeguridad = async function() {
     admLoadLog();
@@ -2128,5 +2297,219 @@ document.getElementById('resultado').addEventListener('touchend', function() { w
 
 })();
 </script>
+<!-- ══════════ MODAL TRANSFERENCIA ══════════ -->
+<div id="modalTransferencia" style="
+  display:none;
+  position:fixed;inset:0;
+  background:rgba(0,0,0,.75);
+  z-index:9800;
+  align-items:center;
+  justify-content:center;
+  padding:16px;
+  backdrop-filter:blur(4px);
+">
+  <div style="
+    background:#111827;
+    border:1px solid rgba(34,197,94,.25);
+    border-radius:18px;
+    padding:26px 20px;
+    max-width:430px;
+    width:100%;
+    max-height:92dvh;
+    overflow-y:auto;
+    color:white;
+    font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+    position:relative;
+  ">
+    <button onclick="cerrarModalTransferencia()" style="
+      position:absolute;top:14px;right:14px;
+      background:rgba(255,255,255,.08);border:none;
+      color:#9ca3af;font-size:18px;width:30px;height:30px;
+      border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;
+    ">✕</button>
+
+    <div style="margin-bottom:18px">
+      <div style="font-size:19px;font-weight:800;margin-bottom:2px">🏦 Pagar por transferencia</div>
+      <div style="font-size:12px;color:#9ca3af">Llena tus datos, transfiere y recibe tus códigos</div>
+    </div>
+
+    <!-- Datos bancarios -->
+    <div style="background:#0f172a;border:1px solid rgba(34,197,94,.3);border-radius:10px;padding:14px;margin-bottom:18px">
+      <div style="color:#4ade80;font-weight:700;font-size:13px;margin-bottom:8px">📋 Datos para la transferencia</div>
+      <table style="width:100%;border-collapse:collapse;font-size:12px;color:#e2e8f0">
+        <tr><td style="padding:3px 0;color:#9ca3af;width:38%">Banco:</td><td style="font-weight:600" id="trfBanco">—</td></tr>
+        <tr><td style="padding:3px 0;color:#9ca3af">Tipo:</td><td style="font-weight:600" id="trfTipo">—</td></tr>
+        <tr><td style="padding:3px 0;color:#9ca3af">Número:</td><td style="font-weight:700;font-family:monospace;letter-spacing:.04em" id="trfNumero">—</td></tr>
+        <tr><td style="padding:3px 0;color:#9ca3af">Titular:</td><td style="font-weight:600" id="trfTitular">—</td></tr>
+        <tr><td style="padding:3px 0;color:#9ca3af">NIT / CC:</td><td style="font-weight:600" id="trfNit">—</td></tr>
+      </table>
+      <div style="margin-top:12px;background:#1e3a2f;border-radius:8px;padding:10px;text-align:center">
+        <div style="color:#9ca3af;font-size:11px">Monto a transferir</div>
+        <div style="color:#4ade80;font-size:24px;font-weight:800" id="trfMontoDisplay">—</div>
+        <div style="color:#6b7280;font-size:11px" id="trfCodsDisplay"></div>
+      </div>
+    </div>
+
+    <!-- Formulario -->
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div>
+        <label style="font-size:11px;color:#9ca3af;display:block;margin-bottom:3px;font-weight:600;text-transform:uppercase;letter-spacing:.04em">Nombre completo *</label>
+        <input id="trfNombreInput" type="text" placeholder="Tu nombre completo"
+          style="width:100%;padding:11px 13px;border-radius:9px;border:1.5px solid #374151;background:#1f2937;color:white;font-size:14px;outline:none;box-sizing:border-box"
+          onfocus="this.style.borderColor='#22c55e'" onblur="this.style.borderColor='#374151'">
+      </div>
+      <div>
+        <label style="font-size:11px;color:#9ca3af;display:block;margin-bottom:3px;font-weight:600;text-transform:uppercase;letter-spacing:.04em">Correo electrónico *</label>
+        <input id="trfCorreoInput" type="email" placeholder="tu@correo.com" inputmode="email"
+          style="width:100%;padding:11px 13px;border-radius:9px;border:1.5px solid #374151;background:#1f2937;color:white;font-size:14px;outline:none;box-sizing:border-box"
+          onfocus="this.style.borderColor='#22c55e'" onblur="this.style.borderColor='#374151'">
+      </div>
+      <div>
+        <label style="font-size:11px;color:#9ca3af;display:block;margin-bottom:3px;font-weight:600;text-transform:uppercase;letter-spacing:.04em">Cédula</label>
+        <input id="trfCedulaInput" type="text" placeholder="1234567890" inputmode="numeric"
+          style="width:100%;padding:11px 13px;border-radius:9px;border:1.5px solid #374151;background:#1f2937;color:white;font-size:14px;outline:none;box-sizing:border-box"
+          onfocus="this.style.borderColor='#22c55e'" onblur="this.style.borderColor='#374151'">
+      </div>
+      <div>
+        <label style="font-size:11px;color:#9ca3af;display:block;margin-bottom:3px;font-weight:600;text-transform:uppercase;letter-spacing:.04em">Teléfono / WhatsApp</label>
+        <input id="trfTelefonoInput" type="tel" placeholder="3001234567" inputmode="tel"
+          style="width:100%;padding:11px 13px;border-radius:9px;border:1.5px solid #374151;background:#1f2937;color:white;font-size:14px;outline:none;box-sizing:border-box"
+          onfocus="this.style.borderColor='#22c55e'" onblur="this.style.borderColor='#374151'">
+      </div>
+      <div>
+        <label style="font-size:11px;color:#9ca3af;display:block;margin-bottom:3px;font-weight:600;text-transform:uppercase;letter-spacing:.04em">Cantidad de códigos *</label>
+        <select id="trfCantidadSelect" onchange="trfActualizarMonto()"
+          style="width:100%;padding:11px 13px;border-radius:9px;border:1.5px solid #374151;background:#1f2937;color:white;font-size:14px;outline:none;box-sizing:border-box"
+          onfocus="this.style.borderColor='#22c55e'" onblur="this.style.borderColor='#374151'">
+          <option value="4">4 códigos — $15.000 COP</option>
+          <option value="8">8 códigos — $30.000 COP</option>
+          <option value="16">16 códigos — $60.000 COP</option>
+        </select>
+      </div>
+    </div>
+
+    <div id="trfFormMsg" style="margin-top:10px;min-height:14px"></div>
+
+    <button onclick="enviarSolicitudTransferencia()" style="
+      margin-top:16px;width:100%;
+      background:linear-gradient(135deg,#16a34a,#22c55e);
+      color:white;border:none;padding:14px;border-radius:11px;
+      font-size:15px;font-weight:800;cursor:pointer;
+      transition:opacity .15s;
+    " onmouseover="this.style.opacity='.9'" onmouseout="this.style.opacity='1'">
+      📨 Registrar mi solicitud
+    </button>
+
+    <p style="color:#4b5563;font-size:11px;text-align:center;margin-top:10px;line-height:1.6">
+      Tienes <strong style="color:#facc15">24 horas</strong> para realizar la transferencia.<br>
+      Una vez confirmada recibirás tus códigos al correo.
+    </p>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════════════════════════
+// TRANSFERENCIA BANCARIA — configura aquí tus datos reales
+// ══════════════════════════════════════════════════════════════
+const TRF_BANCO = {
+  banco:   'Nequi',          // ← tu banco
+  tipo:    'Ahorros',              // ← Ahorros / Corriente
+  numero:  '321 892 1686',        // ← número de cuenta
+  titular: 'Eider Cobo', // ← nombre del titular
+  nit:     '1003178050',           // ← NIT o cédula del titular
+};
+const TRF_PRECIO_COD = 3750;
+
+(function poblarDatosBancarios() {
+  document.getElementById('trfBanco').textContent   = TRF_BANCO.banco;
+  document.getElementById('trfTipo').textContent    = TRF_BANCO.tipo;
+  document.getElementById('trfNumero').textContent  = TRF_BANCO.numero;
+  document.getElementById('trfTitular').textContent = TRF_BANCO.titular;
+  document.getElementById('trfNit').textContent     = TRF_BANCO.nit;
+})();
+
+window.trfActualizarMonto = function() {
+  const cant  = parseInt(document.getElementById('trfCantidadSelect')?.value || 4);
+  const monto = cant * TRF_PRECIO_COD;
+  const dm    = document.getElementById('trfMontoDisplay');
+  const dc    = document.getElementById('trfCodsDisplay');
+  if (dm) dm.textContent = '$' + monto.toLocaleString('es-CO') + ' COP';
+  if (dc) dc.textContent = cant + ' código' + (cant !== 1 ? 's' : '');
+};
+trfActualizarMonto();
+
+window.abrirModalTransferencia = function() {
+  // Pre-llenar con los datos ya escritos en el formulario principal si existen
+  const n = document.getElementById('nombre')?.value.trim();
+  const c = document.getElementById('correo')?.value.trim();
+  const d = document.getElementById('cedula')?.value.trim();
+  const t = document.getElementById('telefono')?.value.trim();
+  if (n) document.getElementById('trfNombreInput').value  = n;
+  if (c) document.getElementById('trfCorreoInput').value  = c;
+  if (d) document.getElementById('trfCedulaInput').value  = d;
+  if (t) document.getElementById('trfTelefonoInput').value = t;
+  // Sincronizar cantidad seleccionada
+  const cant = document.querySelector('.card.selected')?.dataset.cantidad;
+  if (cant) {
+    const sel = document.getElementById('trfCantidadSelect');
+    if (sel) { sel.value = cant; trfActualizarMonto(); }
+  }
+  document.getElementById('trfFormMsg').innerHTML = '';
+  document.getElementById('modalTransferencia').style.display = 'flex';
+};
+
+window.cerrarModalTransferencia = function() {
+  document.getElementById('modalTransferencia').style.display = 'none';
+};
+
+window.enviarSolicitudTransferencia = async function() {
+  const nombre   = document.getElementById('trfNombreInput').value.trim();
+  const correo   = document.getElementById('trfCorreoInput').value.trim();
+  const cedula   = document.getElementById('trfCedulaInput').value.trim();
+  const telefono = document.getElementById('trfTelefonoInput').value.trim();
+  const cantidad = document.getElementById('trfCantidadSelect').value;
+  const msgEl    = document.getElementById('trfFormMsg');
+
+  if (!nombre || !correo) {
+    msgEl.innerHTML = '<div style="background:rgba(248,113,113,.12);color:#f87171;padding:9px 12px;border-radius:8px;font-size:12px">⚠️ Nombre y correo son obligatorios</div>';
+    return;
+  }
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(correo)) {
+    msgEl.innerHTML = '<div style="background:rgba(248,113,113,.12);color:#f87171;padding:9px 12px;border-radius:8px;font-size:12px">⚠️ Correo electrónico inválido</div>';
+    return;
+  }
+
+  msgEl.innerHTML = '<div style="color:#9ca3af;font-size:12px;padding:6px 0">⏳ Registrando solicitud...</div>';
+
+  try {
+    const r = await fetch('/api/transferencia-registrar', {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body:    JSON.stringify({ nombre, correo, cedula, telefono, cantidad: Number(cantidad) })
+    });
+    const d = await r.json();
+
+    if (d.ok) {
+      msgEl.innerHTML = `
+        <div style="background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.3);border-radius:10px;padding:14px;font-size:12px">
+          <div style="color:#4ade80;font-weight:800;font-size:14px;margin-bottom:6px">✅ ¡Solicitud registrada!</div>
+          <div style="color:#e2e8f0;line-height:1.7">${d.mensaje}</div>
+          <div style="margin-top:8px;font-size:11px;color:#9ca3af">
+            Referencia: <span style="font-family:monospace;color:var(--gold)">${d.referencia}</span>
+          </div>
+        </div>`;
+      ['trfNombreInput','trfCorreoInput','trfCedulaInput','trfTelefonoInput'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.value = '';
+      });
+    } else {
+      msgEl.innerHTML = `<div style="background:rgba(248,113,113,.12);color:#f87171;padding:9px 12px;border-radius:8px;font-size:12px">⚠️ ${d.error || 'Error al registrar'}</div>`;
+    }
+  } catch(e) {
+    msgEl.innerHTML = '<div style="background:rgba(248,113,113,.12);color:#f87171;padding:9px 12px;border-radius:8px;font-size:12px">⚠️ Error de conexión. Intenta de nuevo.</div>';
+  }
+};
+</script>
+
 </body>
 </html>
