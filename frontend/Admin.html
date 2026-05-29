@@ -1009,7 +1009,8 @@
           ? t.codigos.map(c => `<span class="code-mono ${c.dorado ? 'gold-code' : ''}" style="margin-right:6px;font-size:12px">${c.dorado ? '⭐' : ''}${c.codigo}</span>`).join('')
           : '<span style="color:var(--text3);font-size:12px">—</span>';
 
-        const acciones = t.estado === 'transferencia_pendiente' ? `
+        const acciones = 
+        t.estado === 'transferencia_pendiente' ? `
           <div style="display:flex;gap:6px;margin-top:6px">
             <button class="btn btn-primary" style="font-size:12px;padding:5px 10px"
               onclick="abrirModalAprobar('${t.referencia}','${t.nombre}',${t.cantidad},${t.cantidad * montoXcod})">

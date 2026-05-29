@@ -391,4 +391,278 @@ router.get('/admin/exportar-compradores', async (req, res) => {
   } catch (e) { res.status(500).json({ ok: false }); }
 });
 
+
+
+// ════════════════════════════════════════════
+// TRANSFERENCIAS PENDIENTES
+// ════════════════════════════════════════════
+
+// Obtener transferencias
+router.get('/admin/transferencias', async (req, res) => {
+  try {
+    const { data: compras, error } = await supabase
+      .from('compras')
+      .select('*')
+      .in('estado', [
+        'transferencia_pendiente',
+        'transferencia_aprobada',
+        'transferencia_rechazada'
+      ])
+      .order('fecha', { ascending: false });
+
+    if (error) {
+      console.error(error);
+      return res.status(500).json({ ok: false });
+    }
+
+    const refs = (compras || []).map(x => x.referencia);
+
+    let codigosMap = {};
+
+    if (refs.length) {
+      const { data: codigos } = await supabase
+        .from('codigos')
+        .select('codigo, dorado, referencia')
+        .in('referencia', refs);
+
+      (codigos || []).forEach(c => {
+        if (!codigosMap[c.referencia]) {
+          codigosMap[c.referencia] = [];
+        }
+
+        codigosMap[c.referencia].push(c);
+      });
+    }
+
+    const transferencias = (compras || []).map(c => ({
+      ...c,
+      codigos: codigosMap[c.referencia] || []
+    }));
+
+    res.json({
+      ok: true,
+      transferencias
+    });
+
+  } catch (e) {
+    console.error('💥 transferencias:', e);
+    res.status(500).json({ ok: false });
+  }
+});
+
+// ════════════════════════════════════════════
+// APROBAR TRANSFERENCIA
+// ════════════════════════════════════════════
+
+router.post('/admin/transferencia-aprobar', async (req, res) => {
+  try {
+
+    const { referencia, notas } = req.body;
+
+    if (!referencia) {
+      return res.status(400).json({
+        ok: false,
+        error: 'Referencia requerida'
+      });
+    }
+
+    // Buscar compra
+    const { data: compra, error } = await supabase
+      .from('compras')
+      .select('*')
+      .eq('referencia', referencia)
+      .single();
+
+    if (error || !compra) {
+      return res.status(404).json({
+        ok: false,
+        error: 'Compra no encontrada'
+      });
+    }
+
+    if (compra.estado !== 'transferencia_pendiente') {
+      return res.status(400).json({
+        ok: false,
+        error: 'La transferencia ya fue procesada'
+      });
+    }
+
+    // Buscar códigos disponibles
+    const { data: disponibles, error: errCodigos } = await supabase
+      .from('codigos')
+      .select('*')
+      .eq('vendido', false)
+      .limit(compra.cantidad);
+
+    if (errCodigos || !disponibles || disponibles.length < compra.cantidad) {
+      return res.status(400).json({
+        ok: false,
+        error: 'No hay suficientes códigos disponibles'
+      });
+    }
+
+    // Marcar códigos como vendidos
+    for (const cod of disponibles) {
+
+      await supabase
+        .from('codigos')
+        .update({
+          vendido: true,
+          referencia: compra.referencia,
+          nombre: compra.nombre,
+          email: compra.correo,
+          telefono: compra.telefono
+        })
+        .eq('id', cod.id);
+    }
+
+    // Actualizar compra
+    await supabase
+      .from('compras')
+      .update({
+        estado: 'transferencia_aprobada',
+        notas_admin: notas || null
+      })
+      .eq('referencia', referencia);
+
+    // Obtener códigos asignados
+    const { data: codigosAsignados } = await supabase
+      .from('codigos')
+      .select('codigo, dorado')
+      .eq('referencia', referencia);
+
+    // Enviar correo
+    try {
+
+      const listaCodigos = (codigosAsignados || [])
+        .map(c => `${c.dorado ? '⭐ ' : ''}${c.codigo}`)
+        .join(', ');
+
+      await enviarCorreo({
+        para: compra.correo,
+        asunto: '✅ Compra aprobada — Tus códigos',
+        html: `
+          <div style="font-family:Arial;padding:20px">
+            <h2>✅ Pago aprobado</h2>
+
+            <p>Hola <strong>${compra.nombre}</strong>,</p>
+
+            <p>Tu transferencia fue aprobada correctamente.</p>
+
+            <p><strong>Tus códigos:</strong></p>
+
+            <div style="padding:12px;background:#f5f5f5;border-radius:8px;margin:10px 0">
+              ${listaCodigos}
+            </div>
+
+            <p>Referencia: <strong>${referencia}</strong></p>
+
+            <p>Gracias por tu compra.</p>
+          </div>
+        `
+      });
+
+    } catch (correoErr) {
+      console.error('❌ Error enviando correo:', correoErr);
+    }
+
+    res.json({
+      ok: true,
+      mensaje: '✅ Transferencia aprobada correctamente'
+    });
+
+  } catch (e) {
+    console.error('💥 aprobar transferencia:', e);
+
+    res.status(500).json({
+      ok: false,
+      error: 'Error interno'
+    });
+  }
+});
+
+// ════════════════════════════════════════════
+// RECHAZAR TRANSFERENCIA
+// ════════════════════════════════════════════
+
+router.post('/admin/transferencia-rechazar', async (req, res) => {
+
+  try {
+
+    const { referencia, notas } = req.body;
+
+    if (!referencia) {
+      return res.status(400).json({
+        ok: false,
+        error: 'Referencia requerida'
+      });
+    }
+
+    const { data: compra, error } = await supabase
+      .from('compras')
+      .select('*')
+      .eq('referencia', referencia)
+      .single();
+
+    if (error || !compra) {
+      return res.status(404).json({
+        ok: false,
+        error: 'Compra no encontrada'
+      });
+    }
+
+    await supabase
+      .from('compras')
+      .update({
+        estado: 'transferencia_rechazada',
+        notas_admin: notas || null
+      })
+      .eq('referencia', referencia);
+
+    // Correo opcional
+    try {
+
+      await enviarCorreo({
+        para: compra.correo,
+        asunto: '❌ Transferencia rechazada',
+        html: `
+          <div style="font-family:Arial;padding:20px">
+            <h2>❌ Transferencia rechazada</h2>
+
+            <p>Hola <strong>${compra.nombre}</strong>,</p>
+
+            <p>Tu transferencia no pudo ser validada.</p>
+
+            ${
+              notas
+                ? `<p><strong>Motivo:</strong> ${notas}</p>`
+                : ''
+            }
+
+            <p>Si crees que esto es un error puedes comunicarte con soporte.</p>
+          </div>
+        `
+      });
+
+    } catch (correoErr) {
+      console.error(correoErr);
+    }
+
+    res.json({
+      ok: true,
+      mensaje: '✕ Transferencia rechazada'
+    });
+
+  } catch (e) {
+
+    console.error('💥 rechazar transferencia:', e);
+
+    res.status(500).json({
+      ok: false,
+      error: 'Error interno'
+    });
+  }
+});
+
+
 module.exports = router;
