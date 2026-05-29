@@ -148,7 +148,7 @@ router.use('/admin', authAdmin);
 router.get('/admin/compras-stats', async (req, res) => {
   try {
     const { data: pagadas } = await supabase
-      .from('compras').select('cantidad, fecha').eq('estado', 'pagado').order('fecha', { ascending: false });
+      .from('compras').select('cantidad, fecha').in('estado', ['pagado', 'transferencia_aprobada']).order('fecha', { ascending: false });
     const { count: pendientes } = await supabase
       .from('compras').select('*', { count: 'exact', head: true }).eq('estado', 'pendiente');
 
@@ -169,7 +169,7 @@ router.get('/admin/compradores', async (req, res) => {
       .order('fecha', { ascending: false }).limit(500);
     if (error) return res.status(500).json({ ok: false });
 
-    const refs = (compras || []).filter(c => c.estado === 'pagado').map(c => c.referencia);
+    const refs = (compras || []).filter(c => c.estado === 'pagado' || c.estado === 'transferencia_aprobada').map(c => c.referencia);
     let codigosMap = {};
     if (refs.length) {
       const { data: codigos } = await supabase
@@ -243,7 +243,7 @@ router.post('/admin/correo-masivo', async (req, res) => {
 
     // Obtener todos los correos únicos de compradores pagados
     const { data: compras, error } = await supabase
-      .from('compras').select('correo, nombre').eq('estado', 'pagado');
+      .from('compras').select('correo, nombre').in('estado', ['pagado', 'transferencia_aprobada']);
     if (error) return res.status(500).json({ error: 'Error obteniendo compradores' });
 
     const vistos = new Set();
@@ -344,7 +344,7 @@ router.get('/admin/exportar-compradores', async (req, res) => {
     const { data: compras, error } = await supabase
       .from('compras')
       .select('referencia, nombre, correo, cedula, telefono, cantidad, estado, fecha, premio_dorado')
-      .eq('estado', 'pagado').order('fecha', { ascending: false });
+      .in('estado', ['pagado', 'transferencia_aprobada']).order('fecha', { ascending: false });
     if (error) return res.status(500).json({ ok: false });
 
     const refs = (compras || []).map(c => c.referencia);
