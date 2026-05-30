@@ -53,24 +53,21 @@ router.get('/admin/notif-stats', authAdmin, async (req, res) => {
 
     // ── Pagos incompletos +12h (Wompi + transferencias) ──────────────────────
     try {
-      let q = await supabase
+      const q = await supabase
         .from('compras')
-        .select('correo, estado', { count: 'exact', head: false })
+        .select('correo, estado, fecha')
         .in('estado', ['pendiente', 'transferencia_pendiente'])
-        .lt('fecha', hace12h)
         .not('correo', 'is', null);
 
-      if (q.error) {
-        q = await supabase
-          .from('compras')
-          .select('correo, estado', { count: 'exact', head: false })
-          .in('estado', ['pendiente', 'transferencia_pendiente'])
-          .lt('created_at', hace12h)
-          .not('correo', 'is', null);
-      }
+      if (q.error) throw q.error;
 
-      // Deduplicar por correo
-      const correos = new Set((q.data || []).map(c => c.correo).filter(Boolean));
+      // Filtrar por +12h y deduplicar por correo
+      const correos = new Set(
+        (q.data || [])
+          .filter(c => c.fecha && new Date(c.fecha) < new Date(hace12h))
+          .map(c => c.correo)
+          .filter(Boolean)
+      );
       incompletos12h = correos.size;
     } catch(e) { console.error('stat incompletos:', e.message); }
 

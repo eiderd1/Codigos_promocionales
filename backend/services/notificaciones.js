@@ -128,15 +128,14 @@ async function recordatorioTransferencias(supabase) {
 
   const { data: todasPendientes, error } = await supabase
     .from('compras')
-    .select('referencia, nombre, correo, cantidad, fecha, created_at')
+    .select('referencia, nombre, correo, cantidad, fecha')
     .eq('estado', 'transferencia_pendiente');
 
   if (error) throw new Error(`Error consultando pendientes: ${error.message}`);
 
-  // Filtrar manualmente por +12h (soporta tanto 'fecha' como 'created_at')
+  // Filtrar por +12h usando columna 'fecha'
   const pendientes = (todasPendientes || []).filter(c => {
-    const ts = c.fecha || c.created_at;
-    return ts && new Date(ts) < new Date(hace12h);
+    return c.fecha && new Date(c.fecha) < new Date(hace12h);
   });
 
   if (pendientes.length === 0) return { enviados: 0, detalle: [] };
@@ -310,17 +309,16 @@ async function recordatorioPagosIncompletos(supabase) {
 
   ({ data: pendientes, error } = await supabase
     .from('compras')
-    .select('referencia, nombre, correo, cantidad, fecha, created_at, estado')
+    .select('referencia, nombre, correo, cantidad, fecha, estado')
     .in('estado', ['pendiente', 'transferencia_pendiente'])
     .not('correo', 'is', null));
 
   if (error) throw new Error(`Error consultando pendientes: ${error.message}`);
   if (!pendientes || pendientes.length === 0) return { enviados: 0, total: 0, detalle: [] };
 
-  // Filtrar manualmente por +12h (soporta tanto 'fecha' como 'created_at')
+  // Filtrar manualmente por +12h usando columna 'fecha'
   pendientes = pendientes.filter(c => {
-    const ts = c.fecha || c.created_at;
-    return ts && new Date(ts) < new Date(hace12h);
+    return c.fecha && new Date(c.fecha) < new Date(hace12h);
   });
 
   // Deduplicar por correo — si alguien tiene varios intentos, un solo correo
