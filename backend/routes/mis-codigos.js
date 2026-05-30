@@ -21,13 +21,32 @@ router.post('/mis-codigos', async (req, res) => {
       .select('referencia')
       .eq('cedula', dato);
 
+    // 🔧 FIX: también buscar en compras por email (cubre transferencias aprobadas manualmente)
+    const { data: porEmailCompras } = await supabase
+      .from('compras')
+      .select('referencia')
+      .eq('correo', dato);
+
     const todasRefs = [
       ...(porEmail || []),
-      ...(porCedula || [])
+      ...(porCedula || []),
+      ...(porEmailCompras || [])
     ].map(t => t.referencia);
 
+    // 🔧 FIX: si no hay referencias por transacción, buscar directamente en codigos por email
+    // (cubre transferencias donde no se creó registro en 'transacciones')
     if (todasRefs.length === 0) {
-      return res.json({ codigos: [] });
+      const { data: codigosDirectos, error: errorDirecto } = await supabase
+        .from('codigos')
+        .select('codigo, dorado')
+        .eq('email', dato);
+
+      if (errorDirecto) {
+        console.error("❌ Error buscando códigos directos:", errorDirecto);
+        return res.status(500).json({ error: "Error obteniendo códigos" });
+      }
+
+      return res.json({ codigos: codigosDirectos || [] });
     }
 
     const referencias = [...new Set(todasRefs)];
@@ -69,22 +88,42 @@ router.post('/reenviar-correo', async (req, res) => {
       .select('referencia, correo')
       .eq('cedula', dato);
 
-    if ((!porEmail || porEmail.length === 0) && (!porCedula || porCedula.length === 0)) {
+    // 🔧 FIX: buscar también en compras por email (transferencias)
+    const { data: porEmailCompras } = await supabase
+      .from('compras')
+      .select('referencia, correo')
+      .eq('correo', dato);
+
+    if ((!porEmail || porEmail.length === 0) && (!porCedula || porCedula.length === 0) && (!porEmailCompras || porEmailCompras.length === 0)) {
       return res.json({ ok: false, mensaje: "No se encontraron compras" });
     }
 
-    const email = porEmail?.[0]?.email || porCedula?.[0]?.correo;
+    const email = porEmail?.[0]?.email || porCedula?.[0]?.correo || porEmailCompras?.[0]?.correo;
     const referencias = [
       ...(porEmail || []).map(t => t.referencia),
-      ...(porCedula || []).map(t => t.referencia)
+      ...(porCedula || []).map(t => t.referencia),
+      ...(porEmailCompras || []).map(t => t.referencia)
     ];
 
     const refUnicas = [...new Set(referencias)];
 
-    const { data: codigos } = await supabase
-      .from('codigos')
-      .select('codigo, dorado')
-      .in('referencia', refUnicas);
+    let codigos;
+    if (refUnicas.length > 0) {
+      const { data } = await supabase
+        .from('codigos')
+        .select('codigo, dorado')
+        .in('referencia', refUnicas);
+      codigos = data;
+    }
+
+    // 🔧 FIX: si no encontró por referencias, buscar directo por email en codigos
+    if (!codigos || codigos.length === 0) {
+      const { data } = await supabase
+        .from('codigos')
+        .select('codigo, dorado')
+        .eq('email', dato);
+      codigos = data;
+    }
 
     if (!codigos || codigos.length === 0) {
       return res.json({ ok: false, mensaje: "No se encontraron códigos" });

@@ -9,7 +9,14 @@ function getAdminConfig() {
 
 async function enviarCorreo(destino, codigos, premioDoradoOverride = null) {
   try {
-    if (!process.env.BREVO_API_KEY || !destino || !codigos?.length) return;
+    if (!process.env.BREVO_API_KEY) {
+      console.error("❌ BREVO_API_KEY no configurada");
+      return;
+    }
+    if (!destino || !codigos?.length) {
+      console.error("❌ enviarCorreo: destino o codigos vacíos", { destino, cantidad: codigos?.length });
+      return;
+    }
 
     const dorados = codigos.filter(c => c.dorado);
     const normales = codigos.filter(c => !c.dorado);
@@ -44,7 +51,7 @@ async function enviarCorreo(destino, codigos, premioDoradoOverride = null) {
                   ">
                     <div style="color:#93c5fd;font-size:10px;letter-spacing:2px;text-transform:uppercase;margin-bottom:4px;font-family:Arial,sans-serif;">🎟️ Código</div>
                     <div style="color:#ffffff;font-size:22px;font-weight:bold;letter-spacing:4px;font-family:'Courier New',monospace;">${codigo}</div>
-                    <div style="color:#60a5fa;font-size:10px;margin-top:4px;font-family:Arial,sans-serif;">Sorteo EiderTech</div>
+                    <div style="color:#60a5fa;font-size:10px;margin-top:4px;font-family:Arial,sans-serif;">Evento EiderTech</div>
                   </td>
                   <!-- Lado derecho (talón) -->
                   <td style="
@@ -124,6 +131,15 @@ async function enviarCorreo(destino, codigos, premioDoradoOverride = null) {
     const waCompartir   = `https://wa.me/?text=${mensajeCompartir}`;
     const waSoporte     = `https://wa.me/${NUM_SOPORTE}?text=${mensajeSoporte}`;
 
+    // ── Pie de correo desde config admin (seguro, fuera del template) ──────────
+    let correoPie = '';
+    try {
+      const cfg = getAdminConfig();
+      if (cfg?.correo_pie) {
+        correoPie = `<p style="text-align:center;color:#f5c518;font-size:12px;margin:8px 0 0;font-weight:600">${cfg.correo_pie}</p>`;
+      }
+    } catch(e) { /* ignorar si admin config no está disponible */ }
+
     // ── HTML completo ────────────────────────────────────────
     const htmlContent = `
       <div style="background:#0f172a;padding:24px 16px;font-family:Arial,sans-serif;color:white;">
@@ -194,7 +210,7 @@ async function enviarCorreo(destino, codigos, premioDoradoOverride = null) {
             Guarda este correo como comprobante de tu compra.<br>
             📧 infoeidertechsoluciones@gmail.com &nbsp;|&nbsp; EiderTech Soluciones
           </p>
-          ${(function(){ try{ const cfg=require('../routes/admin').CONFIG; return cfg&&cfg.correo_pie?`<p style="text-align:center;color:#f5c518;font-size:12px;margin:8px 0 0;font-weight:600">${cfg.correo_pie}</p>`:''; }catch(e){return '';} })()}
+          ${correoPie}
 
         </div>
       </div>
@@ -209,6 +225,8 @@ async function enviarCorreo(destino, codigos, premioDoradoOverride = null) {
       subject: "🎟️ ¡Compra confirmada! Tus códigos están listos",
       htmlContent
     });
+
+    console.log("📧 Intentando enviar email a:", destino);
 
     await new Promise((resolve, reject) => {
       const req = https.request({
@@ -237,10 +255,11 @@ async function enviarCorreo(destino, codigos, premioDoradoOverride = null) {
       req.end();
     });
 
-    console.log("📧 Email enviado a:", destino);
+    console.log("📧 Email enviado exitosamente a:", destino);
 
   } catch (error) {
-    console.error("❌ Error email:", error.message);
+    console.error("❌ Error enviando email a", destino, "→", error.message);
+    throw error; 
   }
 }
 
