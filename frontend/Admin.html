@@ -555,20 +555,27 @@
       <!-- ── COMPRAS ── -->
       <div id="tab-compras" class="section">
         <div class="section-header">
-          <h2>Buscar compra</h2>
-          <p>Ingresa el email o cédula del cliente para ver sus códigos</p>
+          <h2>Compradores</h2>
+          <p>Lista de todos los compradores con sus códigos asignados</p>
         </div>
-        <div class="form-card">
-          <div class="form-row">
+        <div class="form-card" style="margin-bottom:12px">
+          <div class="form-row" style="margin-bottom:8px">
             <div class="form-field">
-              <label>Email o cédula</label>
-              <input type="text" id="buscar-dato" placeholder="cliente@email.com o 1234567890"
-                onkeydown="if(event.key==='Enter') buscarCodigos()">
+              <label>Buscar por nombre, email, cédula o teléfono</label>
+              <input type="text" id="buscar-dato" placeholder="Buscar..." oninput="filtrarCompradores()" autocomplete="off">
             </div>
-            <button class="btn btn-primary" onclick="buscarCodigos()">🔍 Buscar</button>
+            <button class="btn" onclick="loadCompras()">↺ Actualizar</button>
+          </div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <button class="btn active" id="filtro-todos"    onclick="setFiltroCompras('todos')">Todos</button>
+            <button class="btn"        id="filtro-pagado"   onclick="setFiltroCompras('pagado')">✅ Wompi</button>
+            <button class="btn"        id="filtro-transf"   onclick="setFiltroCompras('transferencia')">🏦 Transferencias</button>
+            <button class="btn"        id="filtro-pendiente" onclick="setFiltroCompras('pendiente')">⏳ Pendientes</button>
           </div>
         </div>
-        <div id="compras-result"></div>
+        <div id="compras-result">
+          <div class="state-loading"><div class="spin">⟳</div><br>Cargando...</div>
+        </div>
       </div>
 
       <!-- ── PROMOCIÓN ── -->
@@ -715,21 +722,17 @@
     const errEl = document.getElementById('login-err');
     const token = input.value.trim();
     if (!token) { errEl.textContent = 'Ingresa la clave'; return; }
-
-    errEl.textContent = '';
-
-    // Verificar token haciendo una petición real
+    errEl.textContent = 'Verificando...';
     try {
-      const r = await fetch('/api/progreso', { headers: { 'x-admin-token': token } });
-      // progreso no requiere auth, pero si el server responde bien el token se usa en las rutas admin
-      // Verificamos con una ruta admin real
-      const r2 = await fetch('/api/admin/promo-activa', {
+      const r = await fetch('/api/admin/verificar', {
+        method: 'POST',
         headers: { 'Content-Type': 'application/json', 'x-admin-token': token }
       });
-      if (r2.status === 401) {
-        errEl.textContent = 'Clave incorrecta';
-        return;
-      }
+      if (r.status === 401) { errEl.textContent = '❌ Clave incorrecta'; return; }
+      if (r.status === 500) { errEl.textContent = '⚠️ ADMIN_SECRET no configurado'; return; }
+      if (!r.ok) { errEl.textContent = '❌ Error del servidor'; return; }
+      const d = await r.json();
+      if (!d.ok) { errEl.textContent = '❌ Clave incorrecta'; return; }
       ADMIN_TOKEN = token;
       document.getElementById('login-screen').style.display = 'none';
       document.getElementById('app').style.display = 'block';
@@ -764,6 +767,7 @@
 
     if (tab === 'dashboard')      loadDashboard();
     if (tab === 'codigos')        loadCodigos();
+    if (tab === 'compras')        loadCompras();
     if (tab === 'promo')          loadPromo();
     if (tab === 'transferencias') loadTransferencias();
   }
@@ -831,44 +835,106 @@
   }
 
   // ══════════════════════════════════
-  // BUSCAR COMPRAS
+  // COMPRADORES — lista completa
   // ══════════════════════════════════
-  async function buscarCodigos() {
-    const dato = document.getElementById('buscar-dato').value.trim();
+  let _todosCompradores = [];
+  let _filtroCompras = 'todos';
+
+  async function loadCompras() {
     const el = document.getElementById('compras-result');
-    if (!dato) { el.innerHTML = '<div class="msg msg-err">Ingresa un email o cédula</div>'; return; }
-    el.innerHTML = '<div class="state-loading"><div class="spin">⟳</div><br>Buscando...</div>';
+    el.innerHTML = '<div class="state-loading"><div class="spin">⟳</div><br>Cargando...</div>';
     try {
-      const r = await fetch('/api/mis-codigos', {
-        method: 'POST',
-        headers: headers(),
-        body: JSON.stringify({ dato })
-      });
+      const r = await fetch('/api/admin/compradores', { headers: headers() });
       const d = await r.json();
-      if (!d.codigos || !d.codigos.length) {
-        el.innerHTML = '<div class="msg msg-err">No se encontraron códigos para este dato</div>';
-        return;
-      }
-      const rows = d.codigos.map(x =>
-        `<tr>
-          <td><span class="code-mono ${x.dorado ? 'gold-code' : ''}">${x.dorado ? '⭐ ' : ''}${x.codigo}</span></td>
-          <td>${x.dorado
-            ? '<span class="badge badge-gold">Dorado</span>'
-            : '<span class="badge badge-ok">Normal</span>'}</td>
-        </tr>`
-      ).join('');
-      el.innerHTML = `
-        <p style="font-size:13px;color:var(--text2);margin-bottom:12px">${d.codigos.length} código(s) encontrado(s) para <strong>${dato}</strong></p>
-        <div class="table-card">
-          <table>
-            <thead><tr><th>Código</th><th>Tipo</th></tr></thead>
-            <tbody>${rows}</tbody>
-          </table>
-        </div>`;
+      _todosCompradores = d.compradores || [];
+      renderCompras();
     } catch (e) {
-      el.innerHTML = '<div class="msg msg-err">Error en la búsqueda</div>';
+      el.innerHTML = '<div class="msg msg-err">Error cargando compradores</div>';
     }
   }
+
+  window.setFiltroCompras = function(f) {
+    _filtroCompras = f;
+    ['todos','pagado','transf','pendiente'].forEach(id => {
+      const btn = document.getElementById('filtro-' + id);
+      if (!btn) return;
+      btn.classList.toggle('active', id === f);
+      btn.style.background = id === f ? 'var(--blue-light)' : '';
+      btn.style.color = id === f ? 'var(--blue-dark)' : '';
+      btn.style.borderColor = id === f ? 'var(--blue)' : '';
+    });
+    renderCompras();
+  };
+
+  window.filtrarCompradores = renderCompras;
+
+  function renderCompras() {
+    const el = document.getElementById('compras-result');
+    const buscar = (document.getElementById('buscar-dato')?.value || '').toLowerCase().trim();
+    let lista = _todosCompradores;
+
+    if (_filtroCompras === 'pagado') {
+      lista = lista.filter(c => c.estado === 'pagado');
+    } else if (_filtroCompras === 'transf') {
+      lista = lista.filter(c => ['transferencia_pendiente','transferencia_aprobada','transferencia_rechazada'].includes(c.estado));
+    } else if (_filtroCompras === 'pendiente') {
+      lista = lista.filter(c => c.estado === 'pendiente');
+    }
+
+    if (buscar) {
+      lista = lista.filter(c =>
+        (c.nombre   ||'').toLowerCase().includes(buscar) ||
+        (c.correo   ||'').toLowerCase().includes(buscar) ||
+        (c.cedula   ||'').toLowerCase().includes(buscar) ||
+        (c.telefono ||'').toLowerCase().includes(buscar) ||
+        (c.referencia||'').toLowerCase().includes(buscar)
+      );
+    }
+
+    if (!lista.length) {
+      el.innerHTML = '<div class="state-empty">Sin resultados</div>';
+      return;
+    }
+
+    const rows = lista.map(c => {
+      const fecha = c.fecha ? new Date(c.fecha).toLocaleDateString('es-CO') : '—';
+      let badge = '';
+      if (c.estado === 'pagado')                  badge = '<span class="badge badge-ok">✅ Wompi</span>';
+      else if (c.estado === 'transferencia_aprobada')  badge = '<span class="badge badge-ok">✓ Transf.</span>';
+      else if (c.estado === 'transferencia_pendiente') badge = '<span class="badge badge-pend">⏳ Pend. Transf.</span>';
+      else if (c.estado === 'transferencia_rechazada') badge = '<span class="badge badge-err">✕ Rechazada</span>';
+      else badge = '<span class="badge badge-pend">Pendiente</span>';
+
+      const doradoTag = (c.codigos||[]).some(x=>x.dorado) ? ' <span class="badge badge-gold">⭐</span>' : '';
+      const codsHtml = (c.codigos||[]).length
+        ? (c.codigos||[]).map(cod =>
+            `<span class="code-mono ${cod.dorado ? 'gold-code' : ''}" style="margin-right:6px;font-size:12px">${cod.dorado ? '⭐' : ''}${cod.codigo}</span>`
+          ).join('')
+        : '<span style="color:var(--text3);font-size:12px">Sin códigos asignados</span>';
+
+      return `
+        <div style="background:var(--surface);border:0.5px solid var(--border);border-radius:var(--radius-lg);padding:16px;margin-bottom:10px">
+          <div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:10px">
+            <div>
+              <div style="font-weight:600;font-size:14px">${c.nombre||'—'}${doradoTag}</div>
+              <div style="font-size:12px;color:var(--text2)">${c.correo||'—'}</div>
+              <div style="font-size:11px;color:var(--text3)">${c.cedula ? 'CC '+c.cedula : ''} ${c.telefono||''}</div>
+              ${c.referencia ? `<div style="font-size:11px;color:var(--text3)">Ref: <span class="code-mono">${c.referencia}</span></div>` : ''}
+            </div>
+            <div style="text-align:right">
+              ${badge}
+              <div style="font-size:12px;font-weight:600;margin-top:4px">${c.cantidad||0} cód.</div>
+              <div style="font-size:11px;color:var(--text3)">${fecha}</div>
+            </div>
+          </div>
+          <div style="margin-top:4px">${codsHtml}</div>
+        </div>`;
+    }).join('');
+
+    el.innerHTML = `<p style="font-size:13px;color:var(--text2);margin-bottom:10px">${lista.length} compra(s)</p>${rows}`;
+  }
+
+
 
   // ══════════════════════════════════
   // PROMOCIÓN

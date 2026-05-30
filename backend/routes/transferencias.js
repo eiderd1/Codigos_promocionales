@@ -263,27 +263,89 @@ router.post('/admin/transferencia-aprobar', authAdmin, async (req, res) => {
 });
 
 // ════════════════════════════════════════════════════════════════════════════
-// ADMIN — Rechazar transferencia
+// ADMIN — Rechazar transferencia + correo al cliente
 // ════════════════════════════════════════════════════════════════════════════
 router.post('/admin/transferencia-rechazar', authAdmin, async (req, res) => {
   try {
     const { referencia, notas } = req.body;
     if (!referencia) return res.status(400).json({ error: 'Referencia requerida' });
 
+    // Obtener datos del comprador antes de actualizar
+    const { data: compra, error: errCompra } = await supabase
+      .from('compras')
+      .select('correo, nombre, cantidad')
+      .eq('referencia', referencia)
+      .eq('estado', 'transferencia_pendiente')
+      .single();
+
+    if (errCompra || !compra) {
+      return res.status(404).json({ error: 'Transferencia no encontrada o ya procesada' });
+    }
+
     const { error } = await supabase
       .from('compras')
       .update({ estado: 'transferencia_rechazada', notas_admin: notas || null })
-      .eq('referencia', referencia)
-      .eq('estado', 'transferencia_pendiente');
+      .eq('referencia', referencia);
 
     if (error) return res.status(500).json({ error: 'Error actualizando estado' });
 
-    console.log(`🚫 Transferencia rechazada: ${referencia}`);
+    // Enviar correo de rechazo al cliente
+    const motivo = notas || 'No pudimos verificar tu transferencia.';
+    const precioPorCodigo = 3750;
+    const monto = compra.cantidad * precioPorCodigo;
+    try {
+      await enviarCorreoRechazo(compra.correo, compra.nombre, referencia, motivo, monto);
+    } catch (err) {
+      console.error('❌ Error enviando correo de rechazo:', err.message);
+      // No falla el endpoint si el correo falla
+    }
+
+    console.log(`🚫 Transferencia rechazada: ${referencia} | Motivo: ${motivo}`);
     res.json({ ok: true });
 
   } catch (e) {
+    console.error('💥 Error rechazando transferencia:', e);
     res.status(500).json({ error: 'Error interno del servidor' });
   }
 });
+
+
+// ── Correo de rechazo (independiente de enviarCorreo) ────────────────────────
+async function enviarCorreoRechazo(correo, nombre, referencia, motivo, monto) {
+  const nodemailer = require('nodemailer');
+  const transporter = nodemailer.createTransport({
+    host:   process.env.SMTP_HOST,
+    port:   Number(process.env.SMTP_PORT) || 587,
+    secure: process.env.SMTP_SECURE === 'true',
+    auth: { user: process.env.SMTP_USER, pass: process.env.SMTP_PASS }
+  });
+
+  const html = `
+  <div style="font-family:Arial,sans-serif;max-width:520px;margin:0 auto;background:#0f172a;color:#f1f5f9;border-radius:12px;overflow:hidden">
+    <div style="background:#dc2626;padding:20px 24px;text-align:center">
+      <h2 style="color:white;margin:0;font-size:20px">❌ Transferencia no aprobada</h2>
+    </div>
+    <div style="padding:24px">
+      <p>Hola <strong>${nombre || 'cliente'}</strong>,</p>
+      <p>Lamentablemente no pudimos verificar tu transferencia con referencia <strong>${referencia}</strong>.</p>
+      <div style="background:#1e293b;border-left:4px solid #ef4444;padding:12px 16px;border-radius:6px;margin:16px 0">
+        <p style="margin:0;font-size:14px;color:#fca5a5"><strong>Motivo:</strong> ${motivo}</p>
+      </div>
+      <p>Si crees que es un error, por favor contáctanos directamente con tu comprobante de pago y la referencia.</p>
+      <p style="color:#94a3b8;font-size:13px">Ref: <code style="background:#1e293b;padding:2px 6px;border-radius:4px">${referencia}</code></p>
+    </div>
+    <div style="background:#1e293b;padding:14px 24px;text-align:center">
+      <p style="color:#64748b;font-size:12px;margin:0">© Rifa Colombia — soporte disponible por WhatsApp</p>
+    </div>
+  </div>`;
+
+  await transporter.sendMail({
+    from:    `"Rifa Colombia" <${process.env.SMTP_USER}>`,
+    to:      correo,
+    subject: `❌ Tu transferencia no pudo ser verificada — Ref. ${referencia}`,
+    html
+  });
+  console.log(`📧 Correo de rechazo enviado a ${correo}`);
+}
 
 module.exports = router;
