@@ -490,6 +490,9 @@
       <button class="nav-item" onclick="showTab('transferencias')">
         <span class="nav-icon">🏦</span> Transferencias
       </button>
+      <button class="nav-item" onclick="showTab('notif')">
+        <span class="nav-icon">📢</span> Notificaciones
+      </button>
       <button class="nav-item" onclick="showTab('exportar')">
         <span class="nav-icon">📥</span> Exportar
       </button>
@@ -678,6 +681,126 @@
         </div>
       </div>
 
+      <!-- ── NOTIFICACIONES ── -->
+      <div id="tab-notif" class="section">
+        <div class="section-header">
+          <h2>Notificaciones</h2>
+          <p>Recordatorios, correos masivos y alertas a compradores</p>
+        </div>
+
+        <div class="metric-grid" style="margin-bottom:20px">
+          <div class="metric-card">
+            <div class="metric-label">Pagos incompletos +12h</div>
+            <div class="metric-value" id="notif-inc-count">—</div>
+            <div class="metric-sub">Wompi sin pagar + transferencias</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-label">Transferencias pendientes +12h</div>
+            <div class="metric-value" id="notif-pend-count">—</div>
+            <div class="metric-sub">solo recordatorio de transferencia</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-label">Compradores con códigos</div>
+            <div class="metric-value" id="notif-comp-count">—</div>
+            <div class="metric-sub">destinatarios para correo masivo</div>
+          </div>
+        </div>
+
+        <!-- Bloque 0: Pagos incompletos -->
+        <div class="form-card">
+          <div style="display:flex;align-items:flex-start;gap:12px;margin-bottom:14px">
+            <div style="font-size:28px;line-height:1">💳</div>
+            <div>
+              <div style="font-weight:600;font-size:14px;margin-bottom:3px">Recordatorio a pagos incompletos</div>
+              <div style="font-size:12px;color:var(--text2)">
+                Envía un correo a todos los clientes que <strong>iniciaron una compra (Wompi o transferencia)</strong>
+                hace más de 12 horas pero no completaron el pago. Un solo correo por persona aunque tenga varios intentos.
+                El correo se adapta: Wompi recibe botón para volver al sitio; transferencia ve su referencia de pago.
+              </div>
+            </div>
+          </div>
+          <div class="btn-actions">
+            <button class="btn" onclick="verCorreoPreview('incompleto-wompi')">👁 Ver correo Wompi</button>
+            <button class="btn" onclick="verCorreoPreview('incompleto-transf')">👁 Ver correo Transferencia</button>
+            <button class="btn btn-primary" onclick="enviarRecordatorioIncompletos()" id="btn-incompletos">
+              💳 Enviar recordatorio de pago
+            </button>
+          </div>
+          <div id="incompletos-msg"></div>
+        </div>
+
+        <!-- Bloque 1: Recordatorio transferencias -->
+        <div class="form-card">
+          <div style="display:flex;align-items:flex-start;gap:12px;margin-bottom:14px">
+            <div style="font-size:28px;line-height:1">⏰</div>
+            <div>
+              <div style="font-weight:600;font-size:14px;margin-bottom:3px">Recordatorio a transferencias pendientes</div>
+              <div style="font-size:12px;color:var(--text2)">
+                Envía un correo a todos los clientes que registraron una transferencia hace más de 12 horas y aún no han pagado.
+                Incluye su referencia de pago y un botón para contactarte por WhatsApp.
+              </div>
+            </div>
+          </div>
+          <div class="btn-actions">
+            <button class="btn" onclick="verCorreoPreview('transferencia')">👁 Ver correo</button>
+            <button class="btn btn-primary" onclick="enviarRecordatorio()" id="btn-recordatorio">
+              📤 Enviar recordatorios ahora
+            </button>
+          </div>
+          <div id="recordatorio-msg"></div>
+        </div>
+
+        <!-- Bloque 2: Correo masivo -->
+        <div class="form-card">
+          <div style="display:flex;align-items:flex-start;gap:12px;margin-bottom:16px">
+            <div style="font-size:28px;line-height:1">📢</div>
+            <div>
+              <div style="font-weight:600;font-size:14px;margin-bottom:3px">Correo masivo a compradores</div>
+              <div style="font-size:12px;color:var(--text2)">
+                Envía un mensaje a todos los compradores que ya tienen códigos asignados.
+                Ideal para anunciar fechas, resultados o información del evento.
+              </div>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-field" style="flex:1;min-width:100%">
+              <label>Título destacado (opcional — aparece grande en el correo)</label>
+              <input type="text" id="masivo-titulo" placeholder="Ej: ¡Llegamos al 100%! · Sorteo el 15 de junio">
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-field" style="flex:1;min-width:100%">
+              <label>Asunto del correo <span style="color:var(--red)">*</span></label>
+              <input type="text" id="masivo-asunto" placeholder="Ej: ¡Importante! Fecha del sorteo confirmada"
+                maxlength="150" oninput="actualizarContador('masivo-asunto','cnt-asunto',150)">
+              <span style="font-size:11px;color:var(--text3);margin-top:2px" id="cnt-asunto">0 / 150</span>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-field" style="flex:1;min-width:100%">
+              <label>Mensaje <span style="color:var(--red)">*</span></label>
+              <textarea id="masivo-mensaje" rows="5"
+                placeholder="Escribe el mensaje aquí. Puedes usar saltos de línea normalmente."
+                maxlength="2000" oninput="actualizarContador('masivo-mensaje','cnt-mensaje',2000)"
+                style="width:100%;padding:8px 10px;border:0.5px solid var(--border2);border-radius:var(--radius);font-size:13px;background:var(--surface);color:var(--text);outline:none;resize:vertical;font-family:inherit"></textarea>
+              <span style="font-size:11px;color:var(--text3);margin-top:2px" id="cnt-mensaje">0 / 2000</span>
+            </div>
+          </div>
+          <div id="masivo-preview" style="display:none;background:var(--surface2);border:0.5px solid var(--border);border-radius:var(--radius);padding:14px;margin-bottom:14px;font-size:13px">
+            <div style="font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px">Vista previa texto</div>
+            <div style="font-weight:600;margin-bottom:4px" id="prev-asunto"></div>
+            <div style="color:var(--text2);white-space:pre-line;line-height:1.6" id="prev-mensaje"></div>
+          </div>
+          <div class="btn-actions">
+            <button class="btn" onclick="togglePreview()">👁 Vista previa texto</button>
+            <button class="btn btn-primary" onclick="enviarMasivo()" id="btn-masivo">
+              📢 Enviar a todos los compradores
+            </button>
+          </div>
+          <div id="masivo-msg"></div>
+        </div>
+      </div>
+
       <!-- ── EXPORTAR ── -->
       <div id="tab-exportar" class="section">
         <div class="section-header">
@@ -761,7 +884,7 @@
     document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
     document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
     document.getElementById('tab-' + tab).classList.add('active');
-    const tabs = ['dashboard','codigos','compras','promo','correo','transferencias','exportar'];
+    const tabs = ['dashboard','codigos','compras','promo','correo','transferencias','notif','exportar'];
     const idx = tabs.indexOf(tab);
     document.querySelectorAll('.nav-item')[idx].classList.add('active');
 
@@ -770,6 +893,7 @@
     if (tab === 'compras')        loadCompras();
     if (tab === 'promo')          loadPromo();
     if (tab === 'transferencias') loadTransferencias();
+    if (tab === 'notif')          loadNotifStats();
   }
 
   // ══════════════════════════════════
@@ -1179,11 +1303,130 @@
     }
   }
 
+  // ══════════════════════════════════
+  // NOTIFICACIONES
+  // ══════════════════════════════════
+
+  async function loadNotifStats() {
+    ['notif-pend-count','notif-comp-count','notif-inc-count'].forEach(id => {
+      document.getElementById(id).textContent = '…';
+    });
+    try {
+      const r = await fetch('/api/admin/notif-stats', { headers: headers() });
+      const d = await r.json();
+      document.getElementById('notif-pend-count').textContent = d.transferencias_pendientes_12h ?? '0';
+      document.getElementById('notif-comp-count').textContent = d.compradores_con_codigos ?? '0';
+      document.getElementById('notif-inc-count').textContent  = d.pagos_incompletos_12h ?? '0';
+    } catch (e) {
+      ['notif-pend-count','notif-comp-count','notif-inc-count'].forEach(id => {
+        document.getElementById(id).textContent = 'error';
+      });
+    }
+  }
+
+  async function enviarRecordatorioIncompletos() {
+    const btn   = document.getElementById('btn-incompletos');
+    const msg   = document.getElementById('incompletos-msg');
+    const total = parseInt(document.getElementById('notif-inc-count').textContent) || 0;
+    if (total === 0) { msg.innerHTML = '<div class="msg msg-info">ℹ️ No hay pagos incompletos con más de 12 horas.</div>'; return; }
+    if (!confirm(`¿Enviar recordatorio de pago a ${total} cliente(s) con compra incompleta?\n\nIncluye Wompi no pagados y transferencias pendientes.`)) return;
+    btn.disabled = true; btn.textContent = '⟳ Enviando...';
+    msg.innerHTML = '<div class="state-loading">Enviando correos, por favor espera...</div>';
+    try {
+      const r = await fetch('/api/admin/recordatorio-pagos-incompletos', { method: 'POST', headers: headers() });
+      const d = await r.json();
+      if (d.ok) {
+        msg.innerHTML = `<div class="msg msg-ok">✓ Recordatorios enviados: <strong>${d.enviados}</strong> de <strong>${d.total}</strong> clientes</div>`;
+        loadNotifStats();
+      } else {
+        msg.innerHTML = `<div class="msg msg-err">❌ ${d.error || 'Error al enviar'}</div>`;
+      }
+    } catch (e) { msg.innerHTML = '<div class="msg msg-err">Error de conexión</div>'; }
+    finally { btn.disabled = false; btn.textContent = '💳 Enviar recordatorio de pago'; }
+  }
+
+  async function enviarRecordatorio() {
+    const btn   = document.getElementById('btn-recordatorio');
+    const msg   = document.getElementById('recordatorio-msg');
+    const total = parseInt(document.getElementById('notif-pend-count').textContent) || 0;
+    if (total === 0) { msg.innerHTML = '<div class="msg msg-info">ℹ️ No hay transferencias pendientes con más de 12 horas.</div>'; return; }
+    if (!confirm(`¿Enviar recordatorio a ${total} cliente(s) con transferencia pendiente?`)) return;
+    btn.disabled = true; btn.textContent = '⟳ Enviando...';
+    msg.innerHTML = '<div class="state-loading">Enviando correos, por favor espera...</div>';
+    try {
+      const r = await fetch('/api/admin/recordatorio-transferencias', { method: 'POST', headers: headers() });
+      const d = await r.json();
+      if (d.ok) {
+        msg.innerHTML = `<div class="msg msg-ok">✓ Recordatorios enviados: <strong>${d.enviados}</strong> de <strong>${d.total}</strong> clientes</div>`;
+        loadNotifStats();
+      } else {
+        msg.innerHTML = `<div class="msg msg-err">❌ ${d.error || 'Error al enviar'}</div>`;
+      }
+    } catch (e) { msg.innerHTML = '<div class="msg msg-err">Error de conexión</div>'; }
+    finally { btn.disabled = false; btn.textContent = '📤 Enviar recordatorios ahora'; }
+  }
+
+  function actualizarContador(inputId, counterId, max) {
+    const val = document.getElementById(inputId).value.length;
+    const el  = document.getElementById(counterId);
+    el.textContent = `${val} / ${max}`;
+    el.style.color = val > max * 0.9 ? 'var(--amber)' : 'var(--text3)';
+    const preview = document.getElementById('masivo-preview');
+    if (preview && preview.style.display !== 'none') {
+      document.getElementById('prev-asunto').textContent  = document.getElementById('masivo-asunto').value  || '(sin asunto)';
+      document.getElementById('prev-mensaje').textContent = document.getElementById('masivo-mensaje').value || '(sin mensaje)';
+    }
+  }
+
+  function togglePreview() {
+    const preview = document.getElementById('masivo-preview');
+    const asunto  = document.getElementById('masivo-asunto').value.trim();
+    const mensaje = document.getElementById('masivo-mensaje').value.trim();
+    if (!asunto && !mensaje) { document.getElementById('masivo-msg').innerHTML = '<div class="msg msg-err">Completa al menos el asunto y el mensaje para previsualizar</div>'; return; }
+    document.getElementById('masivo-msg').innerHTML = '';
+    document.getElementById('prev-asunto').textContent  = asunto  || '(sin asunto)';
+    document.getElementById('prev-mensaje').textContent = mensaje || '(sin mensaje)';
+    preview.style.display = preview.style.display === 'none' ? 'block' : 'none';
+  }
+
+  async function enviarMasivo() {
+    const asunto  = document.getElementById('masivo-asunto').value.trim();
+    const mensaje = document.getElementById('masivo-mensaje').value.trim();
+    const titulo  = document.getElementById('masivo-titulo').value.trim();
+    const msg     = document.getElementById('masivo-msg');
+    const btn     = document.getElementById('btn-masivo');
+    const total   = parseInt(document.getElementById('notif-comp-count').textContent) || 0;
+    if (!asunto)  { msg.innerHTML = '<div class="msg msg-err">El asunto es obligatorio</div>'; return; }
+    if (!mensaje) { msg.innerHTML = '<div class="msg msg-err">El mensaje es obligatorio</div>'; return; }
+    if (total === 0) { msg.innerHTML = '<div class="msg msg-info">No hay compradores con códigos aún.</div>'; return; }
+    if (!confirm(`¿Enviar este correo a ${total} comprador(es) con códigos asignados?\n\nAsunto: "${asunto}"\n\nEsta acción no se puede deshacer.`)) return;
+    btn.disabled = true; btn.textContent = '⟳ Enviando...';
+    msg.innerHTML = `<div class="state-loading">Enviando a ${total} compradores, puede tardar unos segundos...</div>`;
+    try {
+      const r = await fetch('/api/admin/correo-masivo', {
+        method: 'POST', headers: headers(),
+        body: JSON.stringify({ asunto, mensaje, tituloDestacado: titulo || null })
+      });
+      const d = await r.json();
+      if (d.ok) {
+        msg.innerHTML = `<div class="msg msg-ok">✓ Correo masivo enviado: <strong>${d.enviados}</strong> de <strong>${d.total}</strong> destinatarios</div>`;
+        document.getElementById('masivo-titulo').value  = '';
+        document.getElementById('masivo-asunto').value  = '';
+        document.getElementById('masivo-mensaje').value = '';
+        document.getElementById('cnt-asunto').textContent  = '0 / 150';
+        document.getElementById('cnt-mensaje').textContent = '0 / 2000';
+        document.getElementById('masivo-preview').style.display = 'none';
+      } else {
+        msg.innerHTML = `<div class="msg msg-err">❌ ${d.error || 'Error al enviar'}</div>`;
+      }
+    } catch (e) { msg.innerHTML = '<div class="msg msg-err">Error de conexión</div>'; }
+    finally { btn.disabled = false; btn.textContent = '📢 Enviar a todos los compradores'; }
+  }
+
   function exportar(e) {
     e.preventDefault();
     const el = document.getElementById('export-msg');
     el.innerHTML = '<div class="msg msg-info">Preparando descarga...</div>';
-    // Construir URL con token como query param
     const url = `/api/admin/exportar?token=${encodeURIComponent(ADMIN_TOKEN)}`;
     const a = document.createElement('a');
     a.href = url;
@@ -1191,6 +1434,138 @@
     a.click();
     setTimeout(() => el.innerHTML = '', 3000);
   }
+
+  // ══════════════════════════════════════════════════════
+  // PREVIEW DE CORREOS
+  // ══════════════════════════════════════════════════════
+  const PREVIEW_TEMPLATES = {
+
+    'transferencia': {
+      titulo:    '⏰ Correo — Transferencia pendiente',
+      subtitulo: 'Se envía a clientes con transferencia bancaria sin confirmar +12h',
+      asunto:    '⏰ ¿Olvidaste tu transferencia? — Ref. TRF-000000000000-0000',
+      html: () => `<div style="font-family:Arial,sans-serif;background:#0f172a;padding:20px;color:#f1f5f9;">
+        <div style="max-width:460px;margin:auto">
+          <div style="background:linear-gradient(135deg,#92400e,#d97706);padding:18px 20px;border-radius:10px 10px 0 0;text-align:center;">
+            <div style="font-size:36px;">⏰</div>
+            <h2 style="margin:6px 0 0;color:#fff;font-size:20px;">¿Olvidaste completar tu compra?</h2>
+          </div>
+          <div style="background:#1e293b;padding:22px;border-radius:0 0 10px 10px;">
+            <p style="margin:0 0 14px;">Hola <strong>Juan Pérez</strong>,</p>
+            <p style="color:#cbd5e1;font-size:14px;line-height:1.7;">Registramos tu intención de pago por <strong>4 códigos</strong> por un valor de <strong style="color:#4ade80;">$15.000 COP</strong>, pero aún no hemos recibido tu transferencia.</p>
+            <div style="background:#0f172a;border-radius:10px;padding:14px 16px;margin:16px 0;border:1px solid #334155;">
+              <p style="margin:0 0 8px;font-size:12px;color:#94a3b8;">Tu referencia de pago:</p>
+              <p style="margin:0;font-family:monospace;font-size:16px;font-weight:bold;color:#f59e0b;letter-spacing:1px;">TRF-1780080547626-6286</p>
+            </div>
+            <p style="color:#cbd5e1;font-size:13px;line-height:1.7;">Recuerda incluir esta referencia en la descripción de tu transferencia para que podamos identificar tu pago rápidamente.</p>
+            <div style="text-align:center;margin:20px 0 8px;">
+              <a href="#" style="display:inline-block;background:#25D366;color:white;text-decoration:none;padding:13px 28px;border-radius:10px;font-weight:bold;font-size:14px;">💬 Confirmar pago por WhatsApp</a>
+            </div>
+            <p style="text-align:center;color:#64748b;font-size:12px;margin:12px 0 0;">Si ya realizaste el pago, ignora este mensaje. Lo verificaremos pronto.</p>
+          </div>
+        </div>
+      </div>`
+    },
+
+    'incompleto-wompi': {
+      titulo:    '💳 Correo — Pago Wompi no completado',
+      subtitulo: 'Se envía a clientes que iniciaron un pago con Wompi pero no lo terminaron',
+      asunto:    '💳 Completa tu compra — 4 códigos te esperan',
+      html: () => `<div style="font-family:Arial,sans-serif;background:#0f172a;padding:20px;color:#f1f5f9;">
+        <div style="max-width:460px;margin:auto">
+          <div style="background:linear-gradient(135deg,#1e3a5f,#2563eb);padding:18px 20px;border-radius:10px 10px 0 0;text-align:center;">
+            <div style="font-size:36px;">💳</div>
+            <h2 style="margin:6px 0 0;color:#fff;font-size:20px;">¡Tu compra está incompleta!</h2>
+            <p style="margin:6px 0 0;color:#93c5fd;font-size:13px;">⚡ Pago Wompi no completado</p>
+          </div>
+          <div style="background:#1e293b;padding:22px;border-radius:0 0 10px 10px;">
+            <p style="margin:0 0 14px;">Hola <strong>María García</strong>,</p>
+            <p style="color:#cbd5e1;font-size:14px;line-height:1.7;margin:0 0 14px;">Iniciaste una compra de <strong>4 códigos</strong> por <strong style="color:#4ade80;">$15.000 COP</strong> pero el pago no se completó.<br>Puedes intentarlo nuevamente o contactarnos si necesitas ayuda.</p>
+            <div style="text-align:center;margin:16px 0;">
+              <a href="#" style="display:inline-block;background:#2563eb;color:white;text-decoration:none;padding:13px 28px;border-radius:10px;font-weight:bold;font-size:14px;">🎟️ Volver a comprar</a>
+            </div>
+            <div style="text-align:center;margin:12px 0 8px;">
+              <a href="#" style="display:inline-block;background:#25D366;color:white;text-decoration:none;padding:13px 28px;border-radius:10px;font-weight:bold;font-size:14px;">💬 Necesito ayuda por WhatsApp</a>
+            </div>
+            <p style="text-align:center;color:#64748b;font-size:12px;margin:12px 0 0;">Si ya completaste tu pago, ignora este mensaje. Lo procesaremos pronto.</p>
+          </div>
+        </div>
+      </div>`
+    },
+
+    'incompleto-transf': {
+      titulo:    '🏦 Correo — Pago incompleto (transferencia)',
+      subtitulo: 'Variante para clientes con transferencia bancaria pendiente',
+      asunto:    '💳 Completa tu compra — 8 códigos te esperan',
+      html: () => `<div style="font-family:Arial,sans-serif;background:#0f172a;padding:20px;color:#f1f5f9;">
+        <div style="max-width:460px;margin:auto">
+          <div style="background:linear-gradient(135deg,#1e3a5f,#2563eb);padding:18px 20px;border-radius:10px 10px 0 0;text-align:center;">
+            <div style="font-size:36px;">💳</div>
+            <h2 style="margin:6px 0 0;color:#fff;font-size:20px;">¡Tu compra está incompleta!</h2>
+            <p style="margin:6px 0 0;color:#93c5fd;font-size:13px;">🏦 Transferencia bancaria pendiente</p>
+          </div>
+          <div style="background:#1e293b;padding:22px;border-radius:0 0 10px 10px;">
+            <p style="margin:0 0 14px;">Hola <strong>Carlos Rodríguez</strong>,</p>
+            <p style="color:#cbd5e1;font-size:14px;line-height:1.7;margin:0 0 14px;">Registramos tu intención de pago por transferencia bancaria de <strong style="color:#4ade80;">$30.000 COP</strong> por <strong>8 códigos</strong>.<br>Aún no hemos recibido tu transferencia.</p>
+            <div style="background:#0f172a;border-radius:10px;padding:14px 16px;margin:16px 0;border:1px solid #334155;">
+              <p style="margin:0 0 6px;font-size:12px;color:#94a3b8;">Incluye esta referencia en tu transferencia:</p>
+              <p style="margin:0;font-family:monospace;font-size:16px;font-weight:bold;color:#f59e0b;letter-spacing:1px;">TRF-1780080547626-6286</p>
+            </div>
+            <div style="text-align:center;margin:20px 0 8px;">
+              <a href="#" style="display:inline-block;background:#25D366;color:white;text-decoration:none;padding:13px 28px;border-radius:10px;font-weight:bold;font-size:14px;">💬 Necesito ayuda por WhatsApp</a>
+            </div>
+            <p style="text-align:center;color:#64748b;font-size:12px;margin:12px 0 0;">Si ya completaste tu pago, ignora este mensaje. Lo procesaremos pronto.</p>
+          </div>
+        </div>
+      </div>`
+    }
+  };
+
+  function verCorreoPreview(tipo) {
+    const tpl = PREVIEW_TEMPLATES[tipo];
+    if (!tpl) return;
+    document.getElementById('preview-titulo').textContent    = tpl.titulo;
+    document.getElementById('preview-subtitulo').textContent = tpl.subtitulo;
+    document.getElementById('preview-asunto').textContent    = tpl.asunto;
+    document.getElementById('preview-iframe').srcdoc         = tpl.html();
+    document.getElementById('preview-modal').style.display  = 'flex';
+    document.body.style.overflow = 'hidden';
+  }
+
+  function cerrarPreview() {
+    document.getElementById('preview-modal').style.display = 'none';
+    document.body.style.overflow = '';
+  }
+
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') cerrarPreview(); });
+
 </script>
+
+<!-- ── MODAL PREVIEW CORREO ── -->
+<div id="preview-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:200;align-items:flex-start;justify-content:center;padding:20px;overflow-y:auto;" onclick="if(event.target===this)cerrarPreview()">
+  <div style="background:#1e293b;border-radius:14px;width:100%;max-width:580px;margin:20px auto;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.5)">
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid #334155">
+      <div>
+        <div style="font-weight:600;color:#f1f5f9;font-size:14px" id="preview-titulo">Vista previa</div>
+        <div style="font-size:11px;color:#64748b;margin-top:2px" id="preview-subtitulo"></div>
+      </div>
+      <button onclick="cerrarPreview()" style="background:#334155;border:none;color:#94a3b8;width:30px;height:30px;border-radius:50%;cursor:pointer;font-size:18px;line-height:1;display:flex;align-items:center;justify-content:center;">×</button>
+    </div>
+    <div style="padding:10px 20px;background:#0f172a;border-bottom:1px solid #1e293b">
+      <span style="font-size:11px;color:#64748b;text-transform:uppercase;letter-spacing:.05em">Asunto: </span>
+      <span style="font-size:13px;color:#e2e8f0;font-weight:500" id="preview-asunto"></span>
+    </div>
+    <div style="padding:16px 20px">
+      <div style="border-radius:10px;overflow:hidden;border:1px solid #334155">
+        <iframe id="preview-iframe" style="width:100%;min-height:500px;border:none;display:block;background:#0f172a" scrolling="yes"></iframe>
+      </div>
+    </div>
+    <div style="padding:10px 20px;border-top:1px solid #334155;text-align:right">
+      <span style="font-size:11px;color:#64748b">Vista previa — datos de ejemplo</span>
+      <button onclick="cerrarPreview()" style="margin-left:12px;padding:6px 14px;background:var(--blue);color:#fff;border:none;border-radius:6px;cursor:pointer;font-size:12px">Cerrar</button>
+    </div>
+  </div>
+</div>
+
 </body>
 </html>

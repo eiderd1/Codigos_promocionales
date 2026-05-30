@@ -5,6 +5,7 @@ const crypto = require('crypto');
 const { generarCodigos } = require('../services/codigos');
 const { enviarCorreo } = require('../services/correo');
 const { enviarWhatsApp } = require('../services/whatsapp');
+const { enviarNotifAdmin } = require('../services/notificaciones');
 const supabase = require('../config/supabase');
 
 function validarFirma(event) {
@@ -153,6 +154,25 @@ router.post('/webhook-wompi', async (req, res) => {
     if (errorTx) {
       console.error("❌ Error insertando transacción:", errorTx);
       return res.sendStatus(500);
+    }
+
+    // ========================
+    // 🔔 NOTIFICAR AL ADMIN
+    // ========================
+    try {
+      const precioPorCodigo = 3750;
+      await enviarNotifAdmin({
+        tipo:       'wompi',
+        nombre,
+        correo:     email,
+        cedula,
+        telefono,
+        cantidad,
+        referencia,
+        monto:      cantidad * precioPorCodigo
+      });
+    } catch (err) {
+      console.error("❌ Error notif admin:", err.message);
     }
 
     // ========================

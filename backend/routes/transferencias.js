@@ -1,34 +1,21 @@
 // routes/transferencias.js
 // ─────────────────────────────────────────────────────────────────────────────
-// Maneja compras por transferencia bancaria.
-//
-//  POST /api/transferencia-registrar   (PÚBLICO)
-//    - El cliente llena el formulario y envía sus datos + comprobante
-//    - Queda en estado "transferencia_pendiente"
-//
-//  GET  /api/admin/transferencias       (ADMIN)
-//    - Lista todas las transferencias pendientes/procesadas
-//
-//  POST /api/admin/transferencia-aprobar  (ADMIN)
-//    - El admin aprueba, genera los códigos automáticamente y envía correo
-//
-//  POST /api/admin/transferencia-rechazar (ADMIN)
-//    - El admin rechaza y puede dejar una nota
-// ─────────────────────────────────────────────────────────────────────────────
 
 const express = require('express');
 const router  = express.Router();
+const https   = require('https');
 const supabase = require('../config/supabase');
 const { generarCodigos } = require('../services/codigos');
 const { enviarCorreo }   = require('../services/correo');
 const { enviarWhatsApp } = require('../services/whatsapp');
+const { enviarNotifAdmin } = require('../services/notificaciones');
 
 // ── Validación básica de correo ──────────────────────────────────────────────
 function esCorreoValido(correo) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(correo);
 }
 
-// ── Auth middleware (reutilizable igual que en admin.js) ─────────────────────
+// ── Auth middleware ──────────────────────────────────────────────────────────
 function authAdmin(req, res, next) {
   const token  = req.headers['x-admin-token'] || req.query.token;
   const SECRET = process.env.ADMIN_SECRET;
@@ -44,7 +31,6 @@ router.post('/transferencia-registrar', async (req, res) => {
   try {
     const { nombre, correo, cedula, telefono, direccion, cantidad } = req.body;
 
-    // ── Validaciones ────────────────────────────────────────────────────────
     if (!nombre || !correo || !cantidad) {
       return res.status(400).json({ error: 'Nombre, correo y cantidad son obligatorios' });
     }
@@ -56,7 +42,6 @@ router.post('/transferencia-registrar', async (req, res) => {
       return res.status(400).json({ error: 'Cantidad inválida. Elige 4, 8 o 16' });
     }
 
-    // ── Verificar stock ──────────────────────────────────────────────────────
     const { count: disponibles } = await supabase
       .from('codigos')
       .select('*', { count: 'exact', head: true })
@@ -66,14 +51,11 @@ router.post('/transferencia-registrar', async (req, res) => {
       return res.status(400).json({ error: 'No hay códigos disponibles' });
     }
 
-    const cantidadFinal = Math.min(Number(cantidad), disponibles);
-    const precioPorCodigo = 3750;
-    const montoTotal = cantidadFinal * precioPorCodigo;
+    const cantidadFinal    = Math.min(Number(cantidad), disponibles);
+    const precioPorCodigo  = 3750;
+    const montoTotal       = cantidadFinal * precioPorCodigo;
+    const referencia       = `TRF-${Date.now()}-${Math.floor(Math.random() * 9999)}`;
 
-    // ── Generar referencia única ─────────────────────────────────────────────
-    const referencia = `TRF-${Date.now()}-${Math.floor(Math.random() * 9999)}`;
-
-    // ── Guardar en tabla compras con estado especial ─────────────────────────
     const { error: errorCompra } = await supabase
       .from('compras')
       .insert([{
@@ -94,6 +76,22 @@ router.post('/transferencia-registrar', async (req, res) => {
     }
 
     console.log(`🏦 Transferencia registrada: ${referencia} | ${cantidadFinal} códigos | $${montoTotal.toLocaleString()}`);
+
+    // ── Notificar al admin de la nueva transferencia pendiente ───────────────
+    try {
+      await enviarNotifAdmin({
+        tipo:      'transferencia',
+        nombre,
+        correo,
+        cedula:    cedula    || '',
+        telefono:  telefono  || '',
+        cantidad:  cantidadFinal,
+        referencia,
+        monto:     montoTotal
+      });
+    } catch (err) {
+      console.error('❌ Error notif admin transferencia:', err.message);
+    }
 
     res.json({
       ok: true,
@@ -123,7 +121,6 @@ router.get('/admin/transferencias', authAdmin, async (req, res) => {
 
     if (error) return res.status(500).json({ ok: false });
 
-    // Adjuntar códigos a las aprobadas
     const refs = (compras || [])
       .filter(c => c.estado === 'transferencia_aprobada')
       .map(c => c.referencia);
@@ -159,7 +156,6 @@ router.post('/admin/transferencia-aprobar', authAdmin, async (req, res) => {
     const { referencia, notas } = req.body;
     if (!referencia) return res.status(400).json({ error: 'Referencia requerida' });
 
-    // ── Verificar que exista y esté pendiente ────────────────────────────────
     const { data: compra, error: errCompra } = await supabase
       .from('compras')
       .select('*')
@@ -171,7 +167,6 @@ router.post('/admin/transferencia-aprobar', authAdmin, async (req, res) => {
       return res.status(404).json({ error: 'Transferencia no encontrada o ya procesada' });
     }
 
-    // ── Generar códigos (misma lógica que webhook) ───────────────────────────
     let codigos;
     try {
       codigos = await generarCodigos(compra.cantidad, referencia);
@@ -184,10 +179,8 @@ router.post('/admin/transferencia-aprobar', authAdmin, async (req, res) => {
       return res.status(400).json({ error: 'Sin stock disponible para asignar' });
     }
 
-    // Mezclar aleatoriamente antes de entregar
     codigos = [...codigos].sort(() => Math.random() - 0.5);
 
-    // ── Guardar transacción ──────────────────────────────────────────────────
     const wompiId = `MANUAL-${referencia}`;
     const { error: errorTx } = await supabase
       .from('transacciones')
@@ -205,10 +198,9 @@ router.post('/admin/transferencia-aprobar', authAdmin, async (req, res) => {
       return res.status(500).json({ error: 'Error interno' });
     }
 
-    // ── Premio dorado si aplica ──────────────────────────────────────────────
     const codigoDorado = codigos.find(c => c.dorado);
     const updateData = {
-      estado:     'transferencia_aprobada',
+      estado:      'transferencia_aprobada',
       notas_admin: notas || null
     };
     if (codigoDorado?.premioDorado) {
@@ -217,7 +209,6 @@ router.post('/admin/transferencia-aprobar', authAdmin, async (req, res) => {
 
     await supabase.from('compras').update(updateData).eq('referencia', referencia);
 
-    // ── Actualizar códigos con datos del comprador ───────────────────────────
     for (const c of codigos) {
       await supabase
         .from('codigos')
@@ -232,14 +223,17 @@ router.post('/admin/transferencia-aprobar', authAdmin, async (req, res) => {
         .eq('codigo', c.codigo);
     }
 
-    // ── Enviar correo ────────────────────────────────────────────────────────
+    // ── Enviar correo (con log explícito para detectar fallos) ───────────────
     try {
       await enviarCorreo(compra.correo, codigos, codigoDorado?.premioDorado || null);
+      console.log(`📧 Correo de aprobación enviado a ${compra.correo}`);
     } catch (err) {
-      console.error('❌ Error correo:', err.message);
+      // 🔧 FIX: el error ya no se traga silenciosamente
+      console.error(`❌ FALLO AL ENVIAR CORREO a ${compra.correo}:`, err.message);
+      // Continúa y responde OK para no bloquear la aprobación,
+      // pero el admin verá el error en los logs
     }
 
-    // ── Enviar WhatsApp si hay teléfono ──────────────────────────────────────
     if (compra.telefono) {
       try {
         await enviarWhatsApp(compra.telefono, compra.nombre, codigos);
@@ -263,14 +257,14 @@ router.post('/admin/transferencia-aprobar', authAdmin, async (req, res) => {
 });
 
 // ════════════════════════════════════════════════════════════════════════════
-// ADMIN — Rechazar transferencia + correo al cliente
+// ADMIN — Rechazar transferencia
+// 🔧 FIX: migrado de nodemailer a Brevo (igual que el resto del sistema)
 // ════════════════════════════════════════════════════════════════════════════
 router.post('/admin/transferencia-rechazar', authAdmin, async (req, res) => {
   try {
     const { referencia, notas } = req.body;
     if (!referencia) return res.status(400).json({ error: 'Referencia requerida' });
 
-    // Obtener datos del comprador antes de actualizar
     const { data: compra, error: errCompra } = await supabase
       .from('compras')
       .select('correo, nombre, cantidad')
@@ -289,15 +283,14 @@ router.post('/admin/transferencia-rechazar', authAdmin, async (req, res) => {
 
     if (error) return res.status(500).json({ error: 'Error actualizando estado' });
 
-    // Enviar correo de rechazo al cliente
     const motivo = notas || 'No pudimos verificar tu transferencia.';
     const precioPorCodigo = 3750;
     const monto = compra.cantidad * precioPorCodigo;
+
     try {
       await enviarCorreoRechazo(compra.correo, compra.nombre, referencia, motivo, monto);
     } catch (err) {
       console.error('❌ Error enviando correo de rechazo:', err.message);
-      // No falla el endpoint si el correo falla
     }
 
     console.log(`🚫 Transferencia rechazada: ${referencia} | Motivo: ${motivo}`);
@@ -309,16 +302,13 @@ router.post('/admin/transferencia-rechazar', authAdmin, async (req, res) => {
   }
 });
 
-
-// ── Correo de rechazo (independiente de enviarCorreo) ────────────────────────
+// ── Correo de rechazo via Brevo (igual que el resto del sistema) ─────────────
+// 🔧 FIX: reemplaza nodemailer que requería variables SMTP_* no configuradas
 async function enviarCorreoRechazo(correo, nombre, referencia, motivo, monto) {
-  const nodemailer = require('nodemailer');
-  const transporter = nodemailer.createTransport({
-    host:   process.env.SMTP_HOST,
-    port:   Number(process.env.SMTP_PORT) || 587,
-    secure: process.env.SMTP_SECURE === 'true',
-    auth: { user: process.env.SMTP_USER, pass: process.env.SMTP_PASS }
-  });
+  if (!process.env.BREVO_API_KEY) {
+    console.error("❌ BREVO_API_KEY no configurada para correo de rechazo");
+    return;
+  }
 
   const html = `
   <div style="font-family:Arial,sans-serif;max-width:520px;margin:0 auto;background:#0f172a;color:#f1f5f9;border-radius:12px;overflow:hidden">
@@ -335,16 +325,43 @@ async function enviarCorreoRechazo(correo, nombre, referencia, motivo, monto) {
       <p style="color:#94a3b8;font-size:13px">Ref: <code style="background:#1e293b;padding:2px 6px;border-radius:4px">${referencia}</code></p>
     </div>
     <div style="background:#1e293b;padding:14px 24px;text-align:center">
-      <p style="color:#64748b;font-size:12px;margin:0">© Rifa Colombia — soporte disponible por WhatsApp</p>
+      <p style="color:#64748b;font-size:12px;margin:0">EiderTech Soluciones — soporte disponible por WhatsApp</p>
     </div>
   </div>`;
 
-  await transporter.sendMail({
-    from:    `"Rifa Colombia" <${process.env.SMTP_USER}>`,
-    to:      correo,
-    subject: `❌ Tu transferencia no pudo ser verificada — Ref. ${referencia}`,
-    html
+  const payload = JSON.stringify({
+    sender:      { name: "EiderTech Soluciones", email: process.env.BREVO_FROM_EMAIL || "eidercobo383@gmail.com" },
+    to:          [{ email: correo }],
+    subject:     `❌ Tu transferencia no pudo ser verificada — Ref. ${referencia}`,
+    htmlContent: html
   });
+
+  await new Promise((resolve, reject) => {
+    const req = https.request({
+      hostname: 'api.brevo.com',
+      path:     '/v3/smtp/email',
+      method:   'POST',
+      headers: {
+        'Content-Type':   'application/json',
+        'api-key':        process.env.BREVO_API_KEY,
+        'Content-Length': Buffer.byteLength(payload)
+      }
+    }, (res) => {
+      let data = '';
+      res.on('data', chunk => data += chunk);
+      res.on('end', () => {
+        if (res.statusCode >= 200 && res.statusCode < 300) {
+          resolve(data);
+        } else {
+          reject(new Error(`Brevo error ${res.statusCode}: ${data}`));
+        }
+      });
+    });
+    req.on('error', reject);
+    req.write(payload);
+    req.end();
+  });
+
   console.log(`📧 Correo de rechazo enviado a ${correo}`);
 }
 
