@@ -39,7 +39,6 @@
       font-size: 14px;
     }
 
-    /* ── LOGIN ─────────────────────────────── */
     #login-screen {
       min-height: 100vh;
       display: flex;
@@ -57,382 +56,184 @@
       max-width: 380px;
     }
 
-    .login-card h1 {
-      font-size: 20px;
-      font-weight: 600;
-      margin-bottom: 6px;
-    }
-
-    .login-card p {
-      font-size: 13px;
-      color: var(--text2);
-      margin-bottom: 28px;
-    }
-
-    .login-card label {
-      display: block;
-      font-size: 12px;
-      color: var(--text2);
-      margin-bottom: 6px;
-    }
-
+    .login-card h1 { font-size: 20px; font-weight: 600; margin-bottom: 6px; }
+    .login-card p { font-size: 13px; color: var(--text2); margin-bottom: 28px; }
+    .login-card label { display: block; font-size: 12px; color: var(--text2); margin-bottom: 6px; }
     .login-card input {
-      width: 100%;
-      padding: 9px 12px;
-      border: 0.5px solid var(--border2);
-      border-radius: var(--radius);
-      font-size: 14px;
-      outline: none;
-      margin-bottom: 16px;
-      background: var(--surface);
-      color: var(--text);
+      width: 100%; padding: 9px 12px; border: 0.5px solid var(--border2);
+      border-radius: var(--radius); font-size: 14px; outline: none;
+      margin-bottom: 16px; background: var(--surface); color: var(--text);
     }
-
     .login-card input:focus { border-color: var(--blue); }
-
     .login-card button {
-      width: 100%;
-      padding: 9px;
-      background: var(--blue);
-      color: #E6F1FB;
-      border: none;
-      border-radius: var(--radius);
-      font-size: 14px;
-      font-weight: 500;
-      cursor: pointer;
+      width: 100%; padding: 9px; background: var(--blue); color: #E6F1FB;
+      border: none; border-radius: var(--radius); font-size: 14px; font-weight: 500; cursor: pointer;
     }
-
     .login-card button:hover { background: var(--blue-dark); }
+    #login-err { font-size: 12px; color: var(--red); margin-top: 10px; min-height: 16px; }
 
-    #login-err {
-      font-size: 12px;
-      color: var(--red);
-      margin-top: 10px;
-      min-height: 16px;
-    }
-
-    /* ── LAYOUT ────────────────────────────── */
     #app { display: none; }
 
     .topbar {
-      background: var(--surface);
-      border-bottom: 0.5px solid var(--border);
-      padding: 0 24px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      height: 52px;
-      position: sticky;
-      top: 0;
-      z-index: 10;
+      background: var(--surface); border-bottom: 0.5px solid var(--border);
+      padding: 0 24px; display: flex; align-items: center;
+      justify-content: space-between; height: 52px; position: sticky; top: 0; z-index: 10;
     }
-
     .topbar-left { display: flex; align-items: center; gap: 12px; }
     .topbar-title { font-size: 15px; font-weight: 600; }
     .topbar-sub { font-size: 12px; color: var(--text3); }
-
     .topbar-right { display: flex; align-items: center; gap: 8px; }
 
     .btn-logout {
-      padding: 5px 12px;
-      border: 0.5px solid var(--border2);
-      border-radius: var(--radius);
-      background: transparent;
-      color: var(--text2);
-      font-size: 12px;
-      cursor: pointer;
+      padding: 5px 12px; border: 0.5px solid var(--border2); border-radius: var(--radius);
+      background: transparent; color: var(--text2); font-size: 12px; cursor: pointer;
     }
-
     .btn-logout:hover { background: var(--surface2); }
 
     .layout { display: flex; min-height: calc(100vh - 52px); }
 
-    /* ── SIDEBAR ───────────────────────────── */
     .sidebar {
-      width: 200px;
-      background: var(--surface);
-      border-right: 0.5px solid var(--border);
-      padding: 16px 10px;
-      flex-shrink: 0;
+      width: 200px; background: var(--surface);
+      border-right: 0.5px solid var(--border); padding: 16px 10px; flex-shrink: 0;
     }
 
     .nav-item {
-      display: flex;
-      align-items: center;
-      gap: 9px;
-      padding: 8px 10px;
-      border-radius: var(--radius);
-      cursor: pointer;
-      font-size: 13px;
-      color: var(--text2);
-      margin-bottom: 2px;
-      border: none;
-      background: transparent;
-      width: 100%;
-      text-align: left;
+      display: flex; align-items: center; gap: 9px; padding: 8px 10px;
+      border-radius: var(--radius); cursor: pointer; font-size: 13px;
+      color: var(--text2); margin-bottom: 2px; border: none;
+      background: transparent; width: 100%; text-align: left;
     }
-
     .nav-item:hover { background: var(--surface2); color: var(--text); }
-
-    .nav-item.active {
-      background: var(--blue-light);
-      color: var(--blue-dark);
-      font-weight: 500;
-    }
-
+    .nav-item.active { background: var(--blue-light); color: var(--blue-dark); font-weight: 500; }
     .nav-icon { font-size: 15px; }
 
-    /* ── MAIN ──────────────────────────────── */
     .main { flex: 1; padding: 24px; overflow: auto; }
-
     .section { display: none; }
     .section.active { display: block; }
+    .section-header { margin-bottom: 20px; }
+    .section-header h2 { font-size: 17px; font-weight: 600; margin-bottom: 3px; }
+    .section-header p { font-size: 13px; color: var(--text2); }
 
-    .section-header {
-      margin-bottom: 20px;
-    }
-
-    .section-header h2 {
-      font-size: 17px;
-      font-weight: 600;
-      margin-bottom: 3px;
-    }
-
-    .section-header p {
-      font-size: 13px;
-      color: var(--text2);
-    }
-
-    /* ── CARDS MÉTRICAS ────────────────────── */
     .metric-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-      gap: 12px;
-      margin-bottom: 20px;
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 12px; margin-bottom: 20px;
     }
-
     .metric-card {
-      background: var(--surface);
-      border: 0.5px solid var(--border);
-      border-radius: var(--radius-lg);
-      padding: 16px;
+      background: var(--surface); border: 0.5px solid var(--border);
+      border-radius: var(--radius-lg); padding: 16px;
     }
-
     .metric-label { font-size: 11px; color: var(--text2); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.04em; }
     .metric-value { font-size: 26px; font-weight: 600; line-height: 1; }
     .metric-sub { font-size: 11px; color: var(--text3); margin-top: 4px; }
 
-    /* ── PROGRESS BAR ──────────────────────── */
     .progress-card {
-      background: var(--surface);
-      border: 0.5px solid var(--border);
-      border-radius: var(--radius-lg);
-      padding: 20px;
-      margin-bottom: 20px;
+      background: var(--surface); border: 0.5px solid var(--border);
+      border-radius: var(--radius-lg); padding: 20px; margin-bottom: 20px;
     }
-
     .progress-title { font-size: 13px; font-weight: 500; margin-bottom: 12px; }
+    .progress-bar-bg { background: var(--surface2); border-radius: 6px; height: 10px; overflow: hidden; margin-bottom: 8px; }
+    .progress-bar-fill { height: 100%; border-radius: 6px; background: var(--blue); transition: width .8s ease; }
+    .progress-labels { display: flex; justify-content: space-between; font-size: 11px; color: var(--text3); }
 
-    .progress-bar-bg {
-      background: var(--surface2);
-      border-radius: 6px;
-      height: 10px;
-      overflow: hidden;
-      margin-bottom: 8px;
-    }
-
-    .progress-bar-fill {
-      height: 100%;
-      border-radius: 6px;
-      background: var(--blue);
-      transition: width .8s ease;
-    }
-
-    .progress-labels {
-      display: flex;
-      justify-content: space-between;
-      font-size: 11px;
-      color: var(--text3);
-    }
-
-    /* ── TABLE ─────────────────────────────── */
     .table-card {
-      background: var(--surface);
-      border: 0.5px solid var(--border);
-      border-radius: var(--radius-lg);
-      overflow: hidden;
-      margin-bottom: 20px;
+      background: var(--surface); border: 0.5px solid var(--border);
+      border-radius: var(--radius-lg); overflow: hidden; margin-bottom: 20px;
     }
-
     table { width: 100%; border-collapse: collapse; font-size: 13px; }
-
     thead th {
-      padding: 10px 16px;
-      text-align: left;
-      font-size: 11px;
-      font-weight: 500;
-      color: var(--text2);
-      text-transform: uppercase;
-      letter-spacing: 0.04em;
-      background: var(--surface2);
-      border-bottom: 0.5px solid var(--border);
+      padding: 10px 16px; text-align: left; font-size: 11px; font-weight: 500;
+      color: var(--text2); text-transform: uppercase; letter-spacing: 0.04em;
+      background: var(--surface2); border-bottom: 0.5px solid var(--border);
     }
-
     tbody tr { border-bottom: 0.5px solid var(--border); }
     tbody tr:last-child { border-bottom: none; }
     tbody tr:hover { background: var(--surface2); }
     tbody td { padding: 10px 16px; }
 
-    .badge {
-      display: inline-block;
-      padding: 2px 8px;
-      border-radius: 20px;
-      font-size: 11px;
-      font-weight: 500;
-    }
-
+    .badge { display: inline-block; padding: 2px 8px; border-radius: 20px; font-size: 11px; font-weight: 500; }
     .badge-gold { background: var(--gold-light); color: var(--gold); }
     .badge-ok   { background: var(--green-light); color: var(--green); }
     .badge-pend { background: var(--amber-light); color: var(--amber); }
     .badge-err  { background: var(--red-light); color: var(--red); }
 
-    /* ── FORMS ─────────────────────────────── */
     .form-card {
-      background: var(--surface);
-      border: 0.5px solid var(--border);
-      border-radius: var(--radius-lg);
-      padding: 20px;
-      margin-bottom: 16px;
+      background: var(--surface); border: 0.5px solid var(--border);
+      border-radius: var(--radius-lg); padding: 20px; margin-bottom: 16px;
     }
-
-    .form-row {
-      display: flex;
-      gap: 12px;
-      flex-wrap: wrap;
-      margin-bottom: 14px;
-      align-items: flex-end;
-    }
-
-    .form-field {
-      display: flex;
-      flex-direction: column;
-      gap: 5px;
-      flex: 1;
-      min-width: 160px;
-    }
-
+    .form-row { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 14px; align-items: flex-end; }
+    .form-field { display: flex; flex-direction: column; gap: 5px; flex: 1; min-width: 160px; }
     .form-field label { font-size: 12px; color: var(--text2); }
-
-    .form-field input,
-    .form-field select {
-      padding: 8px 10px;
-      border: 0.5px solid var(--border2);
-      border-radius: var(--radius);
-      font-size: 13px;
-      background: var(--surface);
-      color: var(--text);
-      outline: none;
-      width: 100%;
+    .form-field input, .form-field select {
+      padding: 8px 10px; border: 0.5px solid var(--border2); border-radius: var(--radius);
+      font-size: 13px; background: var(--surface); color: var(--text); outline: none; width: 100%;
     }
-
-    .form-field input:focus,
-    .form-field select:focus { border-color: var(--blue); }
+    .form-field input:focus, .form-field select:focus { border-color: var(--blue); }
 
     .btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 8px 16px;
-      border-radius: var(--radius);
-      border: 0.5px solid var(--border2);
-      background: var(--surface);
-      color: var(--text);
-      font-size: 13px;
-      cursor: pointer;
-      white-space: nowrap;
-      font-weight: 500;
+      display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px;
+      border-radius: var(--radius); border: 0.5px solid var(--border2);
+      background: var(--surface); color: var(--text); font-size: 13px;
+      cursor: pointer; white-space: nowrap; font-weight: 500;
     }
-
     .btn:hover { background: var(--surface2); }
-
     .btn-primary { background: var(--blue); color: #E6F1FB; border-color: var(--blue); }
     .btn-primary:hover { background: var(--blue-dark); border-color: var(--blue-dark); }
-
     .btn-danger { background: var(--red-light); color: var(--red); border-color: #F09595; }
     .btn-danger:hover { background: #F7C1C1; }
-
     .btn-export { background: var(--green-light); color: var(--green); border-color: #C0DD97; text-decoration: none; }
     .btn-export:hover { background: #C0DD97; }
-
     .btn-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 4px; }
 
-    /* ── MENSAJES ──────────────────────────── */
-    .msg {
-      padding: 10px 14px;
-      border-radius: var(--radius);
-      font-size: 13px;
-      margin-top: 12px;
-    }
-
-    .msg-ok  { background: var(--green-light); color: var(--green); }
-    .msg-err { background: var(--red-light); color: var(--red); }
+    .msg { padding: 10px 14px; border-radius: var(--radius); font-size: 13px; margin-top: 12px; }
+    .msg-ok   { background: var(--green-light); color: var(--green); }
+    .msg-err  { background: var(--red-light); color: var(--red); }
     .msg-info { background: var(--blue-light); color: var(--blue-dark); }
 
-    /* ── ESTADO VACÍO / CARGA ──────────────── */
     .state-empty, .state-loading {
-      text-align: center;
-      padding: 40px 24px;
-      color: var(--text3);
-      font-size: 13px;
+      text-align: center; padding: 40px 24px; color: var(--text3); font-size: 13px;
     }
-
-    .spin {
-      display: inline-block;
-      animation: spin .7s linear infinite;
-      font-size: 18px;
-      margin-bottom: 8px;
-    }
-
+    .spin { display: inline-block; animation: spin .7s linear infinite; font-size: 18px; margin-bottom: 8px; }
     @keyframes spin { to { transform: rotate(360deg); } }
 
-    /* ── PROMO STATUS BOX ──────────────────── */
     .promo-active-box {
-      background: var(--green-light);
-      border: 0.5px solid #C0DD97;
-      border-radius: var(--radius-lg);
-      padding: 20px;
-      margin-bottom: 20px;
+      background: var(--green-light); border: 0.5px solid #C0DD97;
+      border-radius: var(--radius-lg); padding: 20px; margin-bottom: 20px;
     }
-
     .promo-inactive-box {
-      background: var(--surface2);
-      border: 0.5px solid var(--border);
-      border-radius: var(--radius-lg);
-      padding: 20px;
-      margin-bottom: 20px;
-      color: var(--text2);
-      font-size: 13px;
+      background: var(--surface2); border: 0.5px solid var(--border);
+      border-radius: var(--radius-lg); padding: 20px; margin-bottom: 20px;
+      color: var(--text2); font-size: 13px;
     }
-
-    .promo-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-      gap: 12px;
-      margin-top: 14px;
-    }
-
+    .promo-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin-top: 14px; }
     .promo-field-label { font-size: 11px; color: var(--green); margin-bottom: 3px; }
     .promo-field-value { font-size: 15px; font-weight: 600; color: var(--green); }
 
-    /* ── MONO CODES ────────────────────────── */
-    .code-mono {
-      font-family: 'Courier New', monospace;
-      font-size: 13px;
+    .code-mono { font-family: 'Courier New', monospace; font-size: 13px; }
+    .gold-code  { color: var(--gold); font-weight: 600; }
+
+    /* ── SSE dot ── */
+    #sse-dot {
+      display: inline-block; width: 8px; height: 8px; border-radius: 50%;
+      background: #ccc; margin-right: 4px; vertical-align: middle;
     }
+    #sse-dot.live { background: #22c55e; animation: pulse-dot 1.4s ease-in-out infinite; }
+    @keyframes pulse-dot { 0%,100%{opacity:1} 50%{opacity:.35} }
 
-    .gold-code { color: var(--gold); font-weight: 600; }
+    /* ── Ganador box ── */
+    .ganador-announce {
+      background: linear-gradient(135deg, #fef3c7, #fde68a);
+      border: 2px solid #f59e0b;
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .ganador-announce .g-code {
+      font-family: monospace; font-size: 36px; font-weight: 800;
+      color: #92400e; letter-spacing: 4px; margin: 8px 0;
+    }
+    .ganador-announce .g-name { font-size: 18px; font-weight: 600; color: #78350f; }
 
-    /* ── RESPONSIVE ────────────────────────── */
     @media (max-width: 640px) {
       .sidebar { display: none; }
       .main { padding: 16px; }
@@ -442,7 +243,7 @@
 </head>
 <body>
 
-<!-- ══════════════════ LOGIN ══════════════════ -->
+<!-- LOGIN -->
 <div id="login-screen">
   <div class="login-card">
     <h1>🔐 Admin</h1>
@@ -454,7 +255,7 @@
   </div>
 </div>
 
-<!-- ══════════════════ APP ══════════════════ -->
+<!-- APP -->
 <div id="app">
   <div class="topbar">
     <div class="topbar-left">
@@ -464,44 +265,29 @@
       </div>
     </div>
     <div class="topbar-right">
+      <span id="sse-dot"></span>
       <span id="topbar-badge" style="font-size:12px;color:var(--text3)"></span>
       <button class="btn-logout" onclick="doLogout()">Salir</button>
     </div>
   </div>
 
   <div class="layout">
-    <!-- Sidebar -->
     <nav class="sidebar">
-      <button class="nav-item active" onclick="showTab('dashboard')">
-        <span class="nav-icon">📊</span> Dashboard
-      </button>
-      <button class="nav-item" onclick="showTab('codigos')">
-        <span class="nav-icon">⭐</span> Dorados
-      </button>
-      <button class="nav-item" onclick="showTab('compras')">
-        <span class="nav-icon">🧾</span> Compras
-      </button>
-      <button class="nav-item" onclick="showTab('promo')">
-        <span class="nav-icon">📣</span> Promoción
-      </button>
-      <button class="nav-item" onclick="showTab('correo')">
-        <span class="nav-icon">✉️</span> Correo
-      </button>
-      <button class="nav-item" onclick="showTab('transferencias')">
-        <span class="nav-icon">🏦</span> Transferencias
-      </button>
-      <button class="nav-item" onclick="showTab('notif')">
-        <span class="nav-icon">📢</span> Notificaciones
-      </button>
-      <button class="nav-item" onclick="showTab('exportar')">
-        <span class="nav-icon">📥</span> Exportar
-      </button>
+      <button class="nav-item active"  onclick="showTab('dashboard')">      <span class="nav-icon">📊</span> Dashboard</button>
+      <button class="nav-item"         onclick="showTab('codigos')">         <span class="nav-icon">⭐</span> Dorados</button>
+      <button class="nav-item"         onclick="showTab('compras')">         <span class="nav-icon">🧾</span> Compras</button>
+      <button class="nav-item"         onclick="showTab('buscador')">        <span class="nav-icon">🔍</span> Buscador</button>
+      <button class="nav-item"         onclick="showTab('promo')">           <span class="nav-icon">📣</span> Promoción</button>
+      <button class="nav-item"         onclick="showTab('correo')">          <span class="nav-icon">✉️</span> Correo</button>
+      <button class="nav-item"         onclick="showTab('transferencias')">  <span class="nav-icon">🏦</span> Transferencias</button>
+      <button class="nav-item"         onclick="showTab('notif')">           <span class="nav-icon">📢</span> Notificaciones</button>
+      <button class="nav-item"         onclick="showTab('ganador')">         <span class="nav-icon">🏆</span> Ganador</button>
+      <button class="nav-item"         onclick="showTab('exportar')">        <span class="nav-icon">📥</span> Exportar</button>
     </nav>
 
-    <!-- Main -->
     <main class="main">
 
-      <!-- ── DASHBOARD ── -->
+      <!-- DASHBOARD -->
       <div id="tab-dashboard" class="section active">
         <div class="section-header">
           <h2>Dashboard</h2>
@@ -531,9 +317,7 @@
         </div>
         <div class="progress-card">
           <div class="progress-title">Progreso de ventas</div>
-          <div class="progress-bar-bg">
-            <div class="progress-bar-fill" id="bar-fill" style="width:0%"></div>
-          </div>
+          <div class="progress-bar-bg"><div class="progress-bar-fill" id="bar-fill" style="width:0%"></div></div>
           <div class="progress-labels">
             <span id="bar-left">0 vendidos</span>
             <span id="bar-right">10,000 total</span>
@@ -544,7 +328,7 @@
         </div>
       </div>
 
-      <!-- ── CÓDIGOS DORADOS ── -->
+      <!-- CÓDIGOS DORADOS -->
       <div id="tab-codigos" class="section">
         <div class="section-header">
           <h2>Códigos dorados</h2>
@@ -555,7 +339,7 @@
         </div>
       </div>
 
-      <!-- ── COMPRAS ── -->
+      <!-- COMPRAS -->
       <div id="tab-compras" class="section">
         <div class="section-header">
           <h2>Compradores</h2>
@@ -570,9 +354,9 @@
             <button class="btn" onclick="loadCompras()">↺ Actualizar</button>
           </div>
           <div style="display:flex;gap:8px;flex-wrap:wrap">
-            <button class="btn active" id="filtro-todos"    onclick="setFiltroCompras('todos')">Todos</button>
-            <button class="btn"        id="filtro-pagado"   onclick="setFiltroCompras('pagado')">✅ Wompi</button>
-            <button class="btn"        id="filtro-transf"   onclick="setFiltroCompras('transferencia')">🏦 Transferencias</button>
+            <button class="btn active" id="filtro-todos"     onclick="setFiltroCompras('todos')">Todos</button>
+            <button class="btn"        id="filtro-pagado"    onclick="setFiltroCompras('pagado')">✅ Wompi</button>
+            <button class="btn"        id="filtro-transf"    onclick="setFiltroCompras('transferencia')">🏦 Transferencias</button>
             <button class="btn"        id="filtro-pendiente" onclick="setFiltroCompras('pendiente')">⏳ Pendientes</button>
           </div>
         </div>
@@ -581,7 +365,27 @@
         </div>
       </div>
 
-      <!-- ── PROMOCIÓN ── -->
+      <!-- BUSCADOR GLOBAL -->
+      <div id="tab-buscador" class="section">
+        <div class="section-header">
+          <h2>Buscador global</h2>
+          <p>Busca un comprador por nombre, correo, cédula, teléfono o código</p>
+        </div>
+        <div class="form-card">
+          <div class="form-row" style="margin-bottom:0">
+            <div class="form-field">
+              <label>Término de búsqueda</label>
+              <input type="text" id="global-buscar" placeholder="Ej: juan@correo.com · 1234567890 · COD-001"
+                onkeydown="if(event.key==='Enter') buscarGlobal()" autocomplete="off">
+            </div>
+            <button class="btn btn-primary" onclick="buscarGlobal()">🔍 Buscar</button>
+          </div>
+          <div id="global-msg" style="margin-top:8px;min-height:14px"></div>
+        </div>
+        <div id="global-result"></div>
+      </div>
+
+      <!-- PROMOCIÓN -->
       <div id="tab-promo" class="section">
         <div class="section-header">
           <h2>Promoción activa</h2>
@@ -590,7 +394,6 @@
         <div id="promo-status">
           <div class="state-loading"><div class="spin">⟳</div><br>Cargando...</div>
         </div>
-
         <div class="section-header" style="margin-top:28px">
           <h2 style="font-size:15px">Activar nueva promoción</h2>
         </div>
@@ -611,13 +414,13 @@
           </div>
           <div class="btn-actions">
             <button class="btn btn-primary" onclick="activarPromo()">📣 Activar</button>
-            <button class="btn btn-danger" onclick="desactivarPromo()">✕ Desactivar actual</button>
+            <button class="btn btn-danger"  onclick="desactivarPromo()">✕ Desactivar actual</button>
           </div>
           <div id="promo-msg"></div>
         </div>
       </div>
 
-      <!-- ── CORREO ── -->
+      <!-- CORREO -->
       <div id="tab-correo" class="section">
         <div class="section-header">
           <h2>Reenviar correo</h2>
@@ -636,14 +439,12 @@
         </div>
       </div>
 
-      <!-- ── TRANSFERENCIAS ── -->
+      <!-- TRANSFERENCIAS -->
       <div id="tab-transferencias" class="section">
         <div class="section-header">
           <h2>Transferencias bancarias</h2>
-          <p>Revisa y aprueba las compras realizadas por transferencia. Al aprobar se generan los códigos automáticamente y se envían al comprador.</p>
+          <p>Revisa y aprueba las compras realizadas por transferencia.</p>
         </div>
-
-        <!-- Filtros -->
         <div class="form-card" style="margin-bottom:16px">
           <div class="form-row" style="margin-bottom:0">
             <div class="form-field">
@@ -658,12 +459,9 @@
             <button class="btn" onclick="loadTransferencias()" style="align-self:flex-end">↺ Actualizar</button>
           </div>
         </div>
-
         <div id="trf-list">
           <div class="state-loading"><div class="spin">⟳</div><br>Cargando...</div>
         </div>
-
-        <!-- Modal para aprobar/rechazar -->
         <div id="trf-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:100;align-items:center;justify-content:center;padding:20px">
           <div style="background:var(--surface);border-radius:var(--radius-lg);padding:28px;max-width:480px;width:100%;border:0.5px solid var(--border)">
             <h3 id="modal-title" style="font-size:15px;margin-bottom:16px"></h3>
@@ -681,13 +479,12 @@
         </div>
       </div>
 
-      <!-- ── NOTIFICACIONES ── -->
+      <!-- NOTIFICACIONES -->
       <div id="tab-notif" class="section">
         <div class="section-header">
           <h2>Notificaciones</h2>
           <p>Recordatorios, correos masivos y alertas a compradores</p>
         </div>
-
         <div class="metric-grid" style="margin-bottom:20px">
           <div class="metric-card">
             <div class="metric-label">Pagos incompletos +12h</div>
@@ -705,66 +502,46 @@
             <div class="metric-sub">destinatarios para correo masivo</div>
           </div>
         </div>
-
-        <!-- Bloque 0: Pagos incompletos -->
         <div class="form-card">
           <div style="display:flex;align-items:flex-start;gap:12px;margin-bottom:14px">
             <div style="font-size:28px;line-height:1">💳</div>
             <div>
               <div style="font-weight:600;font-size:14px;margin-bottom:3px">Recordatorio a pagos incompletos</div>
-              <div style="font-size:12px;color:var(--text2)">
-                Envía un correo a todos los clientes que <strong>iniciaron una compra (Wompi o transferencia)</strong>
-                hace más de 12 horas pero no completaron el pago. Un solo correo por persona aunque tenga varios intentos.
-                El correo se adapta: Wompi recibe botón para volver al sitio; transferencia ve su referencia de pago.
-              </div>
+              <div style="font-size:12px;color:var(--text2)">Envía un correo a todos los clientes que iniciaron una compra hace más de 12 horas pero no completaron el pago.</div>
             </div>
           </div>
           <div class="btn-actions">
             <button class="btn" onclick="verCorreoPreview('incompleto-wompi')">👁 Ver correo Wompi</button>
             <button class="btn" onclick="verCorreoPreview('incompleto-transf')">👁 Ver correo Transferencia</button>
-            <button class="btn btn-primary" onclick="enviarRecordatorioIncompletos()" id="btn-incompletos">
-              💳 Enviar recordatorio de pago
-            </button>
+            <button class="btn btn-primary" onclick="enviarRecordatorioIncompletos()" id="btn-incompletos">💳 Enviar recordatorio de pago</button>
           </div>
           <div id="incompletos-msg"></div>
         </div>
-
-        <!-- Bloque 1: Recordatorio transferencias -->
         <div class="form-card">
           <div style="display:flex;align-items:flex-start;gap:12px;margin-bottom:14px">
             <div style="font-size:28px;line-height:1">⏰</div>
             <div>
               <div style="font-weight:600;font-size:14px;margin-bottom:3px">Recordatorio a transferencias pendientes</div>
-              <div style="font-size:12px;color:var(--text2)">
-                Envía un correo a todos los clientes que registraron una transferencia hace más de 12 horas y aún no han pagado.
-                Incluye su referencia de pago y un botón para contactarte por WhatsApp.
-              </div>
+              <div style="font-size:12px;color:var(--text2)">Envía un correo a clientes con transferencia registrada hace más de 12 horas sin confirmar.</div>
             </div>
           </div>
           <div class="btn-actions">
             <button class="btn" onclick="verCorreoPreview('transferencia')">👁 Ver correo</button>
-            <button class="btn btn-primary" onclick="enviarRecordatorio()" id="btn-recordatorio">
-              📤 Enviar recordatorios ahora
-            </button>
+            <button class="btn btn-primary" onclick="enviarRecordatorio()" id="btn-recordatorio">📤 Enviar recordatorios ahora</button>
           </div>
           <div id="recordatorio-msg"></div>
         </div>
-
-        <!-- Bloque 2: Correo masivo -->
         <div class="form-card">
           <div style="display:flex;align-items:flex-start;gap:12px;margin-bottom:16px">
             <div style="font-size:28px;line-height:1">📢</div>
             <div>
               <div style="font-weight:600;font-size:14px;margin-bottom:3px">Correo masivo a compradores</div>
-              <div style="font-size:12px;color:var(--text2)">
-                Envía un mensaje a todos los compradores que ya tienen códigos asignados.
-                Ideal para anunciar fechas, resultados o información del evento.
-              </div>
+              <div style="font-size:12px;color:var(--text2)">Envía un mensaje a todos los compradores que ya tienen códigos asignados.</div>
             </div>
           </div>
           <div class="form-row">
             <div class="form-field" style="flex:1;min-width:100%">
-              <label>Título destacado (opcional — aparece grande en el correo)</label>
+              <label>Título destacado (opcional)</label>
               <input type="text" id="masivo-titulo" placeholder="Ej: ¡Llegamos al 100%! · Sorteo el 15 de junio">
             </div>
           </div>
@@ -779,8 +556,7 @@
           <div class="form-row">
             <div class="form-field" style="flex:1;min-width:100%">
               <label>Mensaje <span style="color:var(--red)">*</span></label>
-              <textarea id="masivo-mensaje" rows="5"
-                placeholder="Escribe el mensaje aquí. Puedes usar saltos de línea normalmente."
+              <textarea id="masivo-mensaje" rows="5" placeholder="Escribe el mensaje aquí."
                 maxlength="2000" oninput="actualizarContador('masivo-mensaje','cnt-mensaje',2000)"
                 style="width:100%;padding:8px 10px;border:0.5px solid var(--border2);border-radius:var(--radius);font-size:13px;background:var(--surface);color:var(--text);outline:none;resize:vertical;font-family:inherit"></textarea>
               <span style="font-size:11px;color:var(--text3);margin-top:2px" id="cnt-mensaje">0 / 2000</span>
@@ -793,15 +569,61 @@
           </div>
           <div class="btn-actions">
             <button class="btn" onclick="togglePreview()">👁 Vista previa texto</button>
-            <button class="btn btn-primary" onclick="enviarMasivo()" id="btn-masivo">
-              📢 Enviar a todos los compradores
-            </button>
+            <button class="btn btn-primary" onclick="enviarMasivo()" id="btn-masivo">📢 Enviar a todos los compradores</button>
           </div>
           <div id="masivo-msg"></div>
         </div>
       </div>
 
-      <!-- ── EXPORTAR ── -->
+      <!-- GANADOR -->
+      <div id="tab-ganador" class="section">
+        <div class="section-header">
+          <h2>🏆 Anunciar ganador</h2>
+          <p>Publica el ganador en la página pública. Se mostrará automáticamente a todos los visitantes.</p>
+        </div>
+
+        <!-- Estado actual -->
+        <div id="ganador-status">
+          <div class="state-loading"><div class="spin">⟳</div><br>Cargando...</div>
+        </div>
+
+        <!-- Formulario para anunciar -->
+        <div class="form-card" style="margin-top:20px">
+          <div style="font-weight:600;font-size:14px;margin-bottom:14px">Publicar ganador</div>
+          <div class="form-row">
+            <div class="form-field">
+              <label>Código ganador <span style="color:var(--red)">*</span></label>
+              <input type="text" id="gan-codigo" placeholder="Ej: 1234" maxlength="10"
+                style="font-family:monospace;font-size:16px;font-weight:700;letter-spacing:2px">
+            </div>
+            <div class="form-field">
+              <label>Nombre del ganador <span style="color:var(--red)">*</span></label>
+              <input type="text" id="gan-nombre" placeholder="Nombre completo del ganador">
+            </div>
+          </div>
+          <div class="btn-actions">
+            <button class="btn btn-primary" onclick="publicarGanador()">🏆 Publicar ganador</button>
+            <button class="btn btn-danger"  onclick="ocultarGanador()">✕ Ocultar / limpiar</button>
+          </div>
+          <div id="ganador-msg"></div>
+        </div>
+
+        <!-- Info de cómo se determina -->
+        <div class="form-card" style="background:var(--surface2)">
+          <div style="font-weight:600;font-size:13px;margin-bottom:8px;color:var(--text2)">ℹ️ ¿Cómo se determina el ganador?</div>
+          <p style="font-size:12px;color:var(--text2);line-height:1.7">
+            El código ganador se obtiene cruzando el resultado del sorteo con la <strong>Lotería de Medellín</strong>.
+            Se toman los <strong>3 últimos dígitos del premio mayor</strong> más el <strong>primer número de la serie</strong>.
+            El código que coincida con esa combinación es el ganador.
+          </p>
+          <p style="margin-top:8px;font-size:12px;color:var(--text3)">
+            Ejemplo: Premio mayor <strong style="color:var(--text)">1234</strong> · Serie <strong style="color:var(--text)">2</strong>
+            → código ganador: <strong style="color:var(--gold)">2342</strong>
+          </p>
+        </div>
+      </div>
+
+      <!-- EXPORTAR -->
       <div id="tab-exportar" class="section">
         <div class="section-header">
           <h2>Exportar datos</h2>
@@ -823,23 +645,15 @@
 </div>
 
 <script>
-  // ── Token almacenado en memoria (nunca en localStorage) ──
   let ADMIN_TOKEN = '';
 
   function headers() {
-    return {
-      'Content-Type': 'application/json',
-      'x-admin-token': ADMIN_TOKEN
-    };
+    return { 'Content-Type': 'application/json', 'x-admin-token': ADMIN_TOKEN };
   }
 
-  function fmt(n) {
-    return Number(n).toLocaleString('es-CO');
-  }
+  function fmt(n) { return Number(n).toLocaleString('es-CO'); }
 
-  // ══════════════════════════════════
-  // LOGIN / LOGOUT
-  // ══════════════════════════════════
+  // ── LOGIN / LOGOUT ──────────────────────────────────────────────────────────
   async function doLogin() {
     const input = document.getElementById('secret-input');
     const errEl = document.getElementById('login-err');
@@ -860,6 +674,7 @@
       document.getElementById('login-screen').style.display = 'none';
       document.getElementById('app').style.display = 'block';
       loadDashboard();
+      iniciarSSE();
     } catch (e) {
       errEl.textContent = 'Error de conexión con el servidor';
     }
@@ -867,26 +682,81 @@
 
   function doLogout() {
     ADMIN_TOKEN = '';
+    if (sseSource) { sseSource.close(); sseSource = null; }
+    document.getElementById('sse-dot').className = '';
     document.getElementById('login-screen').style.display = 'flex';
     document.getElementById('app').style.display = 'none';
     document.getElementById('secret-input').value = '';
   }
 
-  // Enter en login
   document.getElementById('secret-input').addEventListener('keydown', e => {
     if (e.key === 'Enter') doLogin();
   });
 
-  // ══════════════════════════════════
-  // NAVEGACIÓN
-  // ══════════════════════════════════
+  // ── SSE — notificaciones en tiempo real ─────────────────────────────────────
+  let sseSource = null;
+
+  function iniciarSSE() {
+    if (sseSource) sseSource.close();
+    const dot = document.getElementById('sse-dot');
+    sseSource = new EventSource(`/api/admin/notif-stream?token=${encodeURIComponent(ADMIN_TOKEN)}`);
+
+    sseSource.onopen = () => {
+      dot.className = 'live';
+      dot.title = 'Conectado — tiempo real activo';
+    };
+
+    sseSource.addEventListener('nueva-compra', e => {
+      try {
+        const d = JSON.parse(e.data);
+        mostrarToast(`🛒 Nueva compra: ${d.nombre} — ${d.cantidad} cód.`);
+        // Si el tab de compras o transferencias está abierto, recargar
+        if (document.getElementById('tab-compras').classList.contains('active'))        loadCompras();
+        if (document.getElementById('tab-transferencias').classList.contains('active')) loadTransferencias();
+        if (document.getElementById('tab-dashboard').classList.contains('active'))      loadDashboard();
+      } catch(_) {}
+    });
+
+    sseSource.addEventListener('transferencia-pendiente', e => {
+      try {
+        const d = JSON.parse(e.data);
+        mostrarToast(`🏦 Nueva transferencia: ${d.nombre} — ${d.cantidad} cód.`);
+        if (document.getElementById('tab-transferencias').classList.contains('active')) loadTransferencias();
+        if (document.getElementById('tab-notif').classList.contains('active'))          loadNotifStats();
+      } catch(_) {}
+    });
+
+    sseSource.onerror = () => {
+      dot.className = '';
+      dot.title = 'Sin conexión en tiempo real';
+      setTimeout(iniciarSSE, 5000); // reconectar
+    };
+  }
+
+  // ── Toast ───────────────────────────────────────────────────────────────────
+  function mostrarToast(texto) {
+    const t = document.createElement('div');
+    t.style.cssText = `
+      position:fixed;bottom:24px;right:24px;z-index:9999;
+      background:#1e293b;color:#f1f5f9;padding:12px 18px;
+      border-radius:10px;font-size:13px;border:1px solid #334155;
+      box-shadow:0 8px 24px rgba(0,0,0,.3);
+      animation:slideIn .3s ease;max-width:320px;line-height:1.4;
+    `;
+    t.textContent = texto;
+    document.body.appendChild(t);
+    setTimeout(() => t.remove(), 5000);
+  }
+
+  // ── NAVEGACIÓN ──────────────────────────────────────────────────────────────
+  const TAB_ORDER = ['dashboard','codigos','compras','buscador','promo','correo','transferencias','notif','ganador','exportar'];
+
   function showTab(tab) {
     document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
     document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
     document.getElementById('tab-' + tab).classList.add('active');
-    const tabs = ['dashboard','codigos','compras','promo','correo','transferencias','notif','exportar'];
-    const idx = tabs.indexOf(tab);
-    document.querySelectorAll('.nav-item')[idx].classList.add('active');
+    const idx = TAB_ORDER.indexOf(tab);
+    if (idx >= 0) document.querySelectorAll('.nav-item')[idx].classList.add('active');
 
     if (tab === 'dashboard')      loadDashboard();
     if (tab === 'codigos')        loadCodigos();
@@ -894,75 +764,54 @@
     if (tab === 'promo')          loadPromo();
     if (tab === 'transferencias') loadTransferencias();
     if (tab === 'notif')          loadNotifStats();
+    if (tab === 'ganador')        loadGanadorStatus();
   }
 
-  // ══════════════════════════════════
-  // DASHBOARD
-  // ══════════════════════════════════
+  // ── DASHBOARD ───────────────────────────────────────────────────────────────
   async function loadDashboard() {
     document.getElementById('d-vendidos').textContent = '…';
     document.getElementById('d-pct').textContent = '…';
-
     try {
       const r = await fetch('/api/progreso');
       const d = await r.json();
       document.getElementById('d-vendidos').textContent = fmt(d.vendidos);
-      document.getElementById('d-disp').textContent = fmt(d.disponibles) + ' disponibles';
-      document.getElementById('d-pct').textContent = d.porcentaje + '%';
-      document.getElementById('bar-fill').style.width = d.porcentaje + '%';
-      document.getElementById('bar-left').textContent = fmt(d.vendidos) + ' vendidos';
-    } catch (e) {
-      document.getElementById('d-vendidos').textContent = 'error';
-    }
-
+      document.getElementById('d-disp').textContent     = fmt(d.disponibles) + ' disponibles';
+      document.getElementById('d-pct').textContent      = d.porcentaje + '%';
+      document.getElementById('bar-fill').style.width   = d.porcentaje + '%';
+      document.getElementById('bar-left').textContent   = fmt(d.vendidos) + ' vendidos';
+    } catch (e) { document.getElementById('d-vendidos').textContent = 'error'; }
     try {
       const r2 = await fetch('/api/admin/codigos-dorados', { headers: headers() });
       const d2 = await r2.json();
       document.getElementById('d-dorados').textContent = Array.isArray(d2) ? fmt(d2.length) : '—';
     } catch (e) {}
-
-    document.getElementById('topbar-update').textContent =
-      'Actualizado: ' + new Date().toLocaleTimeString('es-CO');
+    document.getElementById('topbar-update').textContent = 'Actualizado: ' + new Date().toLocaleTimeString('es-CO');
   }
 
-  // ══════════════════════════════════
-  // CÓDIGOS DORADOS
-  // ══════════════════════════════════
+  // ── CÓDIGOS DORADOS ─────────────────────────────────────────────────────────
   async function loadCodigos() {
     const el = document.getElementById('codigos-content');
     el.innerHTML = '<div class="state-loading"><div class="spin">⟳</div><br>Cargando...</div>';
     try {
       const r = await fetch('/api/admin/codigos-dorados', { headers: headers() });
       const d = await r.json();
-      if (!d.length) {
-        el.innerHTML = '<div class="state-empty">Sin códigos dorados vendidos aún</div>';
-        return;
-      }
-      const rows = d.map((x, i) =>
-        `<tr>
-          <td style="color:var(--text3);font-size:12px">${i + 1}</td>
-          <td><span class="code-mono gold-code">⭐ ${x.codigo}</span></td>
-          <td><span class="badge badge-gold">Dorado</span></td>
-        </tr>`
-      ).join('');
-      el.innerHTML = `
-        <p style="font-size:13px;color:var(--text2);margin-bottom:12px">${d.length} código(s) dorado(s) vendido(s)</p>
-        <div class="table-card">
-          <table>
-            <thead><tr><th>#</th><th>Código</th><th>Tipo</th></tr></thead>
-            <tbody>${rows}</tbody>
-          </table>
-        </div>`;
-    } catch (e) {
-      el.innerHTML = '<div class="msg msg-err">Error cargando códigos</div>';
-    }
+      if (!d.length) { el.innerHTML = '<div class="state-empty">Sin códigos dorados vendidos aún</div>'; return; }
+      const rows = d.map((x, i) => `<tr>
+        <td style="color:var(--text3);font-size:12px">${i+1}</td>
+        <td><span class="code-mono gold-code">⭐ ${x.codigo}</span></td>
+        <td><span class="badge badge-gold">Dorado</span></td>
+      </tr>`).join('');
+      el.innerHTML = `<p style="font-size:13px;color:var(--text2);margin-bottom:12px">${d.length} código(s) dorado(s)</p>
+        <div class="table-card"><table>
+          <thead><tr><th>#</th><th>Código</th><th>Tipo</th></tr></thead>
+          <tbody>${rows}</tbody>
+        </table></div>`;
+    } catch (e) { el.innerHTML = '<div class="msg msg-err">Error cargando códigos</div>'; }
   }
 
-  // ══════════════════════════════════
-  // COMPRADORES — lista completa
-  // ══════════════════════════════════
+  // ── COMPRADORES ─────────────────────────────────────────────────────────────
   let _todosCompradores = [];
-  let _filtroCompras = 'todos';
+  let _filtroCompras    = 'todos';
 
   async function loadCompras() {
     const el = document.getElementById('compras-result');
@@ -972,9 +821,7 @@
       const d = await r.json();
       _todosCompradores = d.compradores || [];
       renderCompras();
-    } catch (e) {
-      el.innerHTML = '<div class="msg msg-err">Error cargando compradores</div>';
-    }
+    } catch (e) { el.innerHTML = '<div class="msg msg-err">Error cargando compradores</div>'; }
   }
 
   window.setFiltroCompras = function(f) {
@@ -982,10 +829,11 @@
     ['todos','pagado','transf','pendiente'].forEach(id => {
       const btn = document.getElementById('filtro-' + id);
       if (!btn) return;
-      btn.classList.toggle('active', id === f);
-      btn.style.background = id === f ? 'var(--blue-light)' : '';
-      btn.style.color = id === f ? 'var(--blue-dark)' : '';
-      btn.style.borderColor = id === f ? 'var(--blue)' : '';
+      const active = id === f;
+      btn.classList.toggle('active', active);
+      btn.style.background   = active ? 'var(--blue-light)' : '';
+      btn.style.color        = active ? 'var(--blue-dark)'  : '';
+      btn.style.borderColor  = active ? 'var(--blue)'       : '';
     });
     renderCompras();
   };
@@ -993,260 +841,196 @@
   window.filtrarCompradores = renderCompras;
 
   function renderCompras() {
-    const el = document.getElementById('compras-result');
+    const el     = document.getElementById('compras-result');
     const buscar = (document.getElementById('buscar-dato')?.value || '').toLowerCase().trim();
-    let lista = _todosCompradores;
-
-    if (_filtroCompras === 'pagado') {
-      lista = lista.filter(c => c.estado === 'pagado');
-    } else if (_filtroCompras === 'transf') {
-      lista = lista.filter(c => ['transferencia_pendiente','transferencia_aprobada','transferencia_rechazada'].includes(c.estado));
-    } else if (_filtroCompras === 'pendiente') {
-      lista = lista.filter(c => c.estado === 'pendiente');
-    }
-
-    if (buscar) {
-      lista = lista.filter(c =>
-        (c.nombre   ||'').toLowerCase().includes(buscar) ||
-        (c.correo   ||'').toLowerCase().includes(buscar) ||
-        (c.cedula   ||'').toLowerCase().includes(buscar) ||
-        (c.telefono ||'').toLowerCase().includes(buscar) ||
-        (c.referencia||'').toLowerCase().includes(buscar)
-      );
-    }
-
-    if (!lista.length) {
-      el.innerHTML = '<div class="state-empty">Sin resultados</div>';
-      return;
-    }
-
-    const rows = lista.map(c => {
-      const fecha = c.fecha ? new Date(c.fecha).toLocaleDateString('es-CO') : '—';
-      let badge = '';
-      if (c.estado === 'pagado')                  badge = '<span class="badge badge-ok">✅ Wompi</span>';
-      else if (c.estado === 'transferencia_aprobada')  badge = '<span class="badge badge-ok">✓ Transf.</span>';
-      else if (c.estado === 'transferencia_pendiente') badge = '<span class="badge badge-pend">⏳ Pend. Transf.</span>';
-      else if (c.estado === 'transferencia_rechazada') badge = '<span class="badge badge-err">✕ Rechazada</span>';
-      else badge = '<span class="badge badge-pend">Pendiente</span>';
-
-      const doradoTag = (c.codigos||[]).some(x=>x.dorado) ? ' <span class="badge badge-gold">⭐</span>' : '';
-      const codsHtml = (c.codigos||[]).length
-        ? (c.codigos||[]).map(cod =>
-            `<span class="code-mono ${cod.dorado ? 'gold-code' : ''}" style="margin-right:6px;font-size:12px">${cod.dorado ? '⭐' : ''}${cod.codigo}</span>`
-          ).join('')
-        : '<span style="color:var(--text3);font-size:12px">Sin códigos asignados</span>';
-
-      return `
-        <div style="background:var(--surface);border:0.5px solid var(--border);border-radius:var(--radius-lg);padding:16px;margin-bottom:10px">
-          <div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:10px">
-            <div>
-              <div style="font-weight:600;font-size:14px">${c.nombre||'—'}${doradoTag}</div>
-              <div style="font-size:12px;color:var(--text2)">${c.correo||'—'}</div>
-              <div style="font-size:11px;color:var(--text3)">${c.cedula ? 'CC '+c.cedula : ''} ${c.telefono||''}</div>
-              ${c.referencia ? `<div style="font-size:11px;color:var(--text3)">Ref: <span class="code-mono">${c.referencia}</span></div>` : ''}
-            </div>
-            <div style="text-align:right">
-              ${badge}
-              <div style="font-size:12px;font-weight:600;margin-top:4px">${c.cantidad||0} cód.</div>
-              <div style="font-size:11px;color:var(--text3)">${fecha}</div>
-            </div>
-          </div>
-          <div style="margin-top:4px">${codsHtml}</div>
-        </div>`;
-    }).join('');
-
-    el.innerHTML = `<p style="font-size:13px;color:var(--text2);margin-bottom:10px">${lista.length} compra(s)</p>${rows}`;
+    let lista    = _todosCompradores;
+    if (_filtroCompras === 'pagado')       lista = lista.filter(c => c.estado === 'pagado');
+    else if (_filtroCompras === 'transf')  lista = lista.filter(c => ['transferencia_pendiente','transferencia_aprobada','transferencia_rechazada'].includes(c.estado));
+    else if (_filtroCompras === 'pendiente') lista = lista.filter(c => c.estado === 'pendiente');
+    if (buscar) lista = lista.filter(c =>
+      (c.nombre   ||'').toLowerCase().includes(buscar) ||
+      (c.correo   ||'').toLowerCase().includes(buscar) ||
+      (c.cedula   ||'').toLowerCase().includes(buscar) ||
+      (c.telefono ||'').toLowerCase().includes(buscar) ||
+      (c.referencia||'').toLowerCase().includes(buscar)
+    );
+    if (!lista.length) { el.innerHTML = '<div class="state-empty">Sin resultados</div>'; return; }
+    el.innerHTML = `<p style="font-size:13px;color:var(--text2);margin-bottom:10px">${lista.length} compra(s)</p>` +
+      lista.map(c => renderCompraCard(c)).join('');
   }
 
+  function renderCompraCard(c) {
+    const fecha    = c.fecha ? new Date(c.fecha).toLocaleDateString('es-CO') : '—';
+    let badge = '';
+    if (c.estado === 'pagado')                   badge = '<span class="badge badge-ok">✅ Wompi</span>';
+    else if (c.estado === 'transferencia_aprobada')  badge = '<span class="badge badge-ok">✓ Transf.</span>';
+    else if (c.estado === 'transferencia_pendiente') badge = '<span class="badge badge-pend">⏳ Pend. Transf.</span>';
+    else if (c.estado === 'transferencia_rechazada') badge = '<span class="badge badge-err">✕ Rechazada</span>';
+    else badge = '<span class="badge badge-pend">Pendiente</span>';
+    const doradoTag = (c.codigos||[]).some(x=>x.dorado) ? ' <span class="badge badge-gold">⭐</span>' : '';
+    const codsHtml = (c.codigos||[]).length
+      ? (c.codigos||[]).map(cod => `<span class="code-mono ${cod.dorado?'gold-code':''}" style="margin-right:6px;font-size:12px">${cod.dorado?'⭐':''}${cod.codigo}</span>`).join('')
+      : '<span style="color:var(--text3);font-size:12px">Sin códigos asignados</span>';
+    return `<div style="background:var(--surface);border:0.5px solid var(--border);border-radius:var(--radius-lg);padding:16px;margin-bottom:10px">
+      <div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:10px">
+        <div>
+          <div style="font-weight:600;font-size:14px">${c.nombre||'—'}${doradoTag}</div>
+          <div style="font-size:12px;color:var(--text2)">${c.correo||'—'}</div>
+          <div style="font-size:11px;color:var(--text3)">${c.cedula?'CC '+c.cedula:''} ${c.telefono||''}</div>
+          ${c.referencia?`<div style="font-size:11px;color:var(--text3)">Ref: <span class="code-mono">${c.referencia}</span></div>`:''}
+        </div>
+        <div style="text-align:right">${badge}<div style="font-size:12px;font-weight:600;margin-top:4px">${c.cantidad||0} cód.</div><div style="font-size:11px;color:var(--text3)">${fecha}</div></div>
+      </div>
+      <div style="margin-top:4px">${codsHtml}</div>
+    </div>`;
+  }
 
+  // ── BUSCADOR GLOBAL ─────────────────────────────────────────────────────────
+  async function buscarGlobal() {
+    const q   = document.getElementById('global-buscar').value.trim();
+    const msg = document.getElementById('global-msg');
+    const res = document.getElementById('global-result');
+    if (!q) { msg.innerHTML = '<span style="color:var(--red);font-size:12px">Ingresa un término para buscar</span>'; return; }
+    msg.innerHTML = '<span style="color:var(--text3);font-size:12px">Buscando...</span>';
+    res.innerHTML = '';
+    try {
+      const r = await fetch(`/api/admin/buscar?q=${encodeURIComponent(q)}`, { headers: headers() });
+      const d = await r.json();
+      const lista = d.resultados || [];
+      if (!lista.length) {
+        msg.innerHTML = '<span style="color:var(--text3);font-size:12px">Sin resultados para "' + q + '"</span>';
+        return;
+      }
+      msg.innerHTML = `<span style="color:var(--text3);font-size:12px">${lista.length} resultado(s)</span>`;
+      res.innerHTML = lista.map(c => renderCompraCard(c)).join('');
+    } catch (e) {
+      msg.innerHTML = '<span style="color:var(--red);font-size:12px">Error de conexión</span>';
+    }
+  }
 
-  // ══════════════════════════════════
-  // PROMOCIÓN
-  // ══════════════════════════════════
+  // ── PROMOCIÓN ───────────────────────────────────────────────────────────────
   async function loadPromo() {
     const el = document.getElementById('promo-status');
     el.innerHTML = '<div class="state-loading"><div class="spin">⟳</div><br>Cargando...</div>';
     try {
       const r = await fetch('/api/admin/promo-activa', { headers: headers() });
       const d = await r.json();
-      if (!d.activa) {
-        el.innerHTML = '<div class="promo-inactive-box">⚪ No hay promoción activa actualmente</div>';
-        return;
-      }
+      if (!d.activa) { el.innerHTML = '<div class="promo-inactive-box">⚪ No hay promoción activa actualmente</div>'; return; }
       const exp = d.expira_en ? new Date(d.expira_en).toLocaleString('es-CO') : 'Sin fecha';
-      el.innerHTML = `
-        <div class="promo-active-box">
-          <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
-            <span class="badge badge-ok">Activa</span>
-            <span style="font-size:14px;font-weight:600;color:var(--green)">Promoción en curso</span>
-          </div>
-          <div class="promo-grid">
-            <div><div class="promo-field-label">Premio dorado</div><div class="promo-field-value">$${fmt(d.precio_dorado)}</div></div>
-            <div><div class="promo-field-label">Precio por código</div><div class="promo-field-value">$${fmt(d.precio_normal || '—')}</div></div>
-            <div><div class="promo-field-label">Expira</div><div class="promo-field-value" style="font-size:13px">${exp}</div></div>
-            <div><div class="promo-field-label">ID</div><div class="promo-field-value" style="font-size:12px;font-family:monospace">${d.id}</div></div>
-          </div>
-        </div>`;
-    } catch (e) {
-      el.innerHTML = '<div class="msg msg-err">Error cargando promoción</div>';
-    }
+      el.innerHTML = `<div class="promo-active-box">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
+          <span class="badge badge-ok">Activa</span>
+          <span style="font-size:14px;font-weight:600;color:var(--green)">Promoción en curso</span>
+        </div>
+        <div class="promo-grid">
+          <div><div class="promo-field-label">Premio dorado</div><div class="promo-field-value">$${fmt(d.precio_dorado)}</div></div>
+          <div><div class="promo-field-label">Precio por código</div><div class="promo-field-value">$${fmt(d.precio_normal||'—')}</div></div>
+          <div><div class="promo-field-label">Expira</div><div class="promo-field-value" style="font-size:13px">${exp}</div></div>
+          <div><div class="promo-field-label">ID</div><div class="promo-field-value" style="font-size:12px;font-family:monospace">${d.id}</div></div>
+        </div>
+      </div>`;
+    } catch (e) { el.innerHTML = '<div class="msg msg-err">Error cargando promoción</div>'; }
   }
 
   async function activarPromo() {
-    const pd  = document.getElementById('p-dorado').value;
-    const pn  = document.getElementById('p-normal').value;
-    const exp = document.getElementById('p-expira').value;
-    const el  = document.getElementById('promo-msg');
-    if (!pd || !pn || !exp) { el.innerHTML = '<div class="msg msg-err">Completa todos los campos</div>'; return; }
-    el.innerHTML = '<div class="state-loading">Activando...</div>';
+    const pd = document.getElementById('p-dorado').value;
+    const pn = document.getElementById('p-normal').value;
+    const exp= document.getElementById('p-expira').value;
+    const el = document.getElementById('promo-msg');
+    if (!pd||!pn||!exp) { el.innerHTML='<div class="msg msg-err">Completa todos los campos</div>'; return; }
+    el.innerHTML='<div class="state-loading">Activando...</div>';
     try {
-      const r = await fetch('/api/admin/activar-promo', {
-        method: 'POST',
-        headers: headers(),
-        body: JSON.stringify({
-          precioDorado: Number(pd),
-          precioNormal: Number(pn),
-          expiraEn: new Date(exp).toISOString()
-        })
-      });
-      if (r.ok) {
-        el.innerHTML = '<div class="msg msg-ok">✓ Promoción activada correctamente</div>';
-        loadPromo();
-      } else {
-        const d = await r.json();
-        el.innerHTML = `<div class="msg msg-err">${d.error || 'Error activando promo'}</div>`;
-      }
-    } catch (e) {
-      el.innerHTML = '<div class="msg msg-err">Error de conexión</div>';
-    }
+      const r = await fetch('/api/admin/activar-promo', { method:'POST', headers:headers(),
+        body:JSON.stringify({ precioDorado:Number(pd), precioNormal:Number(pn), expiraEn:new Date(exp).toISOString() }) });
+      if (r.ok) { el.innerHTML='<div class="msg msg-ok">✓ Promoción activada</div>'; loadPromo(); }
+      else { const d=await r.json(); el.innerHTML=`<div class="msg msg-err">${d.error||'Error'}</div>`; }
+    } catch(e){ el.innerHTML='<div class="msg msg-err">Error de conexión</div>'; }
   }
 
   async function desactivarPromo() {
     const el = document.getElementById('promo-msg');
-    el.innerHTML = '<div class="state-loading">Desactivando...</div>';
+    el.innerHTML='<div class="state-loading">Desactivando...</div>';
     try {
-      const r = await fetch('/api/admin/desactivar-promo', {
-        method: 'POST',
-        headers: headers()
-      });
-      if (r.ok) {
-        el.innerHTML = '<div class="msg msg-ok">Promoción desactivada</div>';
-        loadPromo();
-      } else {
-        el.innerHTML = '<div class="msg msg-err">Error desactivando</div>';
-      }
-    } catch (e) {
-      el.innerHTML = '<div class="msg msg-err">Error de conexión</div>';
-    }
+      const r = await fetch('/api/admin/desactivar-promo', { method:'POST', headers:headers() });
+      if (r.ok) { el.innerHTML='<div class="msg msg-ok">Promoción desactivada</div>'; loadPromo(); }
+      else { el.innerHTML='<div class="msg msg-err">Error desactivando</div>'; }
+    } catch(e){ el.innerHTML='<div class="msg msg-err">Error de conexión</div>'; }
   }
 
-  // ══════════════════════════════════
-  // REENVIAR CORREO
-  // ══════════════════════════════════
+  // ── REENVIAR CORREO ─────────────────────────────────────────────────────────
   async function reenviarCorreo() {
     const dato = document.getElementById('reenviar-dato').value.trim();
     const el   = document.getElementById('correo-msg');
-    if (!dato) { el.innerHTML = '<div class="msg msg-err">Ingresa un email o cédula</div>'; return; }
-    el.innerHTML = '<div class="state-loading">Enviando...</div>';
+    if (!dato) { el.innerHTML='<div class="msg msg-err">Ingresa un email o cédula</div>'; return; }
+    el.innerHTML='<div class="state-loading">Enviando...</div>';
     try {
-      const r = await fetch('/api/reenviar-correo', {
-        method: 'POST',
-        headers: headers(),
-        body: JSON.stringify({ dato })
-      });
+      const r = await fetch('/api/reenviar-correo', { method:'POST', headers:headers(), body:JSON.stringify({dato}) });
       const d = await r.json();
-      if (d.ok) {
-        el.innerHTML = `<div class="msg msg-ok">✓ ${d.mensaje}</div>`;
-      } else {
-        el.innerHTML = `<div class="msg msg-err">${d.mensaje || 'No se pudo enviar'}</div>`;
-      }
-    } catch (e) {
-      el.innerHTML = '<div class="msg msg-err">Error de conexión</div>';
-    }
+      el.innerHTML = d.ok
+        ? `<div class="msg msg-ok">✓ ${d.mensaje}</div>`
+        : `<div class="msg msg-err">${d.mensaje||'No se pudo enviar'}</div>`;
+    } catch(e){ el.innerHTML='<div class="msg msg-err">Error de conexión</div>'; }
   }
 
-  // ══════════════════════════════════
-  // TRANSFERENCIAS BANCARIAS
-  // ══════════════════════════════════
-  let _trfPendiente = null; // guarda acción del modal
+  // ── TRANSFERENCIAS ──────────────────────────────────────────────────────────
+  let _trfPendiente = null;
 
   async function loadTransferencias() {
     const el = document.getElementById('trf-list');
     el.innerHTML = '<div class="state-loading"><div class="spin">⟳</div><br>Cargando...</div>';
     try {
-      const r = await fetch('/api/admin/transferencias', { headers: headers() });
+      const r = await fetch('/api/admin/transferencias', { headers:headers() });
       const d = await r.json();
       const filtro = document.getElementById('trf-filtro').value;
       let lista = d.transferencias || [];
       if (filtro !== 'todas') lista = lista.filter(t => t.estado === filtro);
-
-      if (!lista.length) {
-        el.innerHTML = '<div class="state-empty">No hay transferencias en esta categoría</div>';
-        return;
-      }
-
+      if (!lista.length) { el.innerHTML='<div class="state-empty">No hay transferencias en esta categoría</div>'; return; }
       const montoXcod = 3750;
-
       const filas = lista.map(t => {
         const monto = '$' + (t.cantidad * montoXcod).toLocaleString('es-CO');
         const fecha = t.fecha ? new Date(t.fecha).toLocaleString('es-CO') : '—';
         let estadoBadge = '';
-        if (t.estado === 'transferencia_pendiente')  estadoBadge = '<span class="badge badge-pend">⏳ Pendiente</span>';
-        if (t.estado === 'transferencia_aprobada')   estadoBadge = '<span class="badge badge-ok">✅ Aprobada</span>';
-        if (t.estado === 'transferencia_rechazada')  estadoBadge = '<span class="badge badge-err">✕ Rechazada</span>';
-
+        if (t.estado==='transferencia_pendiente')  estadoBadge='<span class="badge badge-pend">⏳ Pendiente</span>';
+        if (t.estado==='transferencia_aprobada')   estadoBadge='<span class="badge badge-ok">✅ Aprobada</span>';
+        if (t.estado==='transferencia_rechazada')  estadoBadge='<span class="badge badge-err">✕ Rechazada</span>';
         const codsHtml = t.codigos?.length
-          ? t.codigos.map(c => `<span class="code-mono ${c.dorado ? 'gold-code' : ''}" style="margin-right:6px;font-size:12px">${c.dorado ? '⭐' : ''}${c.codigo}</span>`).join('')
+          ? t.codigos.map(c=>`<span class="code-mono ${c.dorado?'gold-code':''}" style="margin-right:6px;font-size:12px">${c.dorado?'⭐':''}${c.codigo}</span>`).join('')
           : '<span style="color:var(--text3);font-size:12px">—</span>';
-
-        const acciones = 
-        t.estado === 'transferencia_pendiente' ? `
+        const acciones = t.estado==='transferencia_pendiente' ? `
           <div style="display:flex;gap:6px;margin-top:6px">
             <button class="btn btn-primary" style="font-size:12px;padding:5px 10px"
-              onclick="abrirModalAprobar('${t.referencia}','${t.nombre}',${t.cantidad},${t.cantidad * montoXcod})">
-              ✅ Aprobar
-            </button>
+              onclick="abrirModalAprobar('${t.referencia}','${t.nombre}',${t.cantidad},${t.cantidad*montoXcod})">✅ Aprobar</button>
             <button class="btn btn-danger" style="font-size:12px;padding:5px 10px"
-              onclick="abrirModalRechazar('${t.referencia}','${t.nombre}')">
-              ✕ Rechazar
-            </button>
+              onclick="abrirModalRechazar('${t.referencia}','${t.nombre}')">✕ Rechazar</button>
           </div>` : '';
-
-        return `
-          <div style="background:var(--surface);border:0.5px solid var(--border);border-radius:var(--radius-lg);padding:16px;margin-bottom:12px">
-            <div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:10px">
-              <div>
-                <div style="font-weight:600;font-size:14px">${t.nombre}</div>
-                <div style="font-size:12px;color:var(--text2)">${t.correo} ${t.cedula ? '· CC ' + t.cedula : ''} ${t.telefono ? '· 📱 ' + t.telefono : ''}</div>
-                <div style="font-size:11px;color:var(--text3);margin-top:2px">${fecha}</div>
-              </div>
-              <div style="text-align:right">
-                ${estadoBadge}
-                <div style="font-size:13px;font-weight:600;margin-top:4px">${t.cantidad} códigos · ${monto}</div>
-              </div>
+        return `<div style="background:var(--surface);border:0.5px solid var(--border);border-radius:var(--radius-lg);padding:16px;margin-bottom:12px">
+          <div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:10px">
+            <div>
+              <div style="font-weight:600;font-size:14px">${t.nombre}</div>
+              <div style="font-size:12px;color:var(--text2)">${t.correo} ${t.cedula?'· CC '+t.cedula:''} ${t.telefono?'· 📱 '+t.telefono:''}</div>
+              <div style="font-size:11px;color:var(--text3);margin-top:2px">${fecha}</div>
             </div>
-            <div style="font-size:12px;color:var(--text2);margin-bottom:4px">
-              <strong style="color:var(--text3);text-transform:uppercase;font-size:10px;letter-spacing:.05em">Ref:</strong>
-              <span class="code-mono" style="font-size:12px">${t.referencia}</span>
-            </div>
-            ${t.codigos?.length ? `<div style="margin-bottom:6px">${codsHtml}</div>` : ''}
-            ${t.notas_admin ? `<div style="font-size:12px;background:var(--surface2);border-radius:6px;padding:6px 10px;margin-top:6px;color:var(--text2)">📝 ${t.notas_admin}</div>` : ''}
-            ${acciones}
-          </div>`;
+            <div style="text-align:right">${estadoBadge}<div style="font-size:13px;font-weight:600;margin-top:4px">${t.cantidad} códigos · ${monto}</div></div>
+          </div>
+          <div style="font-size:12px;color:var(--text2);margin-bottom:4px">
+            <strong style="color:var(--text3);text-transform:uppercase;font-size:10px;letter-spacing:.05em">Ref:</strong>
+            <span class="code-mono" style="font-size:12px">${t.referencia}</span>
+          </div>
+          ${t.codigos?.length?`<div style="margin-bottom:6px">${codsHtml}</div>`:''}
+          ${t.notas_admin?`<div style="font-size:12px;background:var(--surface2);border-radius:6px;padding:6px 10px;margin-top:6px;color:var(--text2)">📝 ${t.notas_admin}</div>`:''}
+          ${acciones}
+        </div>`;
       }).join('');
-
       el.innerHTML = `<p style="font-size:13px;color:var(--text2);margin-bottom:12px">${lista.length} transferencia(s)</p>${filas}`;
-    } catch (e) {
-      el.innerHTML = '<div class="msg msg-err">Error cargando transferencias</div>';
-    }
+    } catch(e){ el.innerHTML='<div class="msg msg-err">Error cargando transferencias</div>'; }
   }
 
-  function abrirModalAprobar(ref, nombre, cantidad, monto) {
-    _trfPendiente = { accion: 'aprobar', referencia: ref };
+  function abrirModalAprobar(ref,nombre,cantidad,monto) {
+    _trfPendiente = { accion:'aprobar', referencia:ref };
     document.getElementById('modal-title').textContent = '✅ Aprobar transferencia';
     document.getElementById('modal-info').innerHTML =
       `<strong>${nombre}</strong> · ${cantidad} códigos · <strong>$${monto.toLocaleString('es-CO')} COP</strong><br>
-       <span style="color:var(--text3);font-size:12px">Se generarán los códigos automáticamente y se enviarán al comprador por correo.</span>`;
+       <span style="color:var(--text3);font-size:12px">Se generarán los códigos automáticamente y se enviarán al comprador.</span>`;
     document.getElementById('modal-notas').value = '';
     document.getElementById('modal-msg').innerHTML = '';
     const btn = document.getElementById('modal-confirm-btn');
@@ -1256,11 +1040,11 @@
     document.getElementById('trf-modal').style.display = 'flex';
   }
 
-  function abrirModalRechazar(ref, nombre) {
-    _trfPendiente = { accion: 'rechazar', referencia: ref };
+  function abrirModalRechazar(ref,nombre) {
+    _trfPendiente = { accion:'rechazar', referencia:ref };
     document.getElementById('modal-title').textContent = '✕ Rechazar transferencia';
     document.getElementById('modal-info').innerHTML =
-      `<strong>${nombre}</strong><br><span style="color:var(--text3);font-size:12px">El cliente NO recibirá códigos. Puedes dejar una nota de por qué se rechazó.</span>`;
+      `<strong>${nombre}</strong><br><span style="color:var(--text3);font-size:12px">El cliente NO recibirá códigos.</span>`;
     document.getElementById('modal-notas').value = '';
     document.getElementById('modal-msg').innerHTML = '';
     const btn = document.getElementById('modal-confirm-btn');
@@ -1280,44 +1064,30 @@
     const notas = document.getElementById('modal-notas').value.trim();
     const msgEl = document.getElementById('modal-msg');
     msgEl.innerHTML = '<div class="state-loading">Procesando...</div>';
-
     const endpoint = _trfPendiente.accion === 'aprobar'
       ? '/api/admin/transferencia-aprobar'
       : '/api/admin/transferencia-rechazar';
-
     try {
-      const r = await fetch(endpoint, {
-        method: 'POST',
-        headers: headers(),
-        body: JSON.stringify({ referencia: _trfPendiente.referencia, notas })
-      });
+      const r = await fetch(endpoint, { method:'POST', headers:headers(),
+        body:JSON.stringify({ referencia:_trfPendiente.referencia, notas }) });
       const d = await r.json();
-      if (d.ok) {
-        msgEl.innerHTML = `<div class="msg msg-ok">${d.mensaje || '✓ Hecho'}</div>`;
-        setTimeout(() => { cerrarModal(); loadTransferencias(); }, 1800);
-      } else {
-        msgEl.innerHTML = `<div class="msg msg-err">${d.error || 'Error al procesar'}</div>`;
-      }
-    } catch (e) {
-      msgEl.innerHTML = '<div class="msg msg-err">Error de conexión</div>';
-    }
+      if (d.ok) { msgEl.innerHTML=`<div class="msg msg-ok">${d.mensaje||'✓ Hecho'}</div>`; setTimeout(()=>{cerrarModal();loadTransferencias();},1800); }
+      else { msgEl.innerHTML=`<div class="msg msg-err">${d.error||'Error al procesar'}</div>`; }
+    } catch(e){ msgEl.innerHTML='<div class="msg msg-err">Error de conexión</div>'; }
   }
 
-  // ══════════════════════════════════
-  // NOTIFICACIONES
-  // ══════════════════════════════════
-
+  // ── NOTIFICACIONES ──────────────────────────────────────────────────────────
   async function loadNotifStats() {
     ['notif-pend-count','notif-comp-count','notif-inc-count'].forEach(id => {
       document.getElementById(id).textContent = '…';
     });
     try {
-      const r = await fetch('/api/admin/notif-stats', { headers: headers() });
+      const r = await fetch('/api/admin/notif-stats', { headers:headers() });
       const d = await r.json();
       document.getElementById('notif-pend-count').textContent = d.transferencias_pendientes_12h ?? '0';
-      document.getElementById('notif-comp-count').textContent = d.compradores_con_codigos ?? '0';
-      document.getElementById('notif-inc-count').textContent  = d.pagos_incompletos_12h ?? '0';
-    } catch (e) {
+      document.getElementById('notif-comp-count').textContent = d.compradores_con_codigos       ?? '0';
+      document.getElementById('notif-inc-count').textContent  = d.pagos_incompletos_12h         ?? '0';
+    } catch(e) {
       ['notif-pend-count','notif-comp-count','notif-inc-count'].forEach(id => {
         document.getElementById(id).textContent = 'error';
       });
@@ -1325,223 +1095,191 @@
   }
 
   async function enviarRecordatorioIncompletos() {
-    const btn   = document.getElementById('btn-incompletos');
-    const msg   = document.getElementById('incompletos-msg');
-    const total = parseInt(document.getElementById('notif-inc-count').textContent) || 0;
-    if (total === 0) { msg.innerHTML = '<div class="msg msg-info">ℹ️ No hay pagos incompletos con más de 12 horas.</div>'; return; }
-    if (!confirm(`¿Enviar recordatorio de pago a ${total} cliente(s) con compra incompleta?\n\nIncluye Wompi no pagados y transferencias pendientes.`)) return;
-    btn.disabled = true; btn.textContent = '⟳ Enviando...';
-    msg.innerHTML = '<div class="state-loading">Enviando correos, por favor espera...</div>';
+    const btn=document.getElementById('btn-incompletos'), msg=document.getElementById('incompletos-msg');
+    const total=parseInt(document.getElementById('notif-inc-count').textContent)||0;
+    if(total===0){msg.innerHTML='<div class="msg msg-info">ℹ️ No hay pagos incompletos con más de 12 horas.</div>';return;}
+    if(!confirm(`¿Enviar recordatorio a ${total} cliente(s) con compra incompleta?`))return;
+    btn.disabled=true;btn.textContent='⟳ Enviando...';
+    msg.innerHTML='<div class="state-loading">Enviando correos...</div>';
     try {
-      const r = await fetch('/api/admin/recordatorio-pagos-incompletos', { method: 'POST', headers: headers() });
-      const d = await r.json();
-      if (d.ok) {
-        msg.innerHTML = `<div class="msg msg-ok">✓ Recordatorios enviados: <strong>${d.enviados}</strong> de <strong>${d.total}</strong> clientes</div>`;
-        loadNotifStats();
-      } else {
-        msg.innerHTML = `<div class="msg msg-err">❌ ${d.error || 'Error al enviar'}</div>`;
-      }
-    } catch (e) { msg.innerHTML = '<div class="msg msg-err">Error de conexión</div>'; }
-    finally { btn.disabled = false; btn.textContent = '💳 Enviar recordatorio de pago'; }
+      const r=await fetch('/api/admin/recordatorio-pagos-incompletos',{method:'POST',headers:headers()});
+      const d=await r.json();
+      if(d.ok){msg.innerHTML=`<div class="msg msg-ok">✓ Enviados: <strong>${d.enviados}</strong> de <strong>${d.total}</strong></div>`;loadNotifStats();}
+      else{msg.innerHTML=`<div class="msg msg-err">❌ ${d.error||'Error al enviar'}</div>`;}
+    }catch(e){msg.innerHTML='<div class="msg msg-err">Error de conexión</div>';}
+    finally{btn.disabled=false;btn.textContent='💳 Enviar recordatorio de pago';}
   }
 
   async function enviarRecordatorio() {
-    const btn   = document.getElementById('btn-recordatorio');
-    const msg   = document.getElementById('recordatorio-msg');
-    const total = parseInt(document.getElementById('notif-pend-count').textContent) || 0;
-    if (total === 0) { msg.innerHTML = '<div class="msg msg-info">ℹ️ No hay transferencias pendientes con más de 12 horas.</div>'; return; }
-    if (!confirm(`¿Enviar recordatorio a ${total} cliente(s) con transferencia pendiente?`)) return;
-    btn.disabled = true; btn.textContent = '⟳ Enviando...';
-    msg.innerHTML = '<div class="state-loading">Enviando correos, por favor espera...</div>';
+    const btn=document.getElementById('btn-recordatorio'),msg=document.getElementById('recordatorio-msg');
+    const total=parseInt(document.getElementById('notif-pend-count').textContent)||0;
+    if(total===0){msg.innerHTML='<div class="msg msg-info">ℹ️ No hay transferencias pendientes +12h.</div>';return;}
+    if(!confirm(`¿Enviar recordatorio a ${total} cliente(s)?`))return;
+    btn.disabled=true;btn.textContent='⟳ Enviando...';
+    msg.innerHTML='<div class="state-loading">Enviando correos...</div>';
     try {
-      const r = await fetch('/api/admin/recordatorio-transferencias', { method: 'POST', headers: headers() });
-      const d = await r.json();
-      if (d.ok) {
-        msg.innerHTML = `<div class="msg msg-ok">✓ Recordatorios enviados: <strong>${d.enviados}</strong> de <strong>${d.total}</strong> clientes</div>`;
-        loadNotifStats();
-      } else {
-        msg.innerHTML = `<div class="msg msg-err">❌ ${d.error || 'Error al enviar'}</div>`;
-      }
-    } catch (e) { msg.innerHTML = '<div class="msg msg-err">Error de conexión</div>'; }
-    finally { btn.disabled = false; btn.textContent = '📤 Enviar recordatorios ahora'; }
+      const r=await fetch('/api/admin/recordatorio-transferencias',{method:'POST',headers:headers()});
+      const d=await r.json();
+      if(d.ok){msg.innerHTML=`<div class="msg msg-ok">✓ Enviados: <strong>${d.enviados}</strong> de <strong>${d.total}</strong></div>`;loadNotifStats();}
+      else{msg.innerHTML=`<div class="msg msg-err">❌ ${d.error||'Error al enviar'}</div>`;}
+    }catch(e){msg.innerHTML='<div class="msg msg-err">Error de conexión</div>';}
+    finally{btn.disabled=false;btn.textContent='📤 Enviar recordatorios ahora';}
   }
 
-  function actualizarContador(inputId, counterId, max) {
-    const val = document.getElementById(inputId).value.length;
-    const el  = document.getElementById(counterId);
-    el.textContent = `${val} / ${max}`;
-    el.style.color = val > max * 0.9 ? 'var(--amber)' : 'var(--text3)';
-    const preview = document.getElementById('masivo-preview');
-    if (preview && preview.style.display !== 'none') {
-      document.getElementById('prev-asunto').textContent  = document.getElementById('masivo-asunto').value  || '(sin asunto)';
-      document.getElementById('prev-mensaje').textContent = document.getElementById('masivo-mensaje').value || '(sin mensaje)';
+  function actualizarContador(inputId,counterId,max){
+    const val=document.getElementById(inputId).value.length;
+    const el=document.getElementById(counterId);
+    el.textContent=`${val} / ${max}`;
+    el.style.color=val>max*.9?'var(--amber)':'var(--text3)';
+    const preview=document.getElementById('masivo-preview');
+    if(preview&&preview.style.display!=='none'){
+      document.getElementById('prev-asunto').textContent =document.getElementById('masivo-asunto').value||'(sin asunto)';
+      document.getElementById('prev-mensaje').textContent=document.getElementById('masivo-mensaje').value||'(sin mensaje)';
     }
   }
 
-  function togglePreview() {
-    const preview = document.getElementById('masivo-preview');
-    const asunto  = document.getElementById('masivo-asunto').value.trim();
-    const mensaje = document.getElementById('masivo-mensaje').value.trim();
-    if (!asunto && !mensaje) { document.getElementById('masivo-msg').innerHTML = '<div class="msg msg-err">Completa al menos el asunto y el mensaje para previsualizar</div>'; return; }
-    document.getElementById('masivo-msg').innerHTML = '';
-    document.getElementById('prev-asunto').textContent  = asunto  || '(sin asunto)';
-    document.getElementById('prev-mensaje').textContent = mensaje || '(sin mensaje)';
-    preview.style.display = preview.style.display === 'none' ? 'block' : 'none';
+  function togglePreview(){
+    const preview=document.getElementById('masivo-preview');
+    const asunto=document.getElementById('masivo-asunto').value.trim();
+    const mensaje=document.getElementById('masivo-mensaje').value.trim();
+    if(!asunto&&!mensaje){document.getElementById('masivo-msg').innerHTML='<div class="msg msg-err">Completa asunto y mensaje primero</div>';return;}
+    document.getElementById('masivo-msg').innerHTML='';
+    document.getElementById('prev-asunto').textContent =asunto||'(sin asunto)';
+    document.getElementById('prev-mensaje').textContent=mensaje||'(sin mensaje)';
+    preview.style.display=preview.style.display==='none'?'block':'none';
   }
 
-  async function enviarMasivo() {
-    const asunto  = document.getElementById('masivo-asunto').value.trim();
-    const mensaje = document.getElementById('masivo-mensaje').value.trim();
-    const titulo  = document.getElementById('masivo-titulo').value.trim();
-    const msg     = document.getElementById('masivo-msg');
-    const btn     = document.getElementById('btn-masivo');
-    const total   = parseInt(document.getElementById('notif-comp-count').textContent) || 0;
-    if (!asunto)  { msg.innerHTML = '<div class="msg msg-err">El asunto es obligatorio</div>'; return; }
-    if (!mensaje) { msg.innerHTML = '<div class="msg msg-err">El mensaje es obligatorio</div>'; return; }
-    if (total === 0) { msg.innerHTML = '<div class="msg msg-info">No hay compradores con códigos aún.</div>'; return; }
-    if (!confirm(`¿Enviar este correo a ${total} comprador(es) con códigos asignados?\n\nAsunto: "${asunto}"\n\nEsta acción no se puede deshacer.`)) return;
-    btn.disabled = true; btn.textContent = '⟳ Enviando...';
-    msg.innerHTML = `<div class="state-loading">Enviando a ${total} compradores, puede tardar unos segundos...</div>`;
+  async function enviarMasivo(){
+    const asunto=document.getElementById('masivo-asunto').value.trim();
+    const mensaje=document.getElementById('masivo-mensaje').value.trim();
+    const titulo=document.getElementById('masivo-titulo').value.trim();
+    const msg=document.getElementById('masivo-msg'),btn=document.getElementById('btn-masivo');
+    const total=parseInt(document.getElementById('notif-comp-count').textContent)||0;
+    if(!asunto){msg.innerHTML='<div class="msg msg-err">El asunto es obligatorio</div>';return;}
+    if(!mensaje){msg.innerHTML='<div class="msg msg-err">El mensaje es obligatorio</div>';return;}
+    if(total===0){msg.innerHTML='<div class="msg msg-info">No hay compradores con códigos aún.</div>';return;}
+    if(!confirm(`¿Enviar a ${total} comprador(es)?\n\nAsunto: "${asunto}"\n\nEsta acción no se puede deshacer.`))return;
+    btn.disabled=true;btn.textContent='⟳ Enviando...';
+    msg.innerHTML=`<div class="state-loading">Enviando a ${total} compradores...</div>`;
     try {
-      const r = await fetch('/api/admin/correo-masivo', {
-        method: 'POST', headers: headers(),
-        body: JSON.stringify({ asunto, mensaje, tituloDestacado: titulo || null })
-      });
-      const d = await r.json();
-      if (d.ok) {
-        msg.innerHTML = `<div class="msg msg-ok">✓ Correo masivo enviado: <strong>${d.enviados}</strong> de <strong>${d.total}</strong> destinatarios</div>`;
-        document.getElementById('masivo-titulo').value  = '';
-        document.getElementById('masivo-asunto').value  = '';
-        document.getElementById('masivo-mensaje').value = '';
-        document.getElementById('cnt-asunto').textContent  = '0 / 150';
-        document.getElementById('cnt-mensaje').textContent = '0 / 2000';
-        document.getElementById('masivo-preview').style.display = 'none';
-      } else {
-        msg.innerHTML = `<div class="msg msg-err">❌ ${d.error || 'Error al enviar'}</div>`;
-      }
-    } catch (e) { msg.innerHTML = '<div class="msg msg-err">Error de conexión</div>'; }
-    finally { btn.disabled = false; btn.textContent = '📢 Enviar a todos los compradores'; }
+      const r=await fetch('/api/admin/correo-masivo',{method:'POST',headers:headers(),
+        body:JSON.stringify({asunto,mensaje,tituloDestacado:titulo||null})});
+      const d=await r.json();
+      if(d.ok){
+        msg.innerHTML=`<div class="msg msg-ok">✓ Enviado: <strong>${d.enviados}</strong> de <strong>${d.total}</strong></div>`;
+        ['masivo-titulo','masivo-asunto','masivo-mensaje'].forEach(id=>document.getElementById(id).value='');
+        document.getElementById('cnt-asunto').textContent='0 / 150';
+        document.getElementById('cnt-mensaje').textContent='0 / 2000';
+        document.getElementById('masivo-preview').style.display='none';
+      }else{msg.innerHTML=`<div class="msg msg-err">❌ ${d.error||'Error al enviar'}</div>`;}
+    }catch(e){msg.innerHTML='<div class="msg msg-err">Error de conexión</div>';}
+    finally{btn.disabled=false;btn.textContent='📢 Enviar a todos los compradores';}
   }
 
+  // ── GANADOR ─────────────────────────────────────────────────────────────────
+  async function loadGanadorStatus() {
+    const el = document.getElementById('ganador-status');
+    el.innerHTML = '<div class="state-loading"><div class="spin">⟳</div><br>Cargando...</div>';
+    try {
+      const r = await fetch('/api/admin/config', { headers: headers() });
+      const d = await r.json();
+      const g = d.ganador;
+      if (g?.activo && g?.codigo) {
+        el.innerHTML = `
+          <div class="ganador-announce">
+            <div style="font-size:13px;font-weight:600;color:#92400e;margin-bottom:4px;text-transform:uppercase;letter-spacing:.05em">🏆 Ganador publicado</div>
+            <div class="g-code">${g.codigo}</div>
+            <div class="g-name">${g.nombre || '—'}</div>
+            <div style="font-size:11px;color:#a16207;margin-top:8px">Visible para todos los visitantes del sitio</div>
+          </div>`;
+        document.getElementById('gan-codigo').value = g.codigo || '';
+        document.getElementById('gan-nombre').value = g.nombre || '';
+      } else {
+        el.innerHTML = '<div class="promo-inactive-box">⚪ No hay ganador publicado actualmente</div>';
+      }
+    } catch(e) { el.innerHTML = '<div class="msg msg-err">Error cargando estado</div>'; }
+  }
+
+  async function publicarGanador() {
+    const codigo = document.getElementById('gan-codigo').value.trim();
+    const nombre = document.getElementById('gan-nombre').value.trim();
+    const msg    = document.getElementById('ganador-msg');
+    if (!codigo || !nombre) { msg.innerHTML='<div class="msg msg-err">Código y nombre son obligatorios</div>'; return; }
+    if (!confirm(`¿Publicar ganador?\n\nCódigo: ${codigo}\nNombre: ${nombre}\n\nEsto se mostrará en la página pública.`)) return;
+    msg.innerHTML = '<div class="state-loading">Publicando...</div>';
+    try {
+      const r = await fetch('/api/admin/config/ganador', { method:'POST', headers:headers(),
+        body: JSON.stringify({ codigo, nombre, activo: true }) });
+      const d = await r.json();
+      if (d.ok) { msg.innerHTML='<div class="msg msg-ok">🏆 Ganador publicado correctamente</div>'; loadGanadorStatus(); }
+      else { msg.innerHTML=`<div class="msg msg-err">${d.error||'Error al publicar'}</div>`; }
+    } catch(e){ msg.innerHTML='<div class="msg msg-err">Error de conexión</div>'; }
+  }
+
+  async function ocultarGanador() {
+    const msg = document.getElementById('ganador-msg');
+    if (!confirm('¿Ocultar el ganador del sitio público?')) return;
+    msg.innerHTML = '<div class="state-loading">Ocultando...</div>';
+    try {
+      const r = await fetch('/api/admin/config/ganador', { method:'POST', headers:headers(),
+        body: JSON.stringify({ activo: false }) });
+      const d = await r.json();
+      if (d.ok) { msg.innerHTML='<div class="msg msg-ok">✓ Ganador ocultado</div>'; loadGanadorStatus(); }
+      else { msg.innerHTML=`<div class="msg msg-err">${d.error||'Error'}</div>`; }
+    } catch(e){ msg.innerHTML='<div class="msg msg-err">Error de conexión</div>'; }
+  }
+
+  // ── EXPORTAR ─────────────────────────────────────────────────────────────────
   function exportar(e) {
     e.preventDefault();
     const el = document.getElementById('export-msg');
     el.innerHTML = '<div class="msg msg-info">Preparando descarga...</div>';
-    const url = `/api/admin/exportar?token=${encodeURIComponent(ADMIN_TOKEN)}`;
     const a = document.createElement('a');
-    a.href = url;
+    a.href = `/api/admin/exportar?token=${encodeURIComponent(ADMIN_TOKEN)}`;
     a.download = 'ganadores.xlsx';
     a.click();
     setTimeout(() => el.innerHTML = '', 3000);
   }
 
-  // ══════════════════════════════════════════════════════
-  // PREVIEW DE CORREOS
-  // ══════════════════════════════════════════════════════
+  // ── PREVIEW CORREOS ──────────────────────────────────────────────────────────
   const PREVIEW_TEMPLATES = {
-
     'transferencia': {
-      titulo:    '⏰ Correo — Transferencia pendiente',
-      subtitulo: 'Se envía a clientes con transferencia bancaria sin confirmar +12h',
-      asunto:    '⏰ ¿Olvidaste tu transferencia? — Ref. TRF-000000000000-0000',
-      html: () => `<div style="font-family:Arial,sans-serif;background:#0f172a;padding:20px;color:#f1f5f9;">
-        <div style="max-width:460px;margin:auto">
-          <div style="background:linear-gradient(135deg,#92400e,#d97706);padding:18px 20px;border-radius:10px 10px 0 0;text-align:center;">
-            <div style="font-size:36px;">⏰</div>
-            <h2 style="margin:6px 0 0;color:#fff;font-size:20px;">¿Olvidaste completar tu compra?</h2>
-          </div>
-          <div style="background:#1e293b;padding:22px;border-radius:0 0 10px 10px;">
-            <p style="margin:0 0 14px;">Hola <strong>Juan Pérez</strong>,</p>
-            <p style="color:#cbd5e1;font-size:14px;line-height:1.7;">Registramos tu intención de pago por <strong>4 códigos</strong> por un valor de <strong style="color:#4ade80;">$15.000 COP</strong>, pero aún no hemos recibido tu transferencia.</p>
-            <div style="background:#0f172a;border-radius:10px;padding:14px 16px;margin:16px 0;border:1px solid #334155;">
-              <p style="margin:0 0 8px;font-size:12px;color:#94a3b8;">Tu referencia de pago:</p>
-              <p style="margin:0;font-family:monospace;font-size:16px;font-weight:bold;color:#f59e0b;letter-spacing:1px;">TRF-1780080547626-6286</p>
-            </div>
-            <p style="color:#cbd5e1;font-size:13px;line-height:1.7;">Recuerda incluir esta referencia en la descripción de tu transferencia para que podamos identificar tu pago rápidamente.</p>
-            <div style="text-align:center;margin:20px 0 8px;">
-              <a href="#" style="display:inline-block;background:#25D366;color:white;text-decoration:none;padding:13px 28px;border-radius:10px;font-weight:bold;font-size:14px;">💬 Confirmar pago por WhatsApp</a>
-            </div>
-            <p style="text-align:center;color:#64748b;font-size:12px;margin:12px 0 0;">Si ya realizaste el pago, ignora este mensaje. Lo verificaremos pronto.</p>
-          </div>
-        </div>
-      </div>`
+      titulo:'⏰ Correo — Transferencia pendiente',
+      subtitulo:'Se envía a clientes con transferencia sin confirmar +12h',
+      asunto:'⏰ ¿Olvidaste tu transferencia? — Ref. TRF-000000000000-0000',
+      html:()=>`<div style="font-family:Arial,sans-serif;background:#0f172a;padding:20px;color:#f1f5f9;"><div style="max-width:460px;margin:auto"><div style="background:linear-gradient(135deg,#92400e,#d97706);padding:18px 20px;border-radius:10px 10px 0 0;text-align:center;"><div style="font-size:36px;">⏰</div><h2 style="margin:6px 0 0;color:#fff;font-size:20px;">¿Olvidaste completar tu compra?</h2></div><div style="background:#1e293b;padding:22px;border-radius:0 0 10px 10px;"><p style="margin:0 0 14px;">Hola <strong>Juan Pérez</strong>,</p><p style="color:#cbd5e1;font-size:14px;line-height:1.7;">Registramos tu intención de pago por <strong>4 códigos</strong> por un valor de <strong style="color:#4ade80;">$15.000 COP</strong>, pero aún no hemos recibido tu transferencia.</p><div style="background:#0f172a;border-radius:10px;padding:14px 16px;margin:16px 0;border:1px solid #334155;"><p style="margin:0 0 8px;font-size:12px;color:#94a3b8;">Tu referencia de pago:</p><p style="margin:0;font-family:monospace;font-size:16px;font-weight:bold;color:#f59e0b;letter-spacing:1px;">TRF-1780080547626-6286</p></div><div style="text-align:center;margin:20px 0 8px;"><a href="#" style="display:inline-block;background:#25D366;color:white;text-decoration:none;padding:13px 28px;border-radius:10px;font-weight:bold;font-size:14px;">💬 Confirmar pago por WhatsApp</a></div></div></div></div>`
     },
-
     'incompleto-wompi': {
-      titulo:    '💳 Correo — Pago Wompi no completado',
-      subtitulo: 'Se envía a clientes que iniciaron un pago con Wompi pero no lo terminaron',
-      asunto:    '💳 Completa tu compra — 4 códigos te esperan',
-      html: () => `<div style="font-family:Arial,sans-serif;background:#0f172a;padding:20px;color:#f1f5f9;">
-        <div style="max-width:460px;margin:auto">
-          <div style="background:linear-gradient(135deg,#1e3a5f,#2563eb);padding:18px 20px;border-radius:10px 10px 0 0;text-align:center;">
-            <div style="font-size:36px;">💳</div>
-            <h2 style="margin:6px 0 0;color:#fff;font-size:20px;">¡Tu compra está incompleta!</h2>
-            <p style="margin:6px 0 0;color:#93c5fd;font-size:13px;">⚡ Pago Wompi no completado</p>
-          </div>
-          <div style="background:#1e293b;padding:22px;border-radius:0 0 10px 10px;">
-            <p style="margin:0 0 14px;">Hola <strong>María García</strong>,</p>
-            <p style="color:#cbd5e1;font-size:14px;line-height:1.7;margin:0 0 14px;">Iniciaste una compra de <strong>4 códigos</strong> por <strong style="color:#4ade80;">$15.000 COP</strong> pero el pago no se completó.<br>Puedes intentarlo nuevamente o contactarnos si necesitas ayuda.</p>
-            <div style="text-align:center;margin:16px 0;">
-              <a href="#" style="display:inline-block;background:#2563eb;color:white;text-decoration:none;padding:13px 28px;border-radius:10px;font-weight:bold;font-size:14px;">🎟️ Volver a comprar</a>
-            </div>
-            <div style="text-align:center;margin:12px 0 8px;">
-              <a href="#" style="display:inline-block;background:#25D366;color:white;text-decoration:none;padding:13px 28px;border-radius:10px;font-weight:bold;font-size:14px;">💬 Necesito ayuda por WhatsApp</a>
-            </div>
-            <p style="text-align:center;color:#64748b;font-size:12px;margin:12px 0 0;">Si ya completaste tu pago, ignora este mensaje. Lo procesaremos pronto.</p>
-          </div>
-        </div>
-      </div>`
+      titulo:'💳 Correo — Pago Wompi no completado',
+      subtitulo:'Para clientes que iniciaron Wompi pero no terminaron',
+      asunto:'💳 Completa tu compra —  códigos te esperan',
+      html:()=>`<div style="font-family:Arial,sans-serif;background:#0f172a;padding:20px;color:#f1f5f9;"><div style="max-width:460px;margin:auto"><div style="background:linear-gradient(135deg,#1e3a5f,#2563eb);padding:18px 20px;border-radius:10px 10px 0 0;text-align:center;"><div style="font-size:36px;">💳</div><h2 style="margin:6px 0 0;color:#fff;font-size:20px;">¡Tu compra está incompleta!</h2></div><div style="background:#1e293b;padding:22px;border-radius:0 0 10px 10px;"><p style="margin:0 0 14px;">Hola <strong>María García</strong>,</p><p style="color:#cbd5e1;font-size:14px;line-height:1.7;margin:0 0 14px;">Iniciaste una compra de <strong>4 códigos</strong> por <strong style="color:#4ade80;">$15.000 COP</strong> pero el pago no se completó.</p><div style="text-align:center;margin:16px 0;"><a href="#" style="display:inline-block;background:#2563eb;color:white;text-decoration:none;padding:13px 28px;border-radius:10px;font-weight:bold;font-size:14px;">🎟️ Volver a comprar</a></div></div></div></div>`
     },
-
     'incompleto-transf': {
-      titulo:    '🏦 Correo — Pago incompleto (transferencia)',
-      subtitulo: 'Variante para clientes con transferencia bancaria pendiente',
-      asunto:    '💳 Completa tu compra — 8 códigos te esperan',
-      html: () => `<div style="font-family:Arial,sans-serif;background:#0f172a;padding:20px;color:#f1f5f9;">
-        <div style="max-width:460px;margin:auto">
-          <div style="background:linear-gradient(135deg,#1e3a5f,#2563eb);padding:18px 20px;border-radius:10px 10px 0 0;text-align:center;">
-            <div style="font-size:36px;">💳</div>
-            <h2 style="margin:6px 0 0;color:#fff;font-size:20px;">¡Tu compra está incompleta!</h2>
-            <p style="margin:6px 0 0;color:#93c5fd;font-size:13px;">🏦 Transferencia bancaria pendiente</p>
-          </div>
-          <div style="background:#1e293b;padding:22px;border-radius:0 0 10px 10px;">
-            <p style="margin:0 0 14px;">Hola <strong>Carlos Rodríguez</strong>,</p>
-            <p style="color:#cbd5e1;font-size:14px;line-height:1.7;margin:0 0 14px;">Registramos tu intención de pago por transferencia bancaria de <strong style="color:#4ade80;">$30.000 COP</strong> por <strong>8 códigos</strong>.<br>Aún no hemos recibido tu transferencia.</p>
-            <div style="background:#0f172a;border-radius:10px;padding:14px 16px;margin:16px 0;border:1px solid #334155;">
-              <p style="margin:0 0 6px;font-size:12px;color:#94a3b8;">Incluye esta referencia en tu transferencia:</p>
-              <p style="margin:0;font-family:monospace;font-size:16px;font-weight:bold;color:#f59e0b;letter-spacing:1px;">TRF-1780080547626-6286</p>
-            </div>
-            <div style="text-align:center;margin:20px 0 8px;">
-              <a href="#" style="display:inline-block;background:#25D366;color:white;text-decoration:none;padding:13px 28px;border-radius:10px;font-weight:bold;font-size:14px;">💬 Necesito ayuda por WhatsApp</a>
-            </div>
-            <p style="text-align:center;color:#64748b;font-size:12px;margin:12px 0 0;">Si ya completaste tu pago, ignora este mensaje. Lo procesaremos pronto.</p>
-          </div>
-        </div>
-      </div>`
+      titulo:'🏦 Correo — Pago incompleto (transferencia)',
+      subtitulo:'Variante para transferencia bancaria pendiente',
+      asunto:'💳 Completa tu compra —  códigos te esperan',
+      html:()=>`<div style="font-family:Arial,sans-serif;background:#0f172a;padding:20px;color:#f1f5f9;"><div style="max-width:460px;margin:auto"><div style="background:linear-gradient(135deg,#1e3a5f,#2563eb);padding:18px 20px;border-radius:10px 10px 0 0;text-align:center;"><div style="font-size:36px;">💳</div><h2 style="margin:6px 0 0;color:#fff;font-size:20px;">¡Tu compra está incompleta!</h2><p style="margin:6px 0 0;color:#93c5fd;font-size:13px;">🏦 Transferencia bancaria pendiente</p></div><div style="background:#1e293b;padding:22px;border-radius:0 0 10px 10px;"><p style="margin:0 0 14px;">Hola <strong>Carlos Rodríguez</strong>,</p><p style="color:#cbd5e1;font-size:14px;line-height:1.7;margin:0 0 14px;">Registramos tu intención de pago por transferencia de <strong style="color:#4ade80;">$30.000 COP</strong>.</p><div style="background:#0f172a;border-radius:10px;padding:14px 16px;margin:16px 0;border:1px solid #334155;"><p style="margin:0;font-family:monospace;font-size:16px;font-weight:bold;color:#f59e0b;">TRF-1780080547626-6286</p></div></div></div></div>`
     }
   };
 
-  function verCorreoPreview(tipo) {
-    const tpl = PREVIEW_TEMPLATES[tipo];
-    if (!tpl) return;
-    document.getElementById('preview-titulo').textContent    = tpl.titulo;
-    document.getElementById('preview-subtitulo').textContent = tpl.subtitulo;
-    document.getElementById('preview-asunto').textContent    = tpl.asunto;
-    document.getElementById('preview-iframe').srcdoc         = tpl.html();
-    document.getElementById('preview-modal').style.display  = 'flex';
-    document.body.style.overflow = 'hidden';
+  function verCorreoPreview(tipo){
+    const tpl=PREVIEW_TEMPLATES[tipo]; if(!tpl)return;
+    document.getElementById('preview-titulo').textContent   =tpl.titulo;
+    document.getElementById('preview-subtitulo').textContent=tpl.subtitulo;
+    document.getElementById('preview-asunto').textContent   =tpl.asunto;
+    document.getElementById('preview-iframe').srcdoc        =tpl.html();
+    document.getElementById('preview-modal').style.display ='flex';
+    document.body.style.overflow='hidden';
   }
-
-  function cerrarPreview() {
-    document.getElementById('preview-modal').style.display = 'none';
-    document.body.style.overflow = '';
+  function cerrarPreview(){
+    document.getElementById('preview-modal').style.display='none';
+    document.body.style.overflow='';
   }
-
-  document.addEventListener('keydown', e => { if (e.key === 'Escape') cerrarPreview(); });
-
+  document.addEventListener('keydown',e=>{if(e.key==='Escape')cerrarPreview();});
 </script>
 
-<!-- ── MODAL PREVIEW CORREO ── -->
+<!-- MODAL PREVIEW CORREO -->
 <div id="preview-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:200;align-items:flex-start;justify-content:center;padding:20px;overflow-y:auto;" onclick="if(event.target===this)cerrarPreview()">
   <div style="background:#1e293b;border-radius:14px;width:100%;max-width:580px;margin:20px auto;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.5)">
     <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid #334155">
@@ -1562,7 +1300,7 @@
     </div>
     <div style="padding:10px 20px;border-top:1px solid #334155;text-align:right">
       <span style="font-size:11px;color:#64748b">Vista previa — datos de ejemplo</span>
-      <button onclick="cerrarPreview()" style="margin-left:12px;padding:6px 14px;background:var(--blue);color:#fff;border:none;border-radius:6px;cursor:pointer;font-size:12px">Cerrar</button>
+      <button onclick="cerrarPreview()" style="margin-left:12px;padding:6px 14px;background:#185FA5;color:#fff;border:none;border-radius:6px;cursor:pointer;font-size:12px">Cerrar</button>
     </div>
   </div>
 </div>

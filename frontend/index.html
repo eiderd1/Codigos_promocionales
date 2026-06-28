@@ -3,13 +3,14 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<meta name="theme-color" content="#0f172a">
+<meta name="theme-color" content="#050A14">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta http-equiv="X-Content-Type-Options" content="nosniff">
 <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
 <title>Compra de Códigos – Participa por $15.000.000 COP</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎟️</text></svg>">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
 
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -23,81 +24,159 @@
 }
 
 :root {
-  --gold: #f5c518;
-  --orange: #f97316;
-  --bg: #0f172a;
-  --surface: #111827;
-  --card: #1f2937;
-  --muted: #9ca3af;
-  --text: #ffffff;
-  --radius: 14px;
-  --radius-sm: 8px;
+  --gold: #E8B84B;
+  --gold-light: #F5D07A;
+  --gold-dim: rgba(232,184,75,.18);
+  --orange: #E07B3C;
+  --bg: #050A14;
+  --surface: #0A1020;
+  --card: #0F1928;
+  --card-hover: #162035;
+  --border: rgba(255,255,255,.07);
+  --border-gold: rgba(232,184,75,.3);
+  --muted: #6B7A99;
+  --text: #ECF0FF;
+  --text-dim: #9AA5C0;
+  --radius: 16px;
+  --radius-sm: 10px;
+  --shadow-gold: 0 0 40px rgba(232,184,75,.15);
+  --font-display: 'Syne', sans-serif;
+  --font-body: 'DM Sans', sans-serif;
 }
 
 html { font-size: 16px; scroll-behavior: smooth; }
 
 body {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  background: linear-gradient(135deg, var(--bg), #1e293b);
-  background-attachment: fixed;
+  font-family: var(--font-body);
+  background: var(--bg);
   color: var(--text);
   min-height: 100dvh;
   -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+/* ── Atmospheric background ── */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 70% 50% at 50% -10%, rgba(232,184,75,.08) 0%, transparent 60%),
+    radial-gradient(ellipse 40% 40% at 90% 80%, rgba(224,123,60,.05) 0%, transparent 50%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ── Grain overlay ── */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.4;
 }
 
 .page {
+  position: relative;
+  z-index: 1;
   max-width: 520px;
+  width: 100%;
   margin: 0 auto;
-  padding: clamp(12px, 4vw, 32px) clamp(12px, 4vw, 24px) 100px;
+  padding: clamp(16px, 5vw, 32px) clamp(14px, 5vw, 24px) 110px;
 }
 
-.title {
-  font-size: clamp(1.5rem, 5vw, 2rem);
-  font-weight: 800;
-  color: var(--gold);
+/* ── Header ── */
+.site-header {
   text-align: center;
-  line-height: 1.2;
-  margin-bottom: 4px;
+  padding-top: 8px;
+  margin-bottom: 32px;
 }
-.subtitle {
-  font-size: clamp(1rem, 3.5vw, 1.25rem);
-  font-weight: 700;
+
+.logo-wrap {
+  margin-bottom: 20px;
+}
+.logo-wrap img { max-width: 150px; height: auto; }
+
+.title {
+  font-family: var(--font-display);
+  font-size: clamp(1.75rem, 6vw, 2.4rem);
+  font-weight: 800;
   color: var(--text);
-  text-align: center;
+  line-height: 1.15;
+  letter-spacing: -.02em;
   margin-bottom: 6px;
 }
+.title span {
+  background: linear-gradient(135deg, var(--gold-light), var(--gold));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.subtitle {
+  font-size: clamp(1rem, 3.5vw, 1.2rem);
+  font-weight: 400;
+  color: var(--text-dim);
+  margin-bottom: 16px;
+  letter-spacing: .01em;
+}
+.subtitle strong, .subtitle span { color: var(--gold); font-weight: 700; }
+
+.badge-wrap { display: flex; justify-content: center; margin-bottom: 0; }
 .badge {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  background: rgba(245,197,24,.12);
-  border: 1px solid rgba(245,197,24,.35);
-  color: var(--gold);
-  font-size: 0.82rem;
+  background: var(--gold-dim);
+  border: 1px solid var(--border-gold);
+  color: var(--gold-light);
+  font-size: 0.78rem;
   font-weight: 600;
-  padding: 6px 12px;
+  padding: 6px 14px;
   border-radius: 999px;
-  margin: 0 auto 16px;
+  letter-spacing: .04em;
+  text-transform: uppercase;
 }
-.badge-wrap { display:flex; justify-content:center; }
 
+/* ── Dynamic banner ── */
+#banner-dinamico {
+  display: none;
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+  margin-bottom: 14px;
+  font-size: .84rem;
+  font-weight: 500;
+  text-align: center;
+  line-height: 1.5;
+}
+
+#seccion-ganador { display: none; }
+
+/* ── Progress ── */
 .progress-wrap {
   background: var(--surface);
+  border: 1px solid var(--border);
   border-radius: var(--radius);
-  padding: 16px;
-  margin-bottom: 16px;
+  padding: 16px 18px;
+  margin: 20px 0 16px;
 }
 .progress-labels {
   display: flex;
   justify-content: space-between;
-  font-size: 0.78rem;
+  font-size: 0.76rem;
+  font-weight: 500;
   color: var(--muted);
-  margin-bottom: 8px;
+  margin-bottom: 10px;
+  letter-spacing: .03em;
+  text-transform: uppercase;
 }
+.progress-labels span:last-child { color: var(--gold); font-weight: 700; }
 .progress-track {
-  background: var(--card);
+  background: rgba(255,255,255,.05);
   border-radius: 999px;
-  height: 12px;
+  height: 6px;
   overflow: hidden;
 }
 .progress-bar {
@@ -105,450 +184,941 @@ body {
   width: 0%;
   background: linear-gradient(90deg, var(--gold), var(--orange));
   border-radius: 999px;
-  transition: width 1.2s ease;
+  transition: width 1.4s cubic-bezier(.4,0,.2,1);
+  box-shadow: 0 0 12px rgba(232,184,75,.5);
 }
 
-
+/* ── Golden codes section ── */
 #seccionDorados {
   display: none;
-  background: #020617;
-  border: 1px solid var(--gold);
-  border-radius: var(--radius);
-  padding: 14px;
-  margin-bottom: 16px;
-  text-align: center;
-}
-#seccionDorados .sec-label { font-size: 0.8rem; color: var(--gold); margin-bottom: 10px; }
-#listaDorados { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
-
-#success {
-  display: none;
-  background: rgba(34,197,94,.15);
-  border: 1px solid #22c55e;
+  background: linear-gradient(135deg, rgba(232,184,75,.08), rgba(224,123,60,.05));
+  border: 1px solid var(--border-gold);
   border-radius: var(--radius);
   padding: 16px;
-  text-align: center;
-  color: #4ade80;
-  font-weight: 700;
   margin-bottom: 16px;
-  font-size: 1.05rem;
+  text-align: center;
+}
+#seccionDorados .sec-label {
+  font-size: 0.75rem;
+  color: var(--gold);
+  font-weight: 600;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+}
+#listaDorados { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+
+/* ── Success ── */
+#success {
+  display: none;
+  background: rgba(52,211,153,.08);
+  border: 1px solid rgba(52,211,153,.25);
+  border-radius: var(--radius);
+  padding: 16px 20px;
+  text-align: center;
+  color: #34D399;
+  font-weight: 600;
+  margin-bottom: 16px;
+  font-size: 1rem;
+  letter-spacing: .01em;
 }
 
+/* ── Section titles ── */
 .section-title {
-  font-size: 0.9rem;
+  font-family: var(--font-display);
+  font-size: 0.72rem;
   font-weight: 700;
   color: var(--muted);
   text-transform: uppercase;
-  letter-spacing: .08em;
-  margin: 20px 0 10px;
+  letter-spacing: .12em;
+  margin: 28px 0 12px;
 }
 
+/* ── Package cards ── */
 .cards-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 10px;
   margin-bottom: 16px;
 }
-@media (max-width: 380px) {
-  .cards-grid { grid-template-columns: 1fr; }
-}
-
 .card {
   background: var(--card);
-  border: 2px solid transparent;
-  padding: 18px 10px;
+  border: 1px solid var(--border);
+  padding: 20px 10px 16px;
   border-radius: var(--radius);
   cursor: pointer;
   text-align: center;
-  transition: transform .2s, box-shadow .2s, border-color .2s, background .2s;
+  transition: all .25s cubic-bezier(.4,0,.2,1);
   position: relative;
   overflow: hidden;
   user-select: none;
   -webkit-tap-highlight-color: transparent;
-  backdrop-filter: blur(10px);
 }
-.card:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(0,0,0,.4); }
+.card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 50% 0%, rgba(232,184,75,.12) 0%, transparent 60%);
+  opacity: 0;
+  transition: opacity .25s;
+}
+.card:hover {
+  transform: translateY(-3px);
+  border-color: var(--border-gold);
+  background: var(--card-hover);
+  box-shadow: 0 12px 32px rgba(0,0,0,.4), 0 0 0 1px rgba(232,184,75,.15);
+}
+.card:hover::before { opacity: 1; }
+
 .card.selected {
-  background: linear-gradient(135deg, var(--gold), var(--orange));
-  color: #000;
+  background: linear-gradient(145deg, rgba(232,184,75,.15), rgba(224,123,60,.08));
   border-color: var(--gold);
-  transform: scale(1.05);
-  box-shadow: 0 0 28px rgba(245,197,24,.7);
+  transform: scale(1.04);
+  box-shadow: 0 0 0 1px var(--gold), 0 12px 40px rgba(232,184,75,.2);
 }
+.card.selected::before { opacity: 1; }
 .card.selected::after {
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(120deg, transparent 30%, rgba(255,255,255,.45) 50%, transparent 70%);
-  animation: shimmer .8s forwards;
+  background: linear-gradient(120deg, transparent 30%, rgba(255,255,255,.12) 50%, transparent 70%);
+  animation: shimmer .7s forwards;
 }
 @keyframes shimmer {
   from { transform: translateX(-100%); }
   to   { transform: translateX(100%); }
 }
 .card.disabled {
-  opacity: .35;
+  opacity: .25;
   pointer-events: none;
-  filter: grayscale(70%);
-  transform: scale(.96);
+  filter: grayscale(80%);
+  transform: scale(.97);
 }
-.card-qty  { font-size: 1.5rem; font-weight: 800; line-height: 1; }
-.card-label{ font-size: .72rem; color: inherit; opacity: .75; margin: 2px 0; }
-.card-price{ font-size: 1rem; font-weight: 700; }
-.card.selected .card-label { opacity: .7; }
+
+.card-qty {
+  font-family: var(--font-display);
+  font-size: 1.8rem;
+  font-weight: 800;
+  line-height: 1;
+  color: var(--text);
+  letter-spacing: -.02em;
+}
+.card.selected .card-qty { color: var(--gold-light); }
+.card-label {
+  font-size: .68rem;
+  color: var(--muted);
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  margin: 4px 0 8px;
+  font-weight: 500;
+}
+.card.selected .card-label { color: var(--gold); opacity: .8; }
+.card-price {
+  font-size: .95rem;
+  font-weight: 700;
+  color: var(--gold);
+  letter-spacing: .01em;
+}
 .card-popular {
   position: absolute;
-  top: -1px;
+  top: 0;
   left: 50%;
   transform: translateX(-50%);
-  background: var(--orange);
+  background: linear-gradient(135deg, var(--gold), var(--orange));
   color: #000;
-  font-size: .62rem;
+  font-size: .55rem;
   font-weight: 800;
-  padding: 2px 8px;
-  border-radius: 0 0 6px 6px;
-  letter-spacing: .04em;
+  padding: 3px 10px;
+  border-radius: 0 0 8px 8px;
+  letter-spacing: .08em;
   white-space: nowrap;
+  text-transform: uppercase;
 }
 
+/* ── Stock notice ── */
 #avisoStock {
   display: none;
-  background: rgba(251,191,36,.12);
-  border: 1px solid rgba(251,191,36,.5);
+  background: rgba(251,191,36,.07);
+  border: 1px solid rgba(251,191,36,.3);
   border-radius: var(--radius-sm);
-  color: #fbbf24;
+  color: #FBB F24;
   font-size: .84rem;
-  padding: 10px 14px;
+  padding: 12px 16px;
   margin-bottom: 12px;
-  line-height: 1.4;
+  line-height: 1.5;
+  color: #F5C842;
 }
 
+/* ── Order summary ── */
 #resumenPedido {
   display: none;
-  background: rgba(245,197,24,.07);
-  border: 1px solid rgba(245,197,24,.2);
+  background: linear-gradient(135deg, rgba(232,184,75,.06), rgba(224,123,60,.03));
+  border: 1px solid var(--border-gold);
   border-radius: var(--radius);
-  padding: 12px 16px;
+  padding: 14px 18px;
   margin-bottom: 14px;
-  animation: fadeIn .3s ease;
+  animation: fadeUp .35s ease;
 }
 .resumen-row {
   display: flex;
   justify-content: space-between;
-  font-size: .85rem;
-  color: #cbd5e1;
-  margin-bottom: 4px;
+  align-items: center;
+  font-size: .82rem;
+  color: var(--text-dim);
+  margin-bottom: 6px;
 }
+.resumen-row span:last-child { color: var(--text); font-weight: 500; }
 .resumen-total {
   display: flex;
   justify-content: space-between;
+  align-items: center;
+  font-family: var(--font-display);
   font-size: 1rem;
-  font-weight: 800;
+  font-weight: 700;
   color: var(--gold);
-  border-top: 1px solid rgba(245,197,24,.2);
-  padding-top: 8px;
+  border-top: 1px solid rgba(232,184,75,.15);
+  padding-top: 10px;
   margin-top: 8px;
+  letter-spacing: -.01em;
 }
 
-#form { display: none; animation: fadeIn .3s ease; }
-@keyframes fadeIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:none; } }
+/* ── Form ── */
+#form { display: none; animation: fadeUp .35s ease; }
+@keyframes fadeUp { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:none; } }
 
-.input-group { margin-bottom: 10px; }
-.input-label { font-size: .78rem; color: var(--muted); margin-bottom: 4px; display: block; font-weight: 600; }
+.input-group { margin-bottom: 12px; }
+.input-label {
+  font-size: .72rem;
+  color: var(--muted);
+  margin-bottom: 6px;
+  display: block;
+  font-weight: 600;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
 
 input[type="text"],
 input[type="email"],
 input[type="tel"] {
   width: 100%;
-  padding: 13px 14px;
-  background: var(--card);
-  border: 1.5px solid #374151;
+  padding: 13px 16px;
+  background: var(--surface);
+  border: 1px solid var(--border);
   border-radius: var(--radius-sm);
   color: var(--text);
-  font-size: 1rem;
+  font-family: var(--font-body);
+  font-size: .95rem;
   outline: none;
-  transition: border-color .2s;
+  transition: border-color .2s, box-shadow .2s, background .2s;
   -webkit-appearance: none;
   appearance: none;
 }
-input:focus { border-color: var(--gold); }
-input.error { border-color: #f87171; }
-.field-error { font-size: .75rem; color: #f87171; margin-top: 3px; display: none; }
+input:focus {
+  border-color: var(--gold);
+  background: var(--card);
+  box-shadow: 0 0 0 3px rgba(232,184,75,.1);
+}
+input::placeholder { color: var(--muted); opacity: .6; }
+input.error { border-color: rgba(248,113,113,.7); box-shadow: 0 0 0 3px rgba(248,113,113,.1); }
+.field-error { font-size: .72rem; color: #f87171; margin-top: 4px; display: none; }
 
+/* ── Info cards ── */
+.info-box {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  margin: 10px 0;
+  font-size: .8rem;
+  color: var(--text-dim);
+  line-height: 1.6;
+}
+.info-box.gold-tint {
+  background: rgba(232,184,75,.05);
+  border-color: rgba(232,184,75,.15);
+}
+.info-box strong { color: var(--text); }
+.info-box .highlight { color: var(--gold); }
+
+/* ── Wompi trust block ── */
+.trust-block {
+  background: rgba(124,58,237,.06);
+  border: 1px solid rgba(124,58,237,.2);
+  border-radius: var(--radius-sm);
+  padding: 14px;
+  text-align: center;
+  margin: 12px 0;
+}
+.trust-block .trust-label { font-size: .75rem; color: var(--muted); margin-bottom: 6px; }
+.trust-block .wompi-name {
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: #9D6FFF;
+  letter-spacing: -.01em;
+  margin-bottom: 10px;
+}
+.trust-badges {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.trust-badge {
+  font-size: .7rem;
+  color: #6B7A99;
+  background: rgba(255,255,255,.04);
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+}
+
+/* ── Buttons ── */
 .btn {
   display: block;
   width: 100%;
-  padding: 15px;
+  padding: 16px;
   border: none;
   border-radius: var(--radius);
-  font-size: 1.05rem;
+  font-family: var(--font-display);
+  font-size: 1rem;
   font-weight: 700;
   cursor: pointer;
-  transition: transform .15s, opacity .15s;
+  transition: all .2s cubic-bezier(.4,0,.2,1);
   -webkit-tap-highlight-color: transparent;
-  letter-spacing: .02em;
+  letter-spacing: .01em;
+  position: relative;
+  overflow: hidden;
 }
-.btn:active { transform: scale(.97); }
+.btn:active { transform: scale(.98); }
 .btn-primary {
   background: linear-gradient(135deg, var(--gold), var(--orange));
-  color: #000;
-  margin-top: 14px;
-  animation: btnPulse 2.5s ease-in-out infinite;
+  color: #0A0600;
+  margin-top: 16px;
+  box-shadow: 0 4px 24px rgba(232,184,75,.25);
 }
-.btn-primary:disabled { opacity: .5; cursor: not-allowed; transform: none; animation: none; }
-.btn-primary.loading { color: transparent; position: relative; animation: none; }
+.btn-primary::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,.15), transparent);
+  opacity: 0;
+  transition: opacity .2s;
+}
+.btn-primary:hover::before { opacity: 1; }
+.btn-primary:hover { box-shadow: 0 8px 32px rgba(232,184,75,.35); transform: translateY(-1px); }
+.btn-primary:disabled {
+  opacity: .4;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+  animation: none;
+}
+.btn-primary.loading { color: transparent; animation: none; }
 .btn-primary.loading::after {
   content: "Procesando...";
-  color: #000;
+  color: #0A0600;
   position: absolute;
   inset: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-}
-@keyframes btnPulse {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(245,197,24,.4); }
-  50%       { box-shadow: 0 0 0 8px rgba(245,197,24,0); }
+  font-family: var(--font-display);
+  font-weight: 700;
 }
 
-.divider { border: none; border-top: 1px solid #1f2937; margin: 28px 0; }
+.btn-transfer {
+  margin-top: 10px;
+  background: transparent;
+  border: 1px solid rgba(52,211,153,.35);
+  color: #34D399;
+  font-size: .9rem;
+}
+.btn-transfer:hover {
+  background: rgba(52,211,153,.06);
+  border-color: rgba(52,211,153,.6);
+  transform: translateY(-1px);
+}
 
+.transfer-note {
+  font-size: .72rem;
+  color: var(--muted);
+  text-align: center;
+  margin-top: 6px;
+  line-height: 1.5;
+}
+
+.terms-note {
+  font-size: .72rem;
+  color: #374561;
+  text-align: center;
+  margin-top: 10px;
+  line-height: 1.6;
+}
+.terms-note span {
+  color: var(--gold);
+  cursor: pointer;
+  text-decoration: underline;
+  text-decoration-color: rgba(232,184,75,.4);
+}
+
+/* ── Divider ── */
+.divider {
+  border: none;
+  border-top: 1px solid rgba(255,255,255,.06);
+  margin: 32px 0;
+}
+
+/* ── Code lookup ── */
 .consult-row { display: flex; gap: 8px; }
 .consult-row input { flex: 1; }
 .btn-consult {
   padding: 13px 18px;
-  border: none;
+  border: 1px solid var(--border-gold);
   border-radius: var(--radius-sm);
-  background: var(--gold);
-  color: #000;
+  background: var(--gold-dim);
+  color: var(--gold-light);
+  font-family: var(--font-display);
   font-weight: 700;
   cursor: pointer;
   white-space: nowrap;
-  font-size: .92rem;
+  font-size: .88rem;
   -webkit-tap-highlight-color: transparent;
+  transition: all .2s;
+  letter-spacing: .02em;
 }
+.btn-consult:hover { background: rgba(232,184,75,.25); }
 .btn-consult:active { opacity: .8; }
 
 .codes-list { margin-top: 14px; display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
 .code-chip {
   display: inline-flex;
   align-items: center;
-  padding: 10px 16px;
+  padding: 8px 16px;
   background: var(--card);
+  border: 1px solid var(--border);
   border-radius: var(--radius-sm);
-  font-size: .92rem;
-  letter-spacing: .08em;
+  font-size: .88rem;
+  letter-spacing: .1em;
   font-weight: 600;
+  color: var(--text);
   opacity: 0;
   transform: scale(.85);
   animation: popIn .35s forwards;
+  font-family: 'DM Mono', monospace, var(--font-body);
 }
 @keyframes popIn { to { opacity:1; transform:scale(1); } }
 .code-chip.dorado {
-  background: linear-gradient(135deg, var(--gold), var(--orange));
-  color: #000;
-  border: 2px solid var(--gold);
-  animation: popIn .35s forwards, glow 1.2s infinite alternate;
+  background: linear-gradient(135deg, rgba(232,184,75,.2), rgba(224,123,60,.15));
+  color: var(--gold-light);
+  border: 1px solid var(--gold);
+  font-weight: 700;
+  animation: popIn .35s forwards, glow 1.5s infinite alternate;
 }
 @keyframes glow {
-  from { box-shadow: 0 0 8px var(--gold); }
-  to   { box-shadow: 0 0 22px var(--orange); }
+  from { box-shadow: 0 0 8px rgba(232,184,75,.3); }
+  to   { box-shadow: 0 0 20px rgba(232,184,75,.6); }
 }
 
 .btn-reenviar {
-  margin-top: 10px;
+  margin-top: 12px;
   width: 100%;
   padding: 12px;
-  border: 1.5px solid var(--gold);
+  border: 1px solid var(--border-gold);
   border-radius: var(--radius-sm);
   background: transparent;
   color: var(--gold);
-  font-weight: 700;
-  font-size: .9rem;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: .88rem;
   cursor: pointer;
   transition: background .2s;
+  letter-spacing: .02em;
 }
-.btn-reenviar:hover { background: rgba(245,197,24,.1); }
-.msg-reenvio { margin-top: 8px; font-size: .85rem; color: var(--gold); text-align: center; min-height: 20px; }
+.btn-reenviar:hover { background: var(--gold-dim); }
+.msg-reenvio { margin-top: 8px; font-size: .82rem; color: var(--gold); text-align: center; min-height: 20px; }
 
 .btn-terminos {
   width: 100%;
   background: transparent;
-  border: 1px solid #374151;
+  border: 1px solid var(--border);
   color: var(--muted);
-  font-size: .85rem;
+  font-size: .82rem;
   padding: 12px;
   border-radius: var(--radius);
   cursor: pointer;
   transition: border-color .2s, color .2s;
   margin-top: 24px;
+  font-family: var(--font-body);
+  letter-spacing: .02em;
 }
-.btn-terminos:hover { border-color: var(--gold); color: var(--gold); }
+.btn-terminos:hover { border-color: var(--border-gold); color: var(--gold); }
 .terminos-body { display: none; margin-top: 10px; }
 .terminos-card {
-  background: var(--card);
+  background: var(--surface);
+  border: 1px solid var(--border);
   border-radius: var(--radius-sm);
-  padding: 15px;
-  margin-bottom: 10px;
-  font-size: .88rem;
-  line-height: 1.6;
-  color: #cbd5e1;
+  padding: 16px;
+  margin-bottom: 8px;
+  font-size: .84rem;
+  line-height: 1.7;
+  color: var(--text-dim);
   text-align: left;
 }
 .terminos-card strong { color: var(--text); }
-.terminos-card h4 { color: var(--gold); margin-bottom: 8px; font-size: .9rem; }
+.terminos-card h4 {
+  color: var(--gold);
+  margin-bottom: 8px;
+  font-size: .82rem;
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
 .terminos-card ul { padding-left: 18px; margin-top: 6px; }
 
+/* ── Social links ── */
 .redes {
   display: flex;
   justify-content: center;
-  gap: 14px;
+  gap: 12px;
   margin-top: 28px;
   flex-wrap: wrap;
 }
 .red-btn {
-  width: 46px;
-  height: 46px;
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
-  background: var(--card);
+  background: var(--surface);
+  border: 1px solid var(--border);
   display: flex;
   align-items: center;
   justify-content: center;
   text-decoration: none;
-  transition: transform .2s, background .2s;
+  transition: all .2s;
 }
-.red-btn:hover { transform: scale(1.2); background: var(--gold); }
-.red-btn svg { width: 22px; height: 22px; fill: white; display: block; }
+.red-btn:hover {
+  transform: scale(1.15) translateY(-2px);
+  border-color: var(--border-gold);
+  background: var(--gold-dim);
+}
+.red-btn svg { width: 20px; height: 20px; fill: white; display: block; }
 
+/* ── WhatsApp float ── */
 .wa-float {
   position: fixed;
-  bottom: 20px;
-  right: 16px;
-  width: 58px;
-  height: 58px;
+  bottom: 22px;
+  right: 18px;
+  width: 56px;
+  height: 56px;
   background: #25D366;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 4px 20px rgba(0,0,0,.4);
+  box-shadow: 0 4px 20px rgba(37,211,102,.4);
   z-index: 9999;
   text-decoration: none;
-  animation: pulse 2s infinite;
+  animation: waPulse 3s infinite;
 }
-.wa-float svg { width: 28px; height: 28px; fill: white; }
-@keyframes pulse {
-  0%,100% { transform: scale(1); }
-  50%      { transform: scale(1.08); }
+.wa-float svg { width: 26px; height: 26px; fill: white; }
+@keyframes waPulse {
+  0%,100% { box-shadow: 0 4px 20px rgba(37,211,102,.4); }
+  50%      { box-shadow: 0 4px 30px rgba(37,211,102,.65); transform: scale(1.05); }
 }
 
+/* ── Loading screen ── */
 #loadingPago {
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,.85);
+  background: rgba(5,10,20,.9);
   display: none;
   align-items: center;
   justify-content: center;
   z-index: 10000;
-  backdrop-filter: blur(4px);
+  backdrop-filter: blur(8px);
 }
 .casino-inner { text-align: center; }
-@keyframes spin { to { transform: rotate(360deg); } }
-.casino-txt { margin-top: 16px; color: var(--gold); font-weight: 700; font-size: 1.1rem; }
-
-.footer {
-  max-width: 520px;
-  margin: 0 auto;
-  padding: 24px clamp(12px, 4vw, 24px) 40px;
-  text-align: center;
-  border-top: 1px solid #1f2937;
+.loading-ring {
+  width: 64px;
+  height: 64px;
+  border: 3px solid rgba(232,184,75,.15);
+  border-top: 3px solid var(--gold);
+  border-radius: 50%;
+  margin: auto;
+  animation: spin 1s linear infinite;
 }
-.footer-logo { max-width: 90px; height: auto; opacity: 0.7; margin-bottom: 12px; }
-.footer-text { font-size: .78rem; color: #4b5563; line-height: 1.7; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.casino-txt {
+  margin-top: 18px;
+  color: var(--gold);
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1rem;
+  letter-spacing: .02em;
+}
+
+/* ── Footer ── */
+.footer {
+  position: relative;
+  z-index: 1;
+  max-width: 520px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 24px clamp(14px, 5vw, 28px) 48px;
+  text-align: center;
+  border-top: 1px solid rgba(255,255,255,.05);
+}
+.footer-logo { max-width: 80px; height: auto; opacity: .5; margin-bottom: 14px; }
 .footer-wompi {
   display: inline-flex;
   align-items: center;
   gap: 8px;
   background: var(--surface);
-  border: 1px solid #1f2937;
+  border: 1px solid var(--border);
   border-radius: 999px;
-  padding: 8px 16px;
+  padding: 8px 18px;
   margin: 12px auto;
-  font-size: .8rem;
+  font-size: .78rem;
   color: var(--muted);
 }
 .wompi-badge {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 5px;
   font-weight: 700;
-  color: #7c3aed;
-  font-size: .85rem;
+  color: #9D6FFF;
+  font-size: .82rem;
+}
+.footer-text { font-size: .74rem; color: #2D3A52; line-height: 1.8; }
+
+/* ── Admin trigger ── */
+#adminTrigger {
+  position: fixed;
+  top: 14px;
+  right: 14px;
+  width: 38px;
+  height: 38px;
+  background: rgba(255,255,255,.04);
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  cursor: pointer;
+  z-index: 8000;
+  backdrop-filter: blur(6px);
+  text-decoration: none;
+  transition: background .2s;
+}
+#adminTrigger:hover { background: rgba(255,255,255,.09); }
+
+/* ── Modal transferencia ── */
+#modalTransferencia {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.8);
+  z-index: 9800;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  backdrop-filter: blur(8px);
+}
+.modal-inner {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 0;
+  max-width: 430px;
+  width: 100%;
+  max-height: 92dvh;
+  overflow-y: auto;
+  color: var(--text);
+  position: relative;
+  box-shadow: 0 24px 80px rgba(0,0,0,.6);
+}
+.modal-header {
+  background: linear-gradient(135deg, #166534, #15803D);
+  padding: 18px 20px 16px;
+  border-radius: 20px 20px 0 0;
+  text-align: center;
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 700;
+  color: white;
+  letter-spacing: .01em;
+}
+.modal-body { padding: 20px; }
+.modal-close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  background: rgba(255,255,255,.1);
+  border: none;
+  color: rgba(255,255,255,.7);
+  font-size: 16px;
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background .2s;
+}
+.modal-close:hover { background: rgba(255,255,255,.2); }
+
+/* ══════════════════════════════════════════════
+   RESPONSIVE SYSTEM
+   xs  < 480px   → celular pequeño
+   sm  480–767px → celular grande
+   md  768–1023px → tablet
+   lg  1024–1279px → laptop
+   xl  1280px+  → escritorio
+   ══════════════════════════════════════════════ */
+
+/* ── Base (mobile-first, aplica a todos) ── */
+.page {
+  max-width: 520px;
+  width: 100%;
+  padding-left: clamp(14px, 5vw, 24px);
+  padding-right: clamp(14px, 5vw, 24px);
+  padding-bottom: 110px;
 }
 
+/* ── XS: celulares muy pequeños (< 380px) ── */
+@media (max-width: 379px) {
+  :root { --radius: 12px; --radius-sm: 8px; }
+  .title { font-size: 1.5rem; letter-spacing: -.015em; }
+  .subtitle { font-size: .9rem; }
+  .cards-grid { grid-template-columns: 1fr; gap: 8px; }
+  .card { padding: 14px 12px; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+  .card-qty { font-size: 1.6rem; }
+  .card-label { margin: 0; font-size: .62rem; }
+  .card-price { font-size: .88rem; }
+  .btn { padding: 14px; font-size: .95rem; }
+  .trust-badges { gap: 6px; }
+  .trust-badge { font-size: .66rem; padding: 3px 8px; }
+  input[type="text"], input[type="email"], input[type="tel"] { font-size: .9rem; padding: 12px 13px; }
+  .progress-wrap { padding: 13px 14px; }
+  .site-header { margin-bottom: 22px; }
+}
+
+/* ── SM: celulares normales (380–599px) ── */
+@media (min-width: 380px) and (max-width: 599px) {
+  .title { font-size: clamp(1.65rem, 6vw, 2rem); }
+  .cards-grid { grid-template-columns: repeat(3, 1fr); gap: 9px; }
+  .card { padding: 18px 10px 14px; }
+}
+
+/* ── MD: Tablets (600–1023px) ── */
 @media (min-width: 600px) {
-  body { padding-top: 20px; }
-  .page { padding-top: 40px; }
+  html { font-size: 16px; }
+  body { padding-top: 24px; }
+
+  .page {
+    max-width: 600px;
+    padding-top: 40px;
+    padding-left: clamp(24px, 5vw, 40px);
+    padding-right: clamp(24px, 5vw, 40px);
+    padding-bottom: 100px;
+  }
+
+  .footer { max-width: 600px; padding-left: 40px; padding-right: 40px; }
+
+  .title { font-size: 2.2rem; letter-spacing: -.025em; }
+  .subtitle { font-size: 1.15rem; }
+  .badge { font-size: .8rem; padding: 7px 16px; }
+
+  .cards-grid { grid-template-columns: repeat(3, 1fr); gap: 14px; }
+  .card { padding: 24px 14px 20px; }
+  .card-qty { font-size: 2rem; }
+  .card-label { font-size: .7rem; }
+  .card-price { font-size: 1rem; }
+
+  .progress-wrap { padding: 18px 22px; }
+  .progress-track { height: 7px; }
+
+  input[type="text"], input[type="email"], input[type="tel"] { padding: 14px 16px; font-size: 1rem; }
+  .btn { padding: 17px; font-size: 1.05rem; }
+
+  .section-title { font-size: .74rem; letter-spacing: .13em; }
+  .trust-badges { gap: 14px; }
+  .trust-badge { font-size: .72rem; padding: 5px 12px; }
+
+  .resumen-row { font-size: .86rem; }
+  .resumen-total { font-size: 1.05rem; }
+
+  #adminTrigger { top: 18px; right: 18px; width: 42px; height: 42px; }
+
+  .wa-float { width: 62px; height: 62px; bottom: 26px; right: 22px; }
+  .wa-float svg { width: 30px; height: 30px; }
 }
-@media (min-width: 900px) {
-  .page { padding-top: 50px; }
+
+/* ── Tablet landscape / laptop pequeño (768–1023px) ── */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .page { max-width: 680px; }
+  .footer { max-width: 680px; }
+
+  .title { font-size: 2.4rem; }
+  .cards-grid { gap: 16px; }
+  .card { padding: 28px 16px 22px; }
+  .card-qty { font-size: 2.2rem; }
+  .card-price { font-size: 1.05rem; }
+
+  /* Formulario en 2 columnas en tablet */
+  .form-cols {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0 16px;
+  }
+  .form-cols .input-group:last-child:nth-child(odd) {
+    grid-column: 1 / -1;
+  }
 }
-@media (min-width: 1600px) {
-  html { font-size: 18px; }
-  .page { max-width: 640px; }
-  .footer { max-width: 640px; }
+
+/* ── LG: Laptop / escritorio (1024–1279px) ── */
+@media (min-width: 1024px) {
+  html { font-size: 16.5px; }
+  body { padding-top: 32px; }
+
+  .page {
+    max-width: 700px;
+    padding-top: 56px;
+    padding-left: 48px;
+    padding-right: 48px;
+    padding-bottom: 120px;
+  }
+  .footer { max-width: 700px; padding: 28px 48px 60px; }
+
+  .title { font-size: 2.6rem; letter-spacing: -.03em; }
+  .subtitle { font-size: 1.2rem; }
+  .badge { font-size: .82rem; padding: 8px 18px; }
+
+  .site-header { margin-bottom: 40px; }
+  .logo-wrap img { max-width: 170px; }
+
+  .cards-grid { gap: 18px; margin-bottom: 20px; }
+  .card { padding: 30px 18px 24px; border-radius: 18px; }
+  .card-qty { font-size: 2.4rem; }
+  .card-label { font-size: .72rem; margin: 5px 0 10px; }
+  .card-price { font-size: 1.08rem; }
+  .card:hover { transform: translateY(-5px); }
+  .card.selected { transform: scale(1.06); }
+
+  .progress-wrap { padding: 20px 24px; border-radius: 18px; }
+  .progress-track { height: 8px; }
+
+  input[type="text"], input[type="email"], input[type="tel"] {
+    padding: 15px 18px;
+    font-size: 1rem;
+    border-radius: 12px;
+  }
+
+  .btn { padding: 18px; font-size: 1.08rem; border-radius: 18px; }
+  .btn-consult { padding: 15px 22px; }
+
+  .section-title { font-size: .76rem; letter-spacing: .14em; margin: 32px 0 14px; }
+
+  .trust-badges { gap: 16px; }
+  .trust-badge { font-size: .74rem; padding: 5px 14px; }
+
+  #resumenPedido { padding: 16px 22px; }
+  .resumen-row { font-size: .88rem; margin-bottom: 8px; }
+  .resumen-total { font-size: 1.1rem; padding-top: 12px; }
+
+  /* Form en 2 columnas en desktop */
+  .form-cols {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0 18px;
+  }
+  .form-cols .full-col { grid-column: 1 / -1; }
+
+  .info-box { font-size: .82rem; padding: 14px 16px; }
+
+  .terminos-card { padding: 18px; font-size: .86rem; }
+
+  .redes { gap: 16px; margin-top: 36px; }
+  .red-btn { width: 48px; height: 48px; }
+  .red-btn svg { width: 22px; height: 22px; }
+
+  #adminTrigger { top: 20px; right: 20px; }
+  .wa-float { width: 64px; height: 64px; }
 }
+
+/* ── XL: Escritorios grandes (1280px+) ── */
+@media (min-width: 1280px) {
+  html { font-size: 17px; }
+
+  .page { max-width: 760px; }
+  .footer { max-width: 760px; }
+
+  .title { font-size: 2.8rem; }
+  .cards-grid { gap: 20px; }
+  .card { padding: 32px 20px 26px; }
+  .card-qty { font-size: 2.6rem; }
+}
+
+/* ── Safe areas (notch, home bar) ── */
 @supports (padding-bottom: env(safe-area-inset-bottom)) {
   body { padding-bottom: env(safe-area-inset-bottom); }
+  .wa-float { bottom: calc(20px + env(safe-area-inset-bottom)); }
 }
+
+/* ── Entrance animations ── */
+@keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
+.page { animation: fadeIn .5s ease; }
 </style>
 </head>
 
 <body>
 
-<a href="Admin.html" id="adminTrigger" title="Admin" style="position:fixed;top:14px;right:14px;width:40px;height:40px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;cursor:pointer;z-index:8000;backdrop-filter:blur(6px);text-decoration:none;transition:background .2s;" onmouseover="this.style.background='rgba(255,255,255,.12)'" onmouseout="this.style.background='rgba(255,255,255,.06)'">
-  <span style="display:block;width:18px;height:2px;background:rgba(255,255,255,.5);border-radius:2px;"></span>
-  <span style="display:block;width:18px;height:2px;background:rgba(255,255,255,.5);border-radius:2px;"></span>
-  <span style="display:block;width:18px;height:2px;background:rgba(255,255,255,.5);border-radius:2px;"></span>
+<a href="Admin.html" id="adminTrigger" title="Admin">
+  <span style="display:block;width:16px;height:1.5px;background:rgba(255,255,255,.4);border-radius:2px;"></span>
+  <span style="display:block;width:16px;height:1.5px;background:rgba(255,255,255,.4);border-radius:2px;"></span>
+  <span style="display:block;width:16px;height:1.5px;background:rgba(255,255,255,.4);border-radius:2px;"></span>
 </a>
 
 <div id="loadingPago">
   <div class="casino-inner">
-    <div style="
-      width:70px; height:70px;
-      border:5px solid rgba(245,197,24,.2);
-      border-top:5px solid var(--gold);
-      border-radius:50%; margin:auto;
-      animation: spin 1s linear infinite;
-    "></div>
-    <p class="casino-txt">⏳ Procesando tu pago seguro...</p>
+    <div class="loading-ring"></div>
+    <p class="casino-txt">Procesando tu pago seguro...</p>
   </div>
 </div>
 
 <div class="page">
 
-  <div style="text-align:center; margin-bottom:16px; padding-top:8px;">
-    <img src="/frontend/imagenes/Logo.png" alt="EiderTech Soluciones"
-         style="max-width:160px; height:auto;"
-         onerror="this.style.display='none'">
+  <div class="site-header">
+    <div class="logo-wrap">
+      <img src="/frontend/imagenes/Logo.png" alt="EiderTech Soluciones"
+           onerror="this.style.display='none'">
+    </div>
+    <h1 class="title">🎟️ Compra tus <span>Códigos</span></h1>
+    <p class="subtitle" id="subtituloPremio">Participa por <span>$15.000.000 COP</span></p>
+    <div class="badge-wrap">
+      <span class="badge">💎 4 códigos dorados · $500.000 c/u</span>
+    </div>
   </div>
 
-  <h1 class="title">🎟️ Compra tus códigos</h1>
-  <p class="subtitle">Participa por <span style="color:var(--gold)">$15.000.000 COP</span></p>
+  <!-- BANNER DINÁMICO -->
+  <div id="banner-dinamico"></div>
 
-  <div class="badge-wrap">
-    <span class="badge">💎 4 códigos dorados · $500.000 c/u</span>
-  </div>
+  <!-- GANADOR -->
+  <div id="seccion-ganador"></div>
 
+  <!-- PROGRESS -->
   <div class="progress-wrap">
     <div class="progress-labels">
       <span>Códigos vendidos</span>
-      <span id="txtProgreso">Cargando...😴</span>
+      <span id="txtProgreso">Cargando...</span>
     </div>
     <div class="progress-track">
       <div id="barraProgreso" class="progress-bar"></div>
     </div>
-
   </div>
 
   <div id="seccionDorados">
@@ -561,23 +1131,8 @@ input.error { border-color: #f87171; }
 
   <p class="section-title">Selecciona tu paquete</p>
 
-  <div class="cards-grid">
-    <div class="card" data-cantidad="4" data-precio="15000">
-      <div class="card-qty">4</div>
-      <div class="card-label">códigos</div>
-      <div class="card-price">$15.000</div>
-    </div>
-    <div class="card" data-cantidad="8" data-precio="30000">
-      <div class="card-popular">⭐ POPULAR</div>
-      <div class="card-qty">8</div>
-      <div class="card-label">códigos</div>
-      <div class="card-price">$30.000</div>
-    </div>
-    <div class="card" data-cantidad="16" data-precio="60000">
-      <div class="card-qty">16</div>
-      <div class="card-label">códigos</div>
-      <div class="card-price">$60.000</div>
-    </div>
+  <div class="cards-grid" id="cards-grid">
+    <div style="text-align:center;padding:20px;color:var(--muted);font-size:.9rem;grid-column:1/-1">Cargando paquetes...</div>
   </div>
 
   <div id="resumenPedido">
@@ -597,49 +1152,51 @@ input.error { border-color: #f87171; }
 
   <div id="form">
 
-    <p class="section-title" style="margin-top:0;">📄 Datos para facturación</p>
-    <div style="background:rgba(245,197,24,.06);border:1px solid rgba(245,197,24,.15);border-radius:10px;padding:10px 12px;margin-bottom:14px;font-size:.8rem;color:#94a3b8;line-height:1.5;">
+    <p class="section-title" style="margin-top:0;">Datos para facturación</p>
+
+    <div class="info-box" style="margin-bottom:14px">
       Estos datos se usan para generar tu factura electrónica y enviarte los códigos al correo.
     </div>
 
-    <div class="input-group">
-      <label class="input-label" for="nombre">Nombre completo</label>
-      <input type="text" id="nombre" placeholder="Ej: Juan Pérez" autocomplete="name">
-      <div class="field-error" id="err-nombre">Ingresa tu nombre</div>
-    </div>
-    <div class="input-group">
-      <label class="input-label" for="cedula">Cédula</label>
-      <input type="text" id="cedula" placeholder="Ej: 1234567890" inputmode="numeric" autocomplete="off">
-      <div class="field-error" id="err-cedula">Ingresa tu cédula</div>
-    </div>
-    <div class="input-group">
-      <label class="input-label" for="telefono">Teléfono / WhatsApp</label>
-      <input type="tel" id="telefono" placeholder="Ej: 3001234567" inputmode="tel" autocomplete="tel">
-      <div class="field-error" id="err-telefono">Ingresa tu teléfono</div>
-    </div>
-    <div class="input-group">
-      <label class="input-label" for="correo">Correo electrónico</label>
-      <input type="email" id="correo" placeholder="Ej: juan@correo.com" inputmode="email" autocomplete="email">
-      <div class="field-error" id="err-correo">Ingresa un correo válido</div>
-    </div>
-    <div class="input-group">
-      <label class="input-label" for="direccion">Dirección (opcional)</label>
-      <input type="text" id="direccion" placeholder="Ej: Cra 5 #10-20, Medellín" autocomplete="street-address">
+    <div class="form-cols">
+      <div class="input-group full-col">
+        <label class="input-label" for="nombre">Nombre completo</label>
+        <input type="text" id="nombre" placeholder="Ej: Juan Pérez" autocomplete="name">
+        <div class="field-error" id="err-nombre">Ingresa tu nombre</div>
+      </div>
+      <div class="input-group">
+        <label class="input-label" for="cedula">Cédula</label>
+        <input type="text" id="cedula" placeholder="Ej: 1234567890" inputmode="numeric" autocomplete="off">
+        <div class="field-error" id="err-cedula">Ingresa tu cédula</div>
+      </div>
+      <div class="input-group">
+        <label class="input-label" for="telefono">Teléfono / WhatsApp</label>
+        <input type="tel" id="telefono" placeholder="Ej: 3001234567" inputmode="tel" autocomplete="tel">
+        <div class="field-error" id="err-telefono">Ingresa tu teléfono</div>
+      </div>
+      <div class="input-group full-col">
+        <label class="input-label" for="correo">Correo electrónico</label>
+        <input type="email" id="correo" placeholder="Ej: juan@correo.com" inputmode="email" autocomplete="email">
+        <div class="field-error" id="err-correo">Ingresa un correo válido</div>
+      </div>
+      <div class="input-group full-col">
+        <label class="input-label" for="direccion">Dirección <span style="font-weight:400;opacity:.6">(opcional)</span></label>
+        <input type="text" id="direccion" placeholder="Ej: Cra 5 #10-20, Medellín" autocomplete="street-address">
+      </div>
     </div>
 
-    <div style="background:rgba(245,197,24,.08);border:1px solid rgba(245,197,24,.2);border-radius:10px;padding:12px;margin:10px 0;font-size:.82rem;color:#cbd5e1;line-height:1.5;">
-      🎟️ <strong style="color:var(--gold)">Los códigos son 100% aleatorios.</strong>
+    <div class="info-box gold-tint">
+      🎟️ <strong>Los códigos son 100% aleatorios.</strong>
       Son generados automáticamente por el sistema al momento del pago. Ninguna persona los selecciona ni los manipula.
     </div>
 
-    <div style="background:rgba(124,58,237,.08);border:1px solid rgba(124,58,237,.25);border-radius:10px;padding:12px;margin:10px 0;text-align:center;">
-      <div style="font-size:.82rem;color:var(--muted);margin-bottom:6px;">🔒 Tus pagos son seguros con</div>
-      <div style="font-size:1.1rem;font-weight:800;color:#7c3aed;letter-spacing:.02em;">Wompi</div>
-      <div style="display:flex;justify-content:center;gap:14px;margin-top:8px;flex-wrap:wrap;">
-        <span style="font-size:.75rem;color:#6b7280;">🔐 Cifrado SSL</span>
-        <span style="font-size:.75rem;color:#6b7280;">✅ Pagos verificados</span>
-        <span style="font-size:.75rem;color:#6b7280;">🏦 Respaldado por Bancolombia</span>
-        <span style="font-size:.75rem;color:#6b7280;">📄 Facturación electrónica disponible</span>
+    <div class="trust-block">
+      <div class="trust-label">🔒 Tus pagos son seguros con</div>
+      <div class="wompi-name">⚡ Wompi</div>
+      <div class="trust-badges">
+        <span class="trust-badge">🔐 Cifrado SSL</span>
+        <span class="trust-badge">✅ Pagos verificados</span>
+        <span class="trust-badge">🏦 Bancolombia</span>
       </div>
     </div>
 
@@ -647,18 +1204,14 @@ input.error { border-color: #f87171; }
       💳 Ir a pagar con Wompi
     </button>
 
-    <button class="btn" id="btnTransferencia" onclick="abrirModalTransferencia()"
-      style="margin-top:10px;background:transparent;border:2px solid #22c55e;color:#22c55e;font-size:.95rem;">
+    <button class="btn btn-transfer" id="btnTransferencia" onclick="abrirModalTransferencia()">
       🏦 Pagar por transferencia bancaria
     </button>
-    <p style="font-size:.72rem;color:#4b5563;text-align:center;margin-top:6px;line-height:1.5;">
-      Transfiere al banco y recibe tus códigos una vez confirmemos el pago
-    </p>
+    <p class="transfer-note">Transfiere al banco y recibe tus códigos una vez confirmemos el pago</p>
 
-    <p style="font-size:.72rem;color:#4b5563;text-align:center;margin-top:10px;line-height:1.5;">
+    <p class="terms-note">
       Al comprar aceptas los
-      <span style="color:var(--gold);cursor:pointer;text-decoration:underline;"
-            onclick="toggleTerminos(); setTimeout(()=>document.getElementById('terminosContent').scrollIntoView({behavior:'smooth'}),100)">
+      <span onclick="toggleTerminos(); setTimeout(()=>document.getElementById('terminosContent').scrollIntoView({behavior:'smooth'}),100)">
         términos y condiciones
       </span>
       y la política de privacidad.
@@ -693,7 +1246,7 @@ input.error { border-color: #f87171; }
     <div class="terminos-card">
       <h4>🏆 Método de juego</h4>
       resultado solo como referencia de validación con la <strong>de Medellín</strong>. Se toman los <strong>3 últimos números del premio mayor</strong> más el <strong>primer número de la serie</strong>. El código que coincida con esta combinación será el ganador.
-      <p style="margin-top:8px;font-size:.8rem;color:var(--muted);">Ejemplo: Premio mayor <strong style="color:white;">1234</strong> · Serie <strong style="color:white;">234</strong> → código ganador: <strong style="color:var(--gold);">2342</strong></p>
+      <p style="margin-top:8px;font-size:.78rem;color:var(--muted);">Ejemplo: Premio mayor <strong style="color:var(--text)">1234</strong> · Serie <strong style="color:var(--text)">234</strong> → código ganador: <strong style="color:var(--gold)">2342</strong></p>
     </div>
     <div class="terminos-card">
       <h4>🎰 Aleatoriedad garantizada</h4>
@@ -703,10 +1256,10 @@ input.error { border-color: #f87171; }
       <h4>💰 Pago del premio</h4>
       Por <strong>transferencia bancaria</strong> en un plazo de <strong>1 a 5 días hábiles</strong> tras verificar el código ganador.
       <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;">
-        <span style="background:#0f172a;color:var(--gold);padding:4px 10px;border-radius:6px;border:1px solid var(--gold);font-size:.8rem;">Nequi</span>
-        <span style="background:#0f172a;color:var(--gold);padding:4px 10px;border-radius:6px;border:1px solid var(--gold);font-size:.8rem;">Bancolombia</span>
-        <span style="background:#0f172a;color:var(--gold);padding:4px 10px;border-radius:6px;border:1px solid var(--gold);font-size:.8rem;">Davivienda</span>
-        <span style="background:#0f172a;color:var(--gold);padding:4px 10px;border-radius:6px;border:1px solid var(--gold);font-size:.8rem;">BBVA</span>
+        <span style="background:var(--bg);color:var(--gold);padding:4px 10px;border-radius:6px;border:1px solid var(--border-gold);font-size:.78rem;">Nequi</span>
+        <span style="background:var(--bg);color:var(--gold);padding:4px 10px;border-radius:6px;border:1px solid var(--border-gold);font-size:.78rem;">Bancolombia</span>
+        <span style="background:var(--bg);color:var(--gold);padding:4px 10px;border-radius:6px;border:1px solid var(--border-gold);font-size:.78rem;">Davivienda</span>
+        <span style="background:var(--bg);color:var(--gold);padding:4px 10px;border-radius:6px;border:1px solid var(--border-gold);font-size:.78rem;">BBVA</span>
       </div>
     </div>
     <div class="terminos-card">
@@ -739,7 +1292,7 @@ input.error { border-color: #f87171; }
         <li>El resultado oficial es el publicado en <strong>loteriademedellin.com.co</strong>.</li>
         <li>EiderTech Soluciones se reserva el derecho de cancelar el sorteo y devolver el dinero si no se venden todos los códigos.</li>
       </ul>
-      <p style="margin-top:10px;font-size:.78rem;color:var(--muted);">Al comprar aceptas estos términos. · 📧 infoeidertechsoluciones@gmail.com</p>
+      <p style="margin-top:10px;font-size:.76rem;color:var(--muted);">Al comprar aceptas estos términos. · 📧 infoeidertechsoluciones@gmail.com</p>
     </div>
   </div>
 
@@ -761,12 +1314,12 @@ input.error { border-color: #f87171; }
   <img src="/frontend/imagenes/Logo.png" alt="EiderTech Soluciones" class="footer-logo"
        onerror="this.style.display='none'">
   <div class="footer-wompi">
-    🔒 Tus pagos son seguros con <span class="wompi-badge">⚡ Wompi</span>
+    🔒 Pagos seguros con <span class="wompi-badge">⚡ Wompi</span>
   </div>
   <div class="footer-text">
     <p>© 2026 EiderTech Soluciones. Todos los derechos reservados.</p>
     <p style="margin-top:4px;">📧 infoeidertechsoluciones@gmail.com</p>
-    <p style="margin-top:4px; font-size:.72rem;">Pagos procesados de forma segura · Cifrado SSL · Respaldado por Bancolombia · Facturación electrónica disponible</p>
+    <p style="margin-top:4px;">Pagos procesados de forma segura · Cifrado SSL · Respaldado por Bancolombia · Facturación electrónica disponible</p>
   </div>
 </footer>
 
@@ -840,7 +1393,7 @@ async function verificarPromo() {
       if (!badge) {
         badge = document.createElement('div');
         badge.id = 'badge-promo';
-        badge.style.cssText = `background:rgba(245,197,24,.15);border:1px solid rgba(245,197,24,.4);border-radius:8px;padding:8px 12px;margin-bottom:12px;font-size:.82rem;color:#fde68a;text-align:center;line-height:1.5;`;
+        badge.style.cssText = `background:rgba(232,184,75,.1);border:1px solid rgba(232,184,75,.3);border-radius:10px;padding:10px 14px;margin-bottom:14px;font-size:.82rem;color:#F5D07A;text-align:center;line-height:1.5;font-family:var(--font-body);`;
         document.querySelector('.cards-grid').parentNode.insertBefore(badge, document.querySelector('.cards-grid'));
       }
       const hora = new Date(promo.expira_en).toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit' });
@@ -884,7 +1437,7 @@ async function verificarStock() {
       dorados.forEach(item => {
         const span = document.createElement("span");
         span.innerHTML = `✨ ${item.codigo}`;
-        span.style.cssText = `background:linear-gradient(135deg,gold,orange);color:#000;padding:6px 12px;border-radius:8px;font-weight:700;font-size:.85rem;box-shadow:0 0 12px rgba(255,215,0,.5);`;
+        span.style.cssText = `background:linear-gradient(135deg,rgba(232,184,75,.2),rgba(224,123,60,.15));color:var(--gold-light, #F5D07A);padding:6px 14px;border-radius:8px;font-weight:700;font-size:.85rem;border:1px solid rgba(232,184,75,.4);box-shadow:0 0 12px rgba(232,184,75,.25);`;
         lista.appendChild(span);
       });
     }
@@ -894,32 +1447,184 @@ verificarStock();
 
 
 // ===============================
-// SELECCIONAR PAQUETE
+// CONFIG DINÁMICA (precios, paquetes, banner, ganador)
 // ===============================
-const PRECIOS = { 4: 15000, 8: 30000, 16: 60000 };
+let PRECIOS = {};
+let precioCodigo = 3750;
 
-cards.forEach(card => {
-  card.addEventListener("click", () => {
-    if (card.classList.contains("disabled")) return;
-    cards.forEach(c => { c.classList.remove("selected"); c.classList.remove("disabled"); });
-    card.classList.add("selected");
-    cards.forEach(c => { if (c !== card) c.classList.add("disabled"); });
+async function cargarConfig() {
+  try {
+    const r   = await fetch(`${API_URL}/api/config`);
+    const cfg = await r.json();
 
-    cantidadSeleccionada = Number(card.dataset.cantidad);
-    const precio = PRECIOS[cantidadSeleccionada] || 0;
+    precioCodigo = cfg.precioCodigo || 3750;
 
-    document.getElementById("resumenCodigos").textContent = `${cantidadSeleccionada} códigos`;
-    document.getElementById("resumenPrecioUnitario").textContent = `$${(precio / cantidadSeleccionada).toLocaleString('es-CO')}`;
-    document.getElementById("resumenTotal").textContent = `$${precio.toLocaleString('es-CO')} COP`;
-    document.getElementById("resumenPedido").style.display = "block";
+    // Premio total
+    if (cfg.premioTotal) {
+      const premioFmt = Number(cfg.premioTotal).toLocaleString('es-CO');
+      document.getElementById('subtituloPremio').innerHTML =
+        `Participa por <span>$${premioFmt} COP</span>`;
+    }
 
-    form.style.display = "block";
-    document.getElementById("avisoStock").style.display = "none";
-    document.getElementById("resumenPedido").scrollIntoView({ behavior: "smooth", block: "start" });
-  });
-});
+    // Banner
+    if (cfg.banner?.activo && cfg.banner?.texto) {
+      const colores = {
+        gold:  { bg: 'rgba(232,184,75,.12)', border: 'rgba(232,184,75,.35)',  color: '#F5D07A' },
+        blue:  { bg: 'rgba(59,130,246,.12)', border: 'rgba(59,130,246,.35)',  color: '#93c5fd' },
+        green: { bg: 'rgba(52,211,153,.12)', border: 'rgba(52,211,153,.35)',  color: '#6ee7b7' },
+        red:   { bg: 'rgba(239,68,68,.12)',  border: 'rgba(239,68,68,.35)',   color: '#fca5a5' }
+      };
+      const est = colores[cfg.banner.color] || colores.gold;
+      const ban = document.getElementById('banner-dinamico');
+      ban.style.display    = 'block';
+      ban.style.background = est.bg;
+      ban.style.border     = `1px solid ${est.border}`;
+      ban.style.color      = est.color;
+      ban.textContent      = cfg.banner.texto;
+    }
 
+    // Ganador
+    if (cfg.ganador?.activo && cfg.ganador?.codigo && cfg.ganador?.nombre) {
+      mostrarGanador(cfg.ganador.codigo, cfg.ganador.nombre);
+    }
 
+    // Renderizar paquetes
+    const grid = document.getElementById('cards-grid');
+    grid.innerHTML = '';
+    PRECIOS = {};
+
+    cfg.paquetes.forEach(p => {
+      PRECIOS[p.cantidad] = p.precio;
+      const card = document.createElement('div');
+      card.className   = 'card';
+      card.dataset.cantidad = p.cantidad;
+      card.dataset.precio   = p.precio;
+      card.innerHTML = `
+        ${p.popular ? '<div class="card-popular">⭐ Popular</div>' : ''}
+        <div class="card-qty">${p.cantidad}</div>
+        <div class="card-label">códigos</div>
+        <div class="card-price">$${p.precio.toLocaleString('es-CO')}</div>
+      `;
+      card.addEventListener('click', () => seleccionarCard(card, cfg.paquetes));
+      grid.appendChild(card);
+    });
+
+  } catch(e) {
+    console.error('Error cargando config:', e);
+    // Fallback
+    const grid = document.getElementById('cards-grid');
+    grid.innerHTML = `
+      <div class="card" data-cantidad="4"  data-precio="15000" onclick="seleccionarCardLegacy(this)"><div class="card-qty">4</div><div class="card-label">códigos</div><div class="card-price">$15.000</div></div>
+      <div class="card" data-cantidad="8"  data-precio="30000" onclick="seleccionarCardLegacy(this)"><div class="card-popular">⭐ Popular</div><div class="card-qty">8</div><div class="card-label">códigos</div><div class="card-price">$30.000</div></div>
+      <div class="card" data-cantidad="16" data-precio="60000" onclick="seleccionarCardLegacy(this)"><div class="card-qty">16</div><div class="card-label">códigos</div><div class="card-price">$60.000</div></div>
+    `;
+    PRECIOS = { 4: 15000, 8: 30000, 16: 60000 };
+    precioCodigo = 3750;
+  }
+}
+
+function seleccionarCard(card, paquetes) {
+  if (card.classList.contains('disabled')) return;
+  document.querySelectorAll('.card').forEach(c => { c.classList.remove('selected','disabled'); });
+  card.classList.add('selected');
+  document.querySelectorAll('.card').forEach(c => { if (c !== card) c.classList.add('disabled'); });
+
+  cantidadSeleccionada = Number(card.dataset.cantidad);
+  const precio         = Number(card.dataset.precio);
+
+  document.getElementById('resumenCodigos').textContent       = `${cantidadSeleccionada} códigos`;
+  document.getElementById('resumenPrecioUnitario').textContent = `$${precioCodigo.toLocaleString('es-CO')}`;
+  document.getElementById('resumenTotal').textContent          = `$${precio.toLocaleString('es-CO')} COP`;
+  document.getElementById('resumenPedido').style.display       = 'block';
+  form.style.display = 'block';
+  document.getElementById('avisoStock').style.display = 'none';
+  document.getElementById('resumenPedido').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function seleccionarCardLegacy(card) {
+  seleccionarCard(card, []);
+}
+
+// ── Mostrar ganador con confeti ──────────────────────────────────────────
+function mostrarGanador(codigo, nombre) {
+  const sec = document.getElementById('seccion-ganador');
+  sec.style.display = 'block';
+  sec.innerHTML = `
+    <div id="ganador-box" style="
+      background: linear-gradient(135deg, var(--surface), var(--card));
+      border: 1px solid var(--gold);
+      border-radius: 20px;
+      padding: 28px 20px;
+      text-align: center;
+      margin-bottom: 20px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 0 60px rgba(232,184,75,.2);
+    ">
+      <div style="font-size:44px;margin-bottom:10px">🏆</div>
+      <div style="font-size:.68rem;letter-spacing:4px;text-transform:uppercase;color:var(--muted);margin-bottom:6px;font-family:var(--font-display)">¡Tenemos Ganador!</div>
+      <div style="font-family:var(--font-display);font-size:2.4rem;font-weight:800;color:var(--gold);letter-spacing:6px;margin:10px 0;text-shadow:0 0 30px rgba(232,184,75,.5)">${codigo}</div>
+      <div style="font-size:1rem;color:var(--text);font-weight:600;margin-bottom:6px">${nombre}</div>
+      <div style="font-size:.76rem;color:var(--muted)">🎉 Felicitaciones al ganador del sorteo</div>
+    </div>`;
+
+  lanzarConfeti();
+}
+
+function lanzarConfeti() {
+  const colores = ['#E8B84B','#E07B3C','#34D399','#60A5FA','#A78BFA','#F472B6','#ffffff'];
+  const canvas  = document.createElement('canvas');
+  canvas.style.cssText = 'position:fixed;inset:0;z-index:9999;pointer-events:none';
+  canvas.width  = window.innerWidth;
+  canvas.height = window.innerHeight;
+  document.body.appendChild(canvas);
+  const ctx = canvas.getContext('2d');
+
+  const particulas = Array.from({ length: 120 }, () => ({
+    x:   Math.random() * canvas.width,
+    y:   -20 - Math.random() * 100,
+    r:   4 + Math.random() * 5,
+    d:   1 + Math.random() * 3,
+    color: colores[Math.floor(Math.random() * colores.length)],
+    tilt: Math.random() * 10 - 10,
+    tiltAngle: 0,
+    tiltInc:   0.05 + Math.random() * 0.1
+  }));
+
+  let frame = 0;
+  const MAX = 200;
+
+  function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    particulas.forEach(p => {
+      ctx.beginPath();
+      ctx.lineWidth = p.r / 2;
+      ctx.strokeStyle = p.color;
+      ctx.moveTo(p.x + p.tilt + p.r / 4, p.y);
+      ctx.lineTo(p.x + p.tilt, p.y + p.tilt + p.r / 4);
+      ctx.stroke();
+    });
+
+    particulas.forEach(p => {
+      p.tiltAngle += p.tiltInc;
+      p.y += p.d;
+      p.tilt = Math.sin(p.tiltAngle) * 12;
+      if (p.y > canvas.height) {
+        p.y = -10;
+        p.x = Math.random() * canvas.width;
+      }
+    });
+
+    frame++;
+    if (frame < MAX) requestAnimationFrame(draw);
+    else canvas.remove();
+  }
+  draw();
+}
+
+cargarConfig();
+
+ 
 // ===============================
 // PAGAR
 // ===============================
@@ -1087,92 +1792,79 @@ document.getElementById('resultado').addEventListener('touchend', function() { w
 </script>
 
 <!-- ══════════ MODAL TRANSFERENCIA BANCARIA ══════════ -->
-<div id="modalTransferencia" style="
-  display:none;position:fixed;inset:0;
-  background:rgba(0,0,0,.75);z-index:9800;
-  align-items:center;justify-content:center;
-  padding:16px;backdrop-filter:blur(4px);
-">
-  <div style="
-    background:#111827;border:1px solid rgba(34,197,94,.25);
-    border-radius:18px;padding:26px 20px;max-width:430px;width:100%;
-    max-height:92dvh;overflow-y:auto;color:white;
-    font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;position:relative;
-  ">
-    <button onclick="cerrarModalTransferencia()" style="
-      position:absolute;top:14px;right:14px;background:rgba(255,255,255,.08);
-      border:none;color:#9ca3af;font-size:18px;width:30px;height:30px;
-      border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;
-    ">✕</button>
+<div id="modalTransferencia">
+  <div class="modal-inner">
+    <button class="modal-close" onclick="cerrarModalTransferencia()">✕</button>
 
-    <!-- Header verde -->
-    <div style="background:#16a34a;margin:-26px -20px 20px;padding:18px 20px 16px;border-radius:18px 18px 0 0;text-align:center">
-      <div style="font-size:16px;font-weight:800;color:white">Datos para tu transferencia</div>
+    <div class="modal-header">
+      🏦 Datos para tu transferencia
     </div>
 
-    <!-- Tarjetas de banco (se renderizan desde JS) -->
-    <div id="trfListaBancos" style="display:flex;flex-direction:column;gap:10px;margin-bottom:16px"></div>
+    <div class="modal-body">
+      <!-- Tarjetas de banco (se renderizan desde JS) -->
+      <div id="trfListaBancos" style="display:flex;flex-direction:column;gap:10px;margin-bottom:16px"></div>
 
-    <!-- Monto a transferir -->
-    <div style="background:#1e3a2f;border-radius:10px;padding:12px;text-align:center;margin-bottom:18px">
-      <div style="color:#9ca3af;font-size:11px">Monto a transferir</div>
-      <div style="color:#4ade80;font-size:26px;font-weight:800" id="trfMontoDisplay">—</div>
-      <div style="color:#6b7280;font-size:11px" id="trfCodsDisplay"></div>
+      <!-- Monto a transferir -->
+      <div style="background:rgba(52,211,153,.06);border:1px solid rgba(52,211,153,.2);border-radius:10px;padding:14px;text-align:center;margin-bottom:18px">
+        <div style="color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px">Monto a transferir</div>
+        <div style="color:#34D399;font-family:var(--font-display);font-size:26px;font-weight:800" id="trfMontoDisplay">—</div>
+        <div style="color:var(--muted);font-size:11px;margin-top:2px" id="trfCodsDisplay"></div>
+      </div>
+
+      <!-- Formulario -->
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <div>
+          <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px;font-weight:600;text-transform:uppercase;letter-spacing:.06em">Nombre completo *</label>
+          <input id="trfNombreInput" type="text" placeholder="Tu nombre completo"
+            style="width:100%;padding:11px 13px;border-radius:10px;border:1px solid var(--border);background:var(--card);color:white;font-size:14px;outline:none;box-sizing:border-box;font-family:var(--font-body);"
+            onfocus="this.style.borderColor='rgba(52,211,153,.5)'" onblur="this.style.borderColor='var(--border)'">
+        </div>
+        <div>
+          <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px;font-weight:600;text-transform:uppercase;letter-spacing:.06em">Correo electrónico *</label>
+          <input id="trfCorreoInput" type="email" placeholder="tu@correo.com" inputmode="email"
+            style="width:100%;padding:11px 13px;border-radius:10px;border:1px solid var(--border);background:var(--card);color:white;font-size:14px;outline:none;box-sizing:border-box;font-family:var(--font-body);"
+            onfocus="this.style.borderColor='rgba(52,211,153,.5)'" onblur="this.style.borderColor='var(--border)'">
+        </div>
+        <div>
+          <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px;font-weight:600;text-transform:uppercase;letter-spacing:.06em">Cédula</label>
+          <input id="trfCedulaInput" type="text" placeholder="1234567890" inputmode="numeric"
+            style="width:100%;padding:11px 13px;border-radius:10px;border:1px solid var(--border);background:var(--card);color:white;font-size:14px;outline:none;box-sizing:border-box;font-family:var(--font-body);"
+            onfocus="this.style.borderColor='rgba(52,211,153,.5)'" onblur="this.style.borderColor='var(--border)'">
+        </div>
+        <div>
+          <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px;font-weight:600;text-transform:uppercase;letter-spacing:.06em">Teléfono / WhatsApp</label>
+          <input id="trfTelefonoInput" type="tel" placeholder="3001234567" inputmode="tel"
+            style="width:100%;padding:11px 13px;border-radius:10px;border:1px solid var(--border);background:var(--card);color:white;font-size:14px;outline:none;box-sizing:border-box;font-family:var(--font-body);"
+            onfocus="this.style.borderColor='rgba(52,211,153,.5)'" onblur="this.style.borderColor='var(--border)'">
+        </div>
+        <div>
+          <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px;font-weight:600;text-transform:uppercase;letter-spacing:.06em">Cantidad de códigos *</label>
+          <select id="trfCantidadSelect" onchange="trfActualizarMonto()"
+            style="width:100%;padding:11px 13px;border-radius:10px;border:1px solid var(--border);background:var(--card);color:white;font-size:14px;outline:none;box-sizing:border-box;font-family:var(--font-body);"
+            onfocus="this.style.borderColor='rgba(52,211,153,.5)'" onblur="this.style.borderColor='var(--border)'">
+            <option value="4">4 códigos — $15.000 COP</option>
+            <option value="8">8 códigos — $30.000 COP</option>
+            <option value="16">16 códigos — $60.000 COP</option>
+          </select>
+        </div>
+      </div>
+
+      <div id="trfFormMsg" style="margin-top:10px;min-height:14px"></div>
+
+      <button onclick="enviarSolicitudTransferencia()" style="
+        margin-top:16px;width:100%;
+        background:linear-gradient(135deg,#166534,#22c55e);
+        color:white;border:none;padding:14px;border-radius:12px;
+        font-family:var(--font-display);font-size:15px;font-weight:700;cursor:pointer;transition:opacity .15s;letter-spacing:.01em;
+      " onmouseover="this.style.opacity='.9'" onmouseout="this.style.opacity='1'">
+        📨 Registrar mi solicitud
+      </button>
+
+      <p style="color:var(--muted);font-size:11px;text-align:center;margin-top:10px;line-height:1.7">
+        Tienes <strong style="color:var(--gold)">24 horas</strong> para realizar la transferencia.<br>
+        Una vez confirmada recibirás tus códigos al correo.
+      </p>
     </div>
-
-    <!-- Formulario -->
-    <div style="display:flex;flex-direction:column;gap:10px">
-      <div>
-        <label style="font-size:11px;color:#9ca3af;display:block;margin-bottom:3px;font-weight:600;text-transform:uppercase;letter-spacing:.04em">Nombre completo *</label>
-        <input id="trfNombreInput" type="text" placeholder="Tu nombre completo"
-          style="width:100%;padding:11px 13px;border-radius:9px;border:1.5px solid #374151;background:#1f2937;color:white;font-size:14px;outline:none;box-sizing:border-box"
-          onfocus="this.style.borderColor='#22c55e'" onblur="this.style.borderColor='#374151'">
-      </div>
-      <div>
-        <label style="font-size:11px;color:#9ca3af;display:block;margin-bottom:3px;font-weight:600;text-transform:uppercase;letter-spacing:.04em">Correo electrónico *</label>
-        <input id="trfCorreoInput" type="email" placeholder="tu@correo.com" inputmode="email"
-          style="width:100%;padding:11px 13px;border-radius:9px;border:1.5px solid #374151;background:#1f2937;color:white;font-size:14px;outline:none;box-sizing:border-box"
-          onfocus="this.style.borderColor='#22c55e'" onblur="this.style.borderColor='#374151'">
-      </div>
-      <div>
-        <label style="font-size:11px;color:#9ca3af;display:block;margin-bottom:3px;font-weight:600;text-transform:uppercase;letter-spacing:.04em">Cédula</label>
-        <input id="trfCedulaInput" type="text" placeholder="1234567890" inputmode="numeric"
-          style="width:100%;padding:11px 13px;border-radius:9px;border:1.5px solid #374151;background:#1f2937;color:white;font-size:14px;outline:none;box-sizing:border-box"
-          onfocus="this.style.borderColor='#22c55e'" onblur="this.style.borderColor='#374151'">
-      </div>
-      <div>
-        <label style="font-size:11px;color:#9ca3af;display:block;margin-bottom:3px;font-weight:600;text-transform:uppercase;letter-spacing:.04em">Teléfono / WhatsApp</label>
-        <input id="trfTelefonoInput" type="tel" placeholder="3001234567" inputmode="tel"
-          style="width:100%;padding:11px 13px;border-radius:9px;border:1.5px solid #374151;background:#1f2937;color:white;font-size:14px;outline:none;box-sizing:border-box"
-          onfocus="this.style.borderColor='#22c55e'" onblur="this.style.borderColor='#374151'">
-      </div>
-      <div>
-        <label style="font-size:11px;color:#9ca3af;display:block;margin-bottom:3px;font-weight:600;text-transform:uppercase;letter-spacing:.04em">Cantidad de códigos *</label>
-        <select id="trfCantidadSelect" onchange="trfActualizarMonto()"
-          style="width:100%;padding:11px 13px;border-radius:9px;border:1.5px solid #374151;background:#1f2937;color:white;font-size:14px;outline:none;box-sizing:border-box"
-          onfocus="this.style.borderColor='#22c55e'" onblur="this.style.borderColor='#374151'">
-          <option value="4">4 códigos — $15.000 COP</option>
-          <option value="8">8 códigos — $30.000 COP</option>
-          <option value="16">16 códigos — $60.000 COP</option>
-        </select>
-      </div>
-    </div>
-
-    <div id="trfFormMsg" style="margin-top:10px;min-height:14px"></div>
-
-    <button onclick="enviarSolicitudTransferencia()" style="
-      margin-top:16px;width:100%;
-      background:linear-gradient(135deg,#16a34a,#22c55e);
-      color:white;border:none;padding:14px;border-radius:11px;
-      font-size:15px;font-weight:800;cursor:pointer;transition:opacity .15s;
-    " onmouseover="this.style.opacity='.9'" onmouseout="this.style.opacity='1'">
-      📨 Registrar mi solicitud
-    </button>
-
-    <p style="color:#4b5563;font-size:11px;text-align:center;margin-top:10px;line-height:1.6">
-      Tienes <strong style="color:#facc15">24 horas</strong> para realizar la transferencia.<br>
-      Una vez confirmada recibirás tus códigos al correo.
-    </p>
   </div>
 </div>
 
@@ -1195,17 +1887,17 @@ function trfRenderLista() {
   TRF_BANCOS.forEach(cuenta => {
     const icono = iconos[cuenta.banco] || '🏦';
     const card = document.createElement('div');
-    card.style.cssText = 'background:#1f2937;border:1px solid #374151;border-radius:12px;padding:14px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px';
+    card.style.cssText = 'background:var(--card, #0F1928);border:1px solid rgba(255,255,255,.07);border-radius:12px;padding:14px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px';
     card.innerHTML = `
       <div style="flex:1;min-width:0">
-        <div style="font-size:11px;font-weight:700;color:#9ca3af;text-transform:uppercase;letter-spacing:.06em;margin-bottom:3px">${icono} ${cuenta.tipo} ${cuenta.banco}</div>
-        <div style="font-size:20px;font-weight:800;color:white;letter-spacing:.03em;margin-bottom:2px">${cuenta.numero}</div>
-        <div style="font-size:12px;color:#9ca3af">Titular: ${cuenta.titular}</div>
+        <div style="font-size:11px;font-weight:700;color:var(--muted, #6B7A99);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px">${icono} ${cuenta.tipo} ${cuenta.banco}</div>
+        <div style="font-family:var(--font-display, sans-serif);font-size:20px;font-weight:800;color:white;letter-spacing:.03em;margin-bottom:3px">${cuenta.numero}</div>
+        <div style="font-size:12px;color:var(--muted, #6B7A99)">Titular: ${cuenta.titular}</div>
       </div>
       <button onclick="trfCopiarNumero('${cuenta.numero}', this)" style="
-        background:#111827;border:2px solid #374151;color:white;
-        border-radius:10px;padding:10px 16px;font-size:13px;font-weight:700;
-        cursor:pointer;white-space:nowrap;flex-shrink:0;transition:all .2s;
+        background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);color:white;
+        border-radius:10px;padding:9px 14px;font-size:12px;font-weight:700;
+        cursor:pointer;white-space:nowrap;flex-shrink:0;transition:all .2s;font-family:var(--font-display, sans-serif);letter-spacing:.02em;
       ">Copiar</button>`;
     lista.appendChild(card);
   });
@@ -1220,11 +1912,9 @@ window.trfCopiarNumero = async function(numero, btn) {
     document.body.removeChild(ta);
   }
   btn.textContent = '✅ Copiado';
-  btn.style.borderColor = '#22c55e'; btn.style.color = '#4ade80';
-  setTimeout(() => { btn.textContent = 'Copiar'; btn.style.borderColor = '#374151'; btn.style.color = 'white'; }, 2000);
+  btn.style.borderColor = 'rgba(52,211,153,.4)'; btn.style.color = '#34D399';
+  setTimeout(() => { btn.textContent = 'Copiar'; btn.style.borderColor = 'rgba(255,255,255,.1)'; btn.style.color = 'white'; }, 2000);
 };
-
-
 
 window.trfActualizarMonto = function() {
   const cant  = parseInt(document.getElementById('trfCantidadSelect')?.value || 4);
@@ -1238,7 +1928,6 @@ trfActualizarMonto();
 
 window.abrirModalTransferencia = function() {
   trfRenderLista();
-  // Pre-llenar con datos ya escritos en el formulario principal
   const n = document.getElementById('nombre')?.value.trim();
   const c = document.getElementById('correo')?.value.trim();
   const d = document.getElementById('cedula')?.value.trim();
@@ -1247,7 +1936,6 @@ window.abrirModalTransferencia = function() {
   if (c) document.getElementById('trfCorreoInput').value   = c;
   if (d) document.getElementById('trfCedulaInput').value   = d;
   if (t) document.getElementById('trfTelefonoInput').value = t;
-  // Sincronizar cantidad seleccionada
   const cant = document.querySelector('.card.selected')?.dataset.cantidad;
   if (cant) { const s = document.getElementById('trfCantidadSelect'); if(s){ s.value = cant; trfActualizarMonto(); } }
   document.getElementById('trfFormMsg').innerHTML = '';
@@ -1258,8 +1946,6 @@ window.cerrarModalTransferencia = function() {
   document.getElementById('modalTransferencia').style.display = 'none';
 };
 
-// copiarCuenta is handled per-card by trfCopiarNumero
-
 window.enviarSolicitudTransferencia = async function() {
   const nombre   = document.getElementById('trfNombreInput').value.trim();
   const correo   = document.getElementById('trfCorreoInput').value.trim();
@@ -1269,15 +1955,15 @@ window.enviarSolicitudTransferencia = async function() {
   const msgEl    = document.getElementById('trfFormMsg');
 
   if (!nombre || !correo) {
-    msgEl.innerHTML = '<div style="background:rgba(248,113,113,.12);color:#f87171;padding:9px 12px;border-radius:8px;font-size:12px">⚠️ Nombre y correo son obligatorios</div>';
+    msgEl.innerHTML = '<div style="background:rgba(248,113,113,.1);color:#f87171;padding:9px 12px;border-radius:8px;font-size:12px;border:1px solid rgba(248,113,113,.2)">⚠️ Nombre y correo son obligatorios</div>';
     return;
   }
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(correo)) {
-    msgEl.innerHTML = '<div style="background:rgba(248,113,113,.12);color:#f87171;padding:9px 12px;border-radius:8px;font-size:12px">⚠️ Correo electrónico inválido</div>';
+    msgEl.innerHTML = '<div style="background:rgba(248,113,113,.1);color:#f87171;padding:9px 12px;border-radius:8px;font-size:12px;border:1px solid rgba(248,113,113,.2)">⚠️ Correo electrónico inválido</div>';
     return;
   }
 
-  msgEl.innerHTML = '<div style="color:#9ca3af;font-size:12px;padding:6px 0">⏳ Registrando solicitud...</div>';
+  msgEl.innerHTML = '<div style="color:var(--muted);font-size:12px;padding:6px 0">⏳ Registrando solicitud...</div>';
 
   try {
     const r = await fetch('/api/transferencia-registrar', {
@@ -1288,21 +1974,21 @@ window.enviarSolicitudTransferencia = async function() {
     const d = await r.json();
     if (d.ok) {
       msgEl.innerHTML = `
-        <div style="background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.3);border-radius:10px;padding:14px;font-size:12px">
-          <div style="color:#4ade80;font-weight:800;font-size:14px;margin-bottom:6px">✅ ¡Solicitud registrada!</div>
-          <div style="color:#e2e8f0;line-height:1.7">${d.mensaje}</div>
-          <div style="margin-top:8px;font-size:11px;color:#9ca3af">
-            Referencia: <span style="font-family:monospace;color:#f5c518">${d.referencia}</span>
+        <div style="background:rgba(52,211,153,.08);border:1px solid rgba(52,211,153,.2);border-radius:10px;padding:14px;font-size:12px">
+          <div style="color:#34D399;font-family:var(--font-display);font-weight:800;font-size:14px;margin-bottom:6px">✅ ¡Solicitud registrada!</div>
+          <div style="color:var(--text);line-height:1.7">${d.mensaje}</div>
+          <div style="margin-top:8px;font-size:11px;color:var(--muted)">
+            Referencia: <span style="font-family:monospace;color:var(--gold)">${d.referencia}</span>
           </div>
         </div>`;
       ['trfNombreInput','trfCorreoInput','trfCedulaInput','trfTelefonoInput'].forEach(id => {
         const el = document.getElementById(id); if (el) el.value = '';
       });
     } else {
-      msgEl.innerHTML = `<div style="background:rgba(248,113,113,.12);color:#f87171;padding:9px 12px;border-radius:8px;font-size:12px">⚠️ ${d.error || 'Error al registrar'}</div>`;
+      msgEl.innerHTML = `<div style="background:rgba(248,113,113,.1);color:#f87171;padding:9px 12px;border-radius:8px;font-size:12px;border:1px solid rgba(248,113,113,.2)">⚠️ ${d.error || 'Error al registrar'}</div>`;
     }
   } catch(e) {
-    msgEl.innerHTML = '<div style="background:rgba(248,113,113,.12);color:#f87171;padding:9px 12px;border-radius:8px;font-size:12px">⚠️ Error de conexión. Intenta de nuevo.</div>';
+    msgEl.innerHTML = '<div style="background:rgba(248,113,113,.1);color:#f87171;padding:9px 12px;border-radius:8px;font-size:12px;border:1px solid rgba(248,113,113,.2)">⚠️ Error de conexión. Intenta de nuevo.</div>';
   }
 };
 </script>

@@ -8,7 +8,7 @@ const ExcelJS = require('exceljs');
 // ════════════════════════════════════════════
 // RATE LIMITING — bloqueo tras 3 fallos
 // ════════════════════════════════════════════
-const loginAttempts = new Map(); // ip -> { count, blockedUntil }
+const loginAttempts = new Map();
 
 function checkLoginRateLimit(ip) {
   const now = Date.now();
@@ -24,7 +24,7 @@ function registrarFalloLogin(ip) {
   const entry = loginAttempts.get(ip) || { count: 0, blockedUntil: 0 };
   entry.count += 1;
   if (entry.count >= 3) {
-    entry.blockedUntil = Date.now() + 5 * 60 * 1000; // 5 minutos bloqueado
+    entry.blockedUntil = Date.now() + 5 * 60 * 1000;
     entry.count = 0;
     console.warn(`🔒 IP bloqueada por 5 min: ${ip}`);
   }
@@ -36,7 +36,7 @@ function limpiarFallosLogin(ip) {
 }
 
 // ════════════════════════════════════════════
-// AUTH MIDDLEWARE — rutas privadas /admin/*
+// AUTH MIDDLEWARE
 // ════════════════════════════════════════════
 function authAdmin(req, res, next) {
   const token  = req.headers['x-admin-token'] || req.query.token;
@@ -47,22 +47,21 @@ function authAdmin(req, res, next) {
 }
 
 // ════════════════════════════════════════════
-// CONFIG en memoria (persiste mientras corre)
-// Para persistencia real, guárdalos en Supabase
+// CONFIG en memoria
 // ════════════════════════════════════════════
 let CONFIG = {
   ventas_activas: true,
   precio_codigo:  3750,
   aviso_texto:    '',
   aviso_color:    'gold',
-  correo_pie:     ''
+  correo_pie:     '',
+  ganador:        { activo: false, codigo: '', nombre: '' }
 };
 
 // ════════════════════════════════════════════
 // RUTAS PÚBLICAS
 // ════════════════════════════════════════════
 
-// Promo activa — la usa el frontend público
 router.get('/admin/promo-activa', async (req, res) => {
   try {
     const promo = await getPromoActiva();
@@ -74,7 +73,6 @@ router.get('/admin/promo-activa', async (req, res) => {
   }
 });
 
-// Códigos dorados — los muestra el frontend público
 router.get('/admin/codigos-dorados', async (req, res) => {
   try {
     const { data, error } = await supabase
@@ -86,18 +84,41 @@ router.get('/admin/codigos-dorados', async (req, res) => {
   }
 });
 
-// Config pública — aviso banner y estado ventas
 router.get('/config-publica', (req, res) => {
   res.json({
     ventas_activas: CONFIG.ventas_activas,
     aviso_texto:    CONFIG.aviso_texto,
     aviso_color:    CONFIG.aviso_color,
-    precio_codigo:  CONFIG.precio_codigo
+    precio_codigo:  CONFIG.precio_codigo,
+    ganador:        CONFIG.ganador
+  });
+});
+
+// Ruta que usa index.html — devuelve config pública con ganador y paquetes dinámicos
+router.get('/config', (req, res) => {
+  const precioCodigo = CONFIG.precio_codigo || 3750;
+  res.json({
+    ventas_activas: CONFIG.ventas_activas,
+    aviso_texto:    CONFIG.aviso_texto,
+    aviso_color:    CONFIG.aviso_color,
+    precioCodigo,
+    premioTotal:    15000000,
+    ganador:        CONFIG.ganador,
+    banner: CONFIG.aviso_texto ? {
+      activo: true,
+      texto:  CONFIG.aviso_texto,
+      color:  CONFIG.aviso_color || 'gold'
+    } : { activo: false },
+    paquetes: [
+      { cantidad: 4,  precio: 4  * precioCodigo, popular: false },
+      { cantidad: 8,  precio: 8  * precioCodigo, popular: true  },
+      { cantidad: 16, precio: 16 * precioCodigo, popular: false }
+    ]
   });
 });
 
 // ════════════════════════════════════════════
-// VERIFICAR LOGIN — con rate limiting
+// VERIFICAR LOGIN
 // ════════════════════════════════════════════
 router.post('/admin/verificar', (req, res) => {
   const ip     = req.ip || req.headers['x-forwarded-for'] || 'unknown';
@@ -106,7 +127,6 @@ router.post('/admin/verificar', (req, res) => {
 
   if (!SECRET) return res.status(500).json({ error: 'ADMIN_SECRET no configurado' });
 
-  // Verificar bloqueo
   const rl = checkLoginRateLimit(ip);
   if (rl.bloqueado) {
     registrarAcceso(ip, false, `Bloqueado (${rl.segs}s restantes)`);
@@ -131,7 +151,7 @@ router.post('/admin/verificar', (req, res) => {
 });
 
 // ════════════════════════════════════════════
-// LOG de accesos (en memoria, últimos 200)
+// LOG de accesos
 // ════════════════════════════════════════════
 const LOG_ACCESOS = [];
 function registrarAcceso(ip, exito, nota = '') {
@@ -241,7 +261,6 @@ router.post('/admin/correo-masivo', async (req, res) => {
     const { asunto, mensaje } = req.body;
     if (!asunto || !mensaje) return res.status(400).json({ error: 'Asunto y mensaje requeridos' });
 
-    // Obtener todos los correos únicos de compradores pagados
     const { data: compras, error } = await supabase
       .from('compras').select('correo, nombre').in('estado', ['pagado', 'transferencia_aprobada']);
     if (error) return res.status(500).json({ error: 'Error obteniendo compradores' });
@@ -297,7 +316,6 @@ router.post('/admin/correo-masivo', async (req, res) => {
         });
 
         enviados++;
-        // Pausa pequeña para no saturar la API de Brevo
         await new Promise(r => setTimeout(r, 150));
       } catch (err) {
         console.error(`❌ Error enviando a ${comp.correo}:`, err.message);
@@ -391,278 +409,249 @@ router.get('/admin/exportar-compradores', async (req, res) => {
   } catch (e) { res.status(500).json({ ok: false }); }
 });
 
-
-
 // ════════════════════════════════════════════
-// TRANSFERENCIAS PENDIENTES
+// TRANSFERENCIAS
 // ════════════════════════════════════════════
 
-// Obtener transferencias
 router.get('/admin/transferencias', async (req, res) => {
   try {
     const { data: compras, error } = await supabase
       .from('compras')
       .select('*')
-      .in('estado', [
-        'transferencia_pendiente',
-        'transferencia_aprobada',
-        'transferencia_rechazada'
-      ])
+      .in('estado', ['transferencia_pendiente', 'transferencia_aprobada', 'transferencia_rechazada'])
       .order('fecha', { ascending: false });
 
-    if (error) {
-      console.error(error);
-      return res.status(500).json({ ok: false });
-    }
+    if (error) return res.status(500).json({ ok: false });
 
     const refs = (compras || []).map(x => x.referencia);
-
     let codigosMap = {};
-
     if (refs.length) {
       const { data: codigos } = await supabase
-        .from('codigos')
-        .select('codigo, dorado, referencia')
-        .in('referencia', refs);
-
+        .from('codigos').select('codigo, dorado, referencia').in('referencia', refs);
       (codigos || []).forEach(c => {
-        if (!codigosMap[c.referencia]) {
-          codigosMap[c.referencia] = [];
-        }
-
+        if (!codigosMap[c.referencia]) codigosMap[c.referencia] = [];
         codigosMap[c.referencia].push(c);
       });
     }
 
-    const transferencias = (compras || []).map(c => ({
-      ...c,
-      codigos: codigosMap[c.referencia] || []
-    }));
-
-    res.json({
-      ok: true,
-      transferencias
-    });
-
+    res.json({ ok: true, transferencias: (compras || []).map(c => ({ ...c, codigos: codigosMap[c.referencia] || [] })) });
   } catch (e) {
     console.error('💥 transferencias:', e);
     res.status(500).json({ ok: false });
   }
 });
 
-// ════════════════════════════════════════════
-// APROBAR TRANSFERENCIA
-// ════════════════════════════════════════════
-
 router.post('/admin/transferencia-aprobar', async (req, res) => {
   try {
-
     const { referencia, notas } = req.body;
+    if (!referencia) return res.status(400).json({ ok: false, error: 'Referencia requerida' });
 
-    if (!referencia) {
-      return res.status(400).json({
-        ok: false,
-        error: 'Referencia requerida'
-      });
-    }
-
-    // Buscar compra
     const { data: compra, error } = await supabase
-      .from('compras')
-      .select('*')
-      .eq('referencia', referencia)
-      .single();
+      .from('compras').select('*').eq('referencia', referencia).single();
+    if (error || !compra) return res.status(404).json({ ok: false, error: 'Compra no encontrada' });
+    if (compra.estado !== 'transferencia_pendiente') return res.status(400).json({ ok: false, error: 'La transferencia ya fue procesada' });
 
-    if (error || !compra) {
-      return res.status(404).json({
-        ok: false,
-        error: 'Compra no encontrada'
-      });
-    }
-
-    if (compra.estado !== 'transferencia_pendiente') {
-      return res.status(400).json({
-        ok: false,
-        error: 'La transferencia ya fue procesada'
-      });
-    }
-
-    // Buscar códigos disponibles
     const { data: disponibles, error: errCodigos } = await supabase
-      .from('codigos')
-      .select('*')
-      .eq('vendido', false)
-      .limit(compra.cantidad);
+      .from('codigos').select('*').eq('vendido', false).limit(compra.cantidad);
+    if (errCodigos || !disponibles || disponibles.length < compra.cantidad)
+      return res.status(400).json({ ok: false, error: 'No hay suficientes códigos disponibles' });
 
-    if (errCodigos || !disponibles || disponibles.length < compra.cantidad) {
-      return res.status(400).json({
-        ok: false,
-        error: 'No hay suficientes códigos disponibles'
-      });
-    }
-
-    // Marcar códigos como vendidos
     for (const cod of disponibles) {
-
-      await supabase
-        .from('codigos')
-        .update({
-          vendido: true,
-          referencia: compra.referencia,
-          nombre: compra.nombre,
-          email: compra.correo,
-          telefono: compra.telefono
-        })
-        .eq('id', cod.id);
+      await supabase.from('codigos').update({
+        vendido: true, referencia: compra.referencia,
+        nombre: compra.nombre, email: compra.correo, telefono: compra.telefono
+      }).eq('id', cod.id);
     }
 
-    // Actualizar compra
-    await supabase
-      .from('compras')
-      .update({
-        estado: 'transferencia_aprobada',
-        notas_admin: notas || null
-      })
-      .eq('referencia', referencia);
+    await supabase.from('compras').update({ estado: 'transferencia_aprobada', notas_admin: notas || null }).eq('referencia', referencia);
 
-    // Obtener códigos asignados
-    const { data: codigosAsignados } = await supabase
-      .from('codigos')
-      .select('codigo, dorado')
-      .eq('referencia', referencia);
+    const { data: codigosAsignados } = await supabase.from('codigos').select('codigo, dorado').eq('referencia', referencia);
 
-    // Enviar correo
     try {
-
-      const listaCodigos = (codigosAsignados || [])
-        .map(c => `${c.dorado ? '⭐ ' : ''}${c.codigo}`)
-        .join(', ');
-
+      const listaCodigos = (codigosAsignados || []).map(c => `${c.dorado ? '⭐ ' : ''}${c.codigo}`).join(', ');
       await enviarCorreo({
         para: compra.correo,
         asunto: '✅ Compra aprobada — Tus códigos',
-        html: `
-          <div style="font-family:Arial;padding:20px">
-            <h2>✅ Pago aprobado</h2>
-
-            <p>Hola <strong>${compra.nombre}</strong>,</p>
-
-            <p>Tu transferencia fue aprobada correctamente.</p>
-
-            <p><strong>Tus códigos:</strong></p>
-
-            <div style="padding:12px;background:#f5f5f5;border-radius:8px;margin:10px 0">
-              ${listaCodigos}
-            </div>
-
-            <p>Referencia: <strong>${referencia}</strong></p>
-
-            <p>Gracias por tu compra.</p>
-          </div>
-        `
+        html: `<div style="font-family:Arial;padding:20px">
+          <h2>✅ Pago aprobado</h2>
+          <p>Hola <strong>${compra.nombre}</strong>,</p>
+          <p>Tu transferencia fue aprobada correctamente.</p>
+          <p><strong>Tus códigos:</strong></p>
+          <div style="padding:12px;background:#f5f5f5;border-radius:8px;margin:10px 0">${listaCodigos}</div>
+          <p>Referencia: <strong>${referencia}</strong></p>
+          <p>Gracias por tu compra.</p>
+        </div>`
       });
+    } catch (correoErr) { console.error('❌ Error enviando correo:', correoErr); }
 
-    } catch (correoErr) {
-      console.error('❌ Error enviando correo:', correoErr);
-    }
-
-    res.json({
-      ok: true,
-      mensaje: '✅ Transferencia aprobada correctamente'
-    });
-
+    res.json({ ok: true, mensaje: '✅ Transferencia aprobada correctamente' });
   } catch (e) {
     console.error('💥 aprobar transferencia:', e);
-
-    res.status(500).json({
-      ok: false,
-      error: 'Error interno'
-    });
+    res.status(500).json({ ok: false, error: 'Error interno' });
   }
 });
 
-// ════════════════════════════════════════════
-// RECHAZAR TRANSFERENCIA
-// ════════════════════════════════════════════
-
 router.post('/admin/transferencia-rechazar', async (req, res) => {
-
   try {
-
     const { referencia, notas } = req.body;
+    if (!referencia) return res.status(400).json({ ok: false, error: 'Referencia requerida' });
 
-    if (!referencia) {
-      return res.status(400).json({
-        ok: false,
-        error: 'Referencia requerida'
-      });
-    }
+    const { data: compra, error } = await supabase.from('compras').select('*').eq('referencia', referencia).single();
+    if (error || !compra) return res.status(404).json({ ok: false, error: 'Compra no encontrada' });
 
-    const { data: compra, error } = await supabase
-      .from('compras')
-      .select('*')
-      .eq('referencia', referencia)
-      .single();
+    await supabase.from('compras').update({ estado: 'transferencia_rechazada', notas_admin: notas || null }).eq('referencia', referencia);
 
-    if (error || !compra) {
-      return res.status(404).json({
-        ok: false,
-        error: 'Compra no encontrada'
-      });
-    }
-
-    await supabase
-      .from('compras')
-      .update({
-        estado: 'transferencia_rechazada',
-        notas_admin: notas || null
-      })
-      .eq('referencia', referencia);
-
-    // Correo opcional
     try {
-
       await enviarCorreo({
         para: compra.correo,
         asunto: '❌ Transferencia rechazada',
-        html: `
-          <div style="font-family:Arial;padding:20px">
-            <h2>❌ Transferencia rechazada</h2>
-
-            <p>Hola <strong>${compra.nombre}</strong>,</p>
-
-            <p>Tu transferencia no pudo ser validada.</p>
-
-            ${
-              notas
-                ? `<p><strong>Motivo:</strong> ${notas}</p>`
-                : ''
-            }
-
-            <p>Si crees que esto es un error puedes comunicarte con soporte.</p>
-          </div>
-        `
+        html: `<div style="font-family:Arial;padding:20px">
+          <h2>❌ Transferencia rechazada</h2>
+          <p>Hola <strong>${compra.nombre}</strong>,</p>
+          <p>Tu transferencia no pudo ser validada.</p>
+          ${notas ? `<p><strong>Motivo:</strong> ${notas}</p>` : ''}
+          <p>Si crees que esto es un error puedes comunicarte con soporte.</p>
+        </div>`
       });
+    } catch (correoErr) { console.error(correoErr); }
 
-    } catch (correoErr) {
-      console.error(correoErr);
-    }
-
-    res.json({
-      ok: true,
-      mensaje: '✕ Transferencia rechazada'
-    });
-
+    res.json({ ok: true, mensaje: '✕ Transferencia rechazada' });
   } catch (e) {
-
     console.error('💥 rechazar transferencia:', e);
-
-    res.status(500).json({
-      ok: false,
-      error: 'Error interno'
-    });
+    res.status(500).json({ ok: false, error: 'Error interno' });
   }
 });
 
+// ════════════════════════════════════════════
+// BUSCADOR GLOBAL
+// ════════════════════════════════════════════
+
+router.get('/admin/buscar', async (req, res) => {
+  try {
+    const q = (req.query.q || '').trim();
+    if (!q) return res.json({ resultados: [] });
+
+    // Buscar en compras por nombre, correo, cédula, teléfono o referencia
+    const { data: compras, error } = await supabase
+      .from('compras')
+      .select('referencia, nombre, correo, cedula, telefono, cantidad, estado, fecha')
+      .or(`nombre.ilike.%${q}%,correo.ilike.%${q}%,cedula.ilike.%${q}%,telefono.ilike.%${q}%,referencia.ilike.%${q}%`)
+      .order('fecha', { ascending: false })
+      .limit(50);
+
+    if (error) return res.status(500).json({ ok: false, error: 'Error en búsqueda' });
+
+    // También buscar por código si el query parece un código
+    let refsPorCodigo = [];
+    if (/^\d{3,6}$/.test(q)) {
+      const { data: codsBuscados } = await supabase
+        .from('codigos').select('referencia').ilike('codigo', `%${q}%`).limit(20);
+      refsPorCodigo = (codsBuscados || []).map(c => c.referencia).filter(Boolean);
+    }
+
+    let comprasPorCodigo = [];
+    if (refsPorCodigo.length) {
+      const { data: extra } = await supabase
+        .from('compras')
+        .select('referencia, nombre, correo, cedula, telefono, cantidad, estado, fecha')
+        .in('referencia', refsPorCodigo);
+      comprasPorCodigo = extra || [];
+    }
+
+    // Unir y deduplicar
+    const todasRefs = new Set();
+    const todas = [...(compras || []), ...comprasPorCodigo].filter(c => {
+      if (todasRefs.has(c.referencia)) return false;
+      todasRefs.add(c.referencia);
+      return true;
+    });
+
+    // Obtener códigos de las compras encontradas
+    const refs = todas.filter(c => ['pagado','transferencia_aprobada'].includes(c.estado)).map(c => c.referencia);
+    let codigosMap = {};
+    if (refs.length) {
+      const { data: codigos } = await supabase
+        .from('codigos').select('codigo, dorado, referencia').in('referencia', refs);
+      (codigos || []).forEach(c => {
+        if (!codigosMap[c.referencia]) codigosMap[c.referencia] = [];
+        codigosMap[c.referencia].push({ codigo: c.codigo, dorado: c.dorado });
+      });
+    }
+
+    res.json({ resultados: todas.map(c => ({ ...c, codigos: codigosMap[c.referencia] || [] })) });
+  } catch (e) {
+    console.error('💥 buscar:', e);
+    res.status(500).json({ ok: false, error: 'Error interno' });
+  }
+});
+
+// ════════════════════════════════════════════
+// NOTIF STATS
+// ════════════════════════════════════════════
+
+router.get('/admin/notif-stats', async (req, res) => {
+  try {
+    const hace12h = new Date(Date.now() - 12 * 60 * 60 * 1000).toISOString();
+
+    // Transferencias pendientes con más de 12h
+    const { count: trf12h } = await supabase
+      .from('compras')
+      .select('*', { count: 'exact', head: true })
+      .eq('estado', 'transferencia_pendiente')
+      .lt('fecha', hace12h);
+
+    // Pagos incompletos (pendiente o transferencia_pendiente) con más de 12h
+    const { count: inc12h } = await supabase
+      .from('compras')
+      .select('*', { count: 'exact', head: true })
+      .in('estado', ['pendiente', 'transferencia_pendiente'])
+      .lt('fecha', hace12h);
+
+    // Compradores con códigos asignados (pagado o transferencia_aprobada)
+    const { count: conCodigos } = await supabase
+      .from('compras')
+      .select('*', { count: 'exact', head: true })
+      .in('estado', ['pagado', 'transferencia_aprobada']);
+
+    res.json({
+      transferencias_pendientes_12h: trf12h  || 0,
+      pagos_incompletos_12h:         inc12h  || 0,
+      compradores_con_codigos:       conCodigos || 0
+    });
+  } catch (e) {
+    console.error('💥 notif-stats:', e);
+    res.status(500).json({ ok: false });
+  }
+});
+
+// ════════════════════════════════════════════
+// GANADOR
+// ════════════════════════════════════════════
+
+// GET — obtener estado actual del ganador (ya disponible vía /admin/config)
+// POST — publicar o limpiar ganador
+router.post('/admin/ganador', (req, res) => {
+  try {
+    const { activo, codigo, nombre } = req.body;
+
+    if (activo === false) {
+      // Ocultar ganador
+      CONFIG.ganador = { activo: false, codigo: '', nombre: '' };
+      console.log('🏆 Ganador ocultado');
+      return res.json({ ok: true, mensaje: 'Ganador ocultado' });
+    }
+
+    if (!codigo || !nombre) {
+      return res.status(400).json({ ok: false, error: 'Código y nombre son obligatorios' });
+    }
+
+    CONFIG.ganador = { activo: true, codigo: codigo.trim(), nombre: nombre.trim() };
+    console.log(`🏆 Ganador publicado: ${codigo} — ${nombre}`);
+    res.json({ ok: true, mensaje: `🏆 Ganador publicado: ${codigo}` });
+  } catch (e) {
+    console.error('💥 ganador:', e);
+    res.status(500).json({ ok: false, error: 'Error interno' });
+  }
+});
 
 module.exports = router;

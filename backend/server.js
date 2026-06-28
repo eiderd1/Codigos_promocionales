@@ -52,17 +52,7 @@ app.use('/api', require('./routes/exportar'));
 app.use('/api', require('./routes/mis-codigos'));
 app.use('/api', require('./routes/transferencias'));
 app.use('/api', require('./routes/notif-admin'));
-
-// ========================
-// FRONTEND
-// ========================
-const frontendPath = path.join(__dirname, '../frontend');
-
-app.use(express.static(frontendPath));
-
-app.get('*', (req, res) => {
-  res.sendFile(path.join(frontendPath, 'index.html'));
-});
+app.use('/api', require('./routes/config'));
 
 // ========================
 // TEST
@@ -71,6 +61,31 @@ app.get('/api/test', (req, res) => {
   res.json({ ok: true });
 });
 
+// ========================
+// FRONTEND
+// ========================
+const frontendPath = path.join(__dirname, '../frontend');
+
+app.use(express.static(frontendPath));
+
+// Rutas /api/* no encontradas → devuelve JSON, no HTML
+app.all('/api/*', (req, res) => {
+  res.status(404).json({ error: `Ruta ${req.path} no encontrada` });
+});
+
+// Admin — debe ir ANTES del catch-all *
+app.get('/Admin.html', (req, res) => {
+  const filePath = path.join(frontendPath, 'Admin.html');
+  console.log('🔍 Buscando Admin.html en:', filePath);
+  res.sendFile(filePath, err => {
+    if (err) console.error('❌ No encontrado:', err.message);
+  });
+});
+
+// Todo lo demás → SPA index.html
+app.get('*', (req, res) => {
+  res.sendFile(path.join(frontendPath, 'index.html'));
+});
 // ========================
 // ERROR GLOBAL
 // ========================
