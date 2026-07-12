@@ -66,6 +66,9 @@ app.get('/api/test', (req, res) => {
 // ========================
 const frontendPath = path.join(__dirname, '../frontend');
 
+// Servir imágenes desde Web/imagenes/ (fuera del frontend)
+app.use('/imagenes', express.static(path.join(__dirname, '../imagenes')));
+
 app.use(express.static(frontendPath));
 
 // Rutas /api/* no encontradas → devuelve JSON, no HTML
