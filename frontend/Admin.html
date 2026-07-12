@@ -236,9 +236,43 @@
 
     @media (max-width: 640px) {
       .sidebar { display: none; }
-      .main { padding: 16px; }
-      .topbar { padding: 0 16px; }
+      .main { padding: 14px 12px; }
+      .topbar { padding: 0 12px; }
+      .section-header h2 { font-size: 16px; }
+      .metric-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+      .form-row { flex-direction: column; }
+      .btn-actions { flex-direction: column; }
+      .btn-actions .btn { width: 100%; justify-content: center; }
+      /* Bottom mobile nav */
+      #mobile-nav {
+        display: flex;
+        position: fixed;
+        bottom: 0; left: 0; right: 0;
+        background: var(--surface);
+        border-top: 0.5px solid var(--border);
+        z-index: 100;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+        padding-bottom: env(safe-area-inset-bottom, 0px);
+      }
+      #mobile-nav::-webkit-scrollbar { display: none; }
+      .mobile-nav-btn {
+        display: flex; flex-direction: column; align-items: center;
+        gap: 2px; padding: 8px 12px; border: none; background: none;
+        font-size: 10px; color: var(--text2); cursor: pointer;
+        white-space: nowrap; flex-shrink: 0; min-width: 56px;
+      }
+      .mobile-nav-btn .nav-icon { font-size: 18px; line-height: 1; }
+      .mobile-nav-btn.active { color: var(--blue); }
+      .main { padding-bottom: 80px; }
     }
+    @media (min-width: 641px) {
+      #mobile-nav { display: none; }
+    }
+
+    .ventas-on  #ventas-slider { background: var(--green) !important; }
+    .ventas-on  #ventas-knob   { transform: translateX(20px); }
   </style>
 </head>
 <body>
@@ -277,6 +311,7 @@
       <button class="nav-item"         onclick="showTab('codigos')">         <span class="nav-icon">⭐</span> Dorados</button>
       <button class="nav-item"         onclick="showTab('compras')">         <span class="nav-icon">🧾</span> Compras</button>
       <button class="nav-item"         onclick="showTab('buscador')">        <span class="nav-icon">🔍</span> Buscador</button>
+      <button class="nav-item"         onclick="showTab('financiero')">      <span class="nav-icon">💰</span> Financiero</button>
       <button class="nav-item"         onclick="showTab('promo')">           <span class="nav-icon">📣</span> Promoción</button>
       <button class="nav-item"         onclick="showTab('correo')">          <span class="nav-icon">✉️</span> Correo</button>
       <button class="nav-item"         onclick="showTab('transferencias')">  <span class="nav-icon">🏦</span> Transferencias</button>
@@ -293,6 +328,28 @@
           <h2>Dashboard</h2>
           <p>Resumen general de ventas y códigos</p>
         </div>
+
+        <!-- TOGGLE VENTAS -->
+        <div id="ventas-banner" style="display:none;background:#fef2f2;border:0.5px solid #fca5a5;border-radius:var(--radius-lg);padding:12px 16px;margin-bottom:16px;display:flex;align-items:center;gap:10px">
+          <span style="font-size:18px">⏸</span>
+          <span style="font-size:13px;font-weight:500;color:var(--red)">Ventas pausadas — los clientes no pueden comprar en este momento</span>
+        </div>
+        <div class="form-card" style="margin-bottom:16px;padding:14px 16px">
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:12px">
+            <div>
+              <div style="font-size:13px;font-weight:500;margin-bottom:2px">Estado de ventas</div>
+              <div style="font-size:12px;color:var(--text3)" id="ventas-sub">Cargando...</div>
+            </div>
+            <label style="position:relative;display:inline-block;width:44px;height:24px;flex-shrink:0">
+              <input type="checkbox" id="ventas-toggle" onchange="toggleVentas(this.checked)"
+                style="opacity:0;width:0;height:0">
+              <span id="ventas-slider" style="position:absolute;inset:0;border-radius:24px;background:#d1d5db;cursor:pointer;transition:background .2s">
+                <span style="position:absolute;width:18px;height:18px;border-radius:50%;background:#fff;top:3px;left:3px;transition:transform .2s;display:block" id="ventas-knob"></span>
+              </span>
+            </label>
+          </div>
+        </div>
+
         <div class="metric-grid">
           <div class="metric-card">
             <div class="metric-label">Vendidos</div>
@@ -575,6 +632,73 @@
         </div>
       </div>
 
+      <!-- FINANCIERO -->
+      <div id="tab-financiero" class="section">
+        <div class="section-header">
+          <h2>💰 Resumen financiero</h2>
+          <p>Total recaudado por Wompi y transferencias aprobadas</p>
+        </div>
+
+        <div id="fin-loading" class="state-loading"><div class="spin">⟳</div><br>Cargando...</div>
+
+        <div id="fin-content" style="display:none">
+          <!-- Tarjetas resumen -->
+          <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px;margin-bottom:20px">
+            <div class="metric-card" style="border-left:3px solid var(--green)">
+              <div class="metric-label">Total recaudado</div>
+              <div class="metric-value" id="fin-total">—</div>
+            </div>
+            <div class="metric-card" style="border-left:3px solid var(--blue)">
+              <div class="metric-label">Wompi</div>
+              <div class="metric-value" id="fin-wompi">—</div>
+            </div>
+            <div class="metric-card" style="border-left:3px solid var(--amber)">
+              <div class="metric-label">Transferencias</div>
+              <div class="metric-value" id="fin-transf">—</div>
+            </div>
+            <div class="metric-card" style="border-left:3px solid var(--text3)">
+              <div class="metric-label">Pendientes</div>
+              <div class="metric-value" id="fin-pend">—</div>
+            </div>
+            <div class="metric-card">
+              <div class="metric-label">Códigos vendidos</div>
+              <div class="metric-value" id="fin-codigos">—</div>
+            </div>
+            <div class="metric-card">
+              <div class="metric-label">Ventas rechazadas</div>
+              <div class="metric-value" id="fin-rechazadas">—</div>
+            </div>
+          </div>
+
+          <!-- Botón exportar CSV -->
+          <div class="btn-actions" style="margin-bottom:20px">
+            <button class="btn btn-primary" onclick="exportarCSV()">📥 Exportar CSV</button>
+            <button class="btn" onclick="loadFinanciero()">↻ Actualizar</button>
+          </div>
+
+          <!-- Tabla detallada -->
+          <div class="form-card" style="padding:0;overflow:hidden">
+            <div style="padding:14px 16px;border-bottom:0.5px solid var(--border);font-weight:600;font-size:13px">
+              Detalle de compras
+            </div>
+            <div style="overflow-x:auto">
+              <table style="width:100%;border-collapse:collapse;font-size:12px">
+                <thead>
+                  <tr style="background:var(--surface2)">
+                    <th style="padding:8px 12px;text-align:left;font-weight:500;color:var(--text2)">Fecha</th>
+                    <th style="padding:8px 12px;text-align:left;font-weight:500;color:var(--text2)">Nombre</th>
+                    <th style="padding:8px 12px;text-align:left;font-weight:500;color:var(--text2)">Estado</th>
+                    <th style="padding:8px 12px;text-align:right;font-weight:500;color:var(--text2)">Cód.</th>
+                    <th style="padding:8px 12px;text-align:right;font-weight:500;color:var(--text2)">Monto</th>
+                  </tr>
+                </thead>
+                <tbody id="fin-tabla"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <!-- GANADOR -->
       <div id="tab-ganador" class="section">
         <div class="section-header">
@@ -603,9 +727,19 @@
           </div>
           <div class="btn-actions">
             <button class="btn btn-primary" onclick="publicarGanador()">🏆 Publicar ganador</button>
+            <button class="btn"             onclick="previsualizarCorreoGanador()">👁 Vista previa correo</button>
             <button class="btn btn-danger"  onclick="ocultarGanador()">✕ Ocultar / limpiar</button>
           </div>
           <div id="ganador-msg"></div>
+        </div>
+
+        <!-- Vista previa correo ganador -->
+        <div id="ganador-preview" style="display:none" class="form-card" style="padding:0">
+          <div style="font-weight:600;font-size:13px;margin-bottom:12px">📧 Vista previa del correo al ganador</div>
+          <div id="ganador-preview-inner" style="
+            background:#0f172a;border-radius:10px;padding:24px 16px;
+            font-family:Arial,sans-serif;color:#fff;font-size:13px;line-height:1.7
+          "></div>
         </div>
 
         <!-- Info de cómo se determina -->
@@ -642,6 +776,19 @@
 
     </main>
   </div>
+
+  <!-- Navegación móvil inferior -->
+  <nav id="mobile-nav">
+    <button class="mobile-nav-btn active" onclick="showTab('dashboard')"><span class="nav-icon">📊</span>Dashboard</button>
+    <button class="mobile-nav-btn" onclick="showTab('compras')"><span class="nav-icon">🧾</span>Compras</button>
+    <button class="mobile-nav-btn" onclick="showTab('buscador')"><span class="nav-icon">🔍</span>Buscar</button>
+    <button class="mobile-nav-btn" onclick="showTab('financiero')"><span class="nav-icon">💰</span>Finanzas</button>
+    <button class="mobile-nav-btn" onclick="showTab('transferencias')"><span class="nav-icon">🏦</span>Transf.</button>
+    <button class="mobile-nav-btn" onclick="showTab('ganador')"><span class="nav-icon">🏆</span>Ganador</button>
+    <button class="mobile-nav-btn" onclick="showTab('correo')"><span class="nav-icon">✉️</span>Correo</button>
+    <button class="mobile-nav-btn" onclick="showTab('notif')"><span class="nav-icon">📢</span>Notif.</button>
+    <button class="mobile-nav-btn" onclick="showTab('exportar')"><span class="nav-icon">📥</span>Exportar</button>
+  </nav>
 </div>
 
 <script>
@@ -675,6 +822,8 @@
       document.getElementById('app').style.display = 'block';
       loadDashboard();
       iniciarSSE();
+      iniciarSSEStats();
+      cargarEstadoVentas();
     } catch (e) {
       errEl.textContent = 'Error de conexión con el servidor';
     }
@@ -682,7 +831,8 @@
 
   function doLogout() {
     ADMIN_TOKEN = '';
-    if (sseSource) { sseSource.close(); sseSource = null; }
+    if (sseSource)  { sseSource.close();  sseSource  = null; }
+    if (sseStats)   { sseStats.close();   sseStats   = null; }
     document.getElementById('sse-dot').className = '';
     document.getElementById('login-screen').style.display = 'flex';
     document.getElementById('app').style.display = 'none';
@@ -696,6 +846,7 @@
   // ── SSE — notificaciones en tiempo real ─────────────────────────────────────
   let sseSource = null;
 
+  // ── SSE notificaciones (compras nuevas, transferencias) ─────
   function iniciarSSE() {
     if (sseSource) sseSource.close();
     const dot = document.getElementById('sse-dot');
@@ -710,7 +861,6 @@
       try {
         const d = JSON.parse(e.data);
         mostrarToast(`🛒 Nueva compra: ${d.nombre} — ${d.cantidad} cód.`);
-        // Si el tab de compras o transferencias está abierto, recargar
         if (document.getElementById('tab-compras').classList.contains('active'))        loadCompras();
         if (document.getElementById('tab-transferencias').classList.contains('active')) loadTransferencias();
         if (document.getElementById('tab-dashboard').classList.contains('active'))      loadDashboard();
@@ -729,8 +879,97 @@
     sseSource.onerror = () => {
       dot.className = '';
       dot.title = 'Sin conexión en tiempo real';
-      setTimeout(iniciarSSE, 5000); // reconectar
+      setTimeout(iniciarSSE, 5000);
     };
+  }
+
+  // ── SSE stats (contador en tiempo real) ──────────────────────
+  let sseStats = null;
+
+  function iniciarSSEStats() {
+    if (sseStats) sseStats.close();
+    sseStats = new EventSource(`/api/admin/stats-stream?token=${encodeURIComponent(ADMIN_TOKEN)}`);
+
+    sseStats.addEventListener('stats', e => {
+      try {
+        const d = JSON.parse(e.data);
+        // Actualizar métricas del dashboard si están visibles
+        const dVendidos = document.getElementById('d-vendidos');
+        const dDisp     = document.getElementById('d-disp');
+        const dPct      = document.getElementById('d-pct');
+        const barFill   = document.getElementById('bar-fill');
+        const barLeft   = document.getElementById('bar-left');
+        if (dVendidos) {
+          const vendidos = d.codigos_vendidos || 0;
+          const pct = Math.min(100, ((vendidos / 10000) * 100).toFixed(1));
+          dVendidos.textContent = fmt(vendidos);
+          if (dDisp)   dDisp.textContent   = fmt(d.codigos_disponibles) + ' disponibles';
+          if (dPct)    dPct.textContent     = pct + '%';
+          if (barFill) barFill.style.width  = pct + '%';
+          if (barLeft) barLeft.textContent  = fmt(vendidos) + ' vendidos';
+        }
+        // Actualizar toggle de ventas
+        actualizarToggleVentas(d.ventas_activas !== false);
+      } catch(_) {}
+    });
+
+    sseStats.onerror = () => {
+      setTimeout(iniciarSSEStats, 8000);
+    };
+  }
+
+  // ── Toggle ventas ─────────────────────────────────────────────
+  function actualizarToggleVentas(activas) {
+    const toggle  = document.getElementById('ventas-toggle');
+    const sub     = document.getElementById('ventas-sub');
+    const banner  = document.getElementById('ventas-banner');
+    const slider  = document.getElementById('ventas-slider');
+    const knob    = document.getElementById('ventas-knob');
+    if (!toggle) return;
+    toggle.checked = activas;
+    if (activas) {
+      sub.textContent       = '✅ Activas — los clientes pueden comprar';
+      sub.style.color       = 'var(--green)';
+      banner.style.display  = 'none';
+      slider.style.background = 'var(--green)';
+      knob.style.transform  = 'translateX(20px)';
+    } else {
+      sub.textContent       = '⏸ Pausadas — no se aceptan nuevas compras';
+      sub.style.color       = 'var(--red)';
+      banner.style.display  = 'flex';
+      slider.style.background = '#d1d5db';
+      knob.style.transform  = 'translateX(0)';
+    }
+  }
+
+  async function toggleVentas(activas) {
+    // Actualizar UI inmediatamente (optimistic)
+    actualizarToggleVentas(activas);
+    try {
+      const r = await fetch('/api/admin/config', {
+        method: 'POST', headers: headers(),
+        body: JSON.stringify({ ventas_activas: activas })
+      });
+      const d = await r.json();
+      if (!d.ok) {
+        // Revertir si falló
+        actualizarToggleVentas(!activas);
+        mostrarToast('❌ Error actualizando estado de ventas');
+      } else {
+        mostrarToast(activas ? '✅ Ventas activadas' : '⏸ Ventas pausadas');
+      }
+    } catch(e) {
+      actualizarToggleVentas(!activas);
+      mostrarToast('❌ Error de conexión');
+    }
+  }
+
+  async function cargarEstadoVentas() {
+    try {
+      const r = await fetch('/api/admin/config', { headers: headers() });
+      const d = await r.json();
+      actualizarToggleVentas(d.ventas_activas !== false);
+    } catch(_) {}
   }
 
   // ── Toast ───────────────────────────────────────────────────────────────────
@@ -749,14 +988,20 @@
   }
 
   // ── NAVEGACIÓN ──────────────────────────────────────────────────────────────
-  const TAB_ORDER = ['dashboard','codigos','compras','buscador','promo','correo','transferencias','notif','ganador','exportar'];
+  const TAB_ORDER = ['dashboard','codigos','compras','buscador','financiero','promo','correo','transferencias','notif','ganador','exportar'];
 
   function showTab(tab) {
     document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
     document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.mobile-nav-btn').forEach(b => b.classList.remove('active'));
     document.getElementById('tab-' + tab).classList.add('active');
     const idx = TAB_ORDER.indexOf(tab);
     if (idx >= 0) document.querySelectorAll('.nav-item')[idx].classList.add('active');
+    // Sync mobile nav
+    document.querySelectorAll('.mobile-nav-btn').forEach(btn => {
+      const m = btn.getAttribute('onclick')?.match(/'(\w+)'/);
+      if (m && m[1] === tab) btn.classList.add('active');
+    });
 
     if (tab === 'dashboard')      loadDashboard();
     if (tab === 'codigos')        loadCodigos();
@@ -765,6 +1010,7 @@
     if (tab === 'transferencias') loadTransferencias();
     if (tab === 'notif')          loadNotifStats();
     if (tab === 'ganador')        loadGanadorStatus();
+    if (tab === 'financiero')     loadFinanciero();
   }
 
   // ── DASHBOARD ───────────────────────────────────────────────────────────────
@@ -1277,6 +1523,122 @@
     document.body.style.overflow='';
   }
   document.addEventListener('keydown',e=>{if(e.key==='Escape')cerrarPreview();});
+
+  // ── Resumen financiero ─────────────────────────────────────────
+  let _finData = null;
+
+  async function loadFinanciero() {
+    document.getElementById('fin-loading').style.display = 'block';
+    document.getElementById('fin-content').style.display = 'none';
+    try {
+      const r = await fetch('/api/admin/resumen-financiero', { headers: headers() });
+      const d = await r.json();
+      _finData = d;
+      const s = d.resumen;
+      const fmtCOP = n => '$' + fmt(n);
+
+      document.getElementById('fin-total').textContent      = fmtCOP(s.ingresos_total);
+      document.getElementById('fin-wompi').textContent      = fmtCOP(s.ingresos_wompi);
+      document.getElementById('fin-transf').textContent     = fmtCOP(s.ingresos_transf);
+      document.getElementById('fin-pend').textContent       = fmtCOP(s.ingresos_pendientes);
+      document.getElementById('fin-codigos').textContent    = fmt(s.codigos_vendidos);
+      document.getElementById('fin-rechazadas').textContent = s.ventas_rechazadas;
+
+      const estadoBadge = estado => {
+        const map = {
+          'pagado':                  ['Pagado','background:#dcfce7;color:#166534'],
+          'transferencia_aprobada':  ['Aprobada','background:#dcfce7;color:#166534'],
+          'pendiente':               ['Pendiente','background:#fef9c3;color:#854d0e'],
+          'transferencia_pendiente': ['Transf.','background:#dbeafe;color:#1e40af'],
+          'DECLINED':                ['Rechazado','background:#fee2e2;color:#991b1b'],
+          'transferencia_rechazada': ['Rechazada','background:#fee2e2;color:#991b1b'],
+        };
+        const [lbl, sty] = map[estado] || [estado, 'background:#f3f4f6;color:#374151'];
+        return `<span style="font-size:11px;padding:2px 8px;border-radius:20px;font-weight:600;${sty}">${lbl}</span>`;
+      };
+
+      const filas = (d.compras || []).map(c => `
+        <tr style="border-top:0.5px solid var(--border)">
+          <td style="padding:8px 12px;color:var(--text2)">${new Date(c.fecha).toLocaleDateString('es-CO')}</td>
+          <td style="padding:8px 12px;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${c.nombre}</td>
+          <td style="padding:8px 12px">${estadoBadge(c.estado)}</td>
+          <td style="padding:8px 12px;text-align:right">${c.cantidad}</td>
+          <td style="padding:8px 12px;text-align:right;font-weight:500">$${fmt(c.monto)}</td>
+        </tr>`).join('');
+
+      document.getElementById('fin-tabla').innerHTML = filas || '<tr><td colspan="5" style="padding:20px;text-align:center;color:var(--text3)">Sin compras</td></tr>';
+      document.getElementById('fin-loading').style.display = 'none';
+      document.getElementById('fin-content').style.display = 'block';
+    } catch(e) {
+      document.getElementById('fin-loading').innerHTML = '<span style="color:var(--red)">Error cargando resumen. Intenta de nuevo.</span>';
+    }
+  }
+
+  function exportarCSV() {
+    if (!_finData?.compras?.length) { alert('Sin datos para exportar'); return; }
+    const cols = ['Fecha','Nombre','Correo','Estado','Códigos','Monto','Referencia'];
+    const rows = _finData.compras.map(c => [
+      new Date(c.fecha).toLocaleDateString('es-CO'),
+      `"${c.nombre}"`,
+      c.correo,
+      c.estado,
+      c.cantidad,
+      c.monto,
+      c.referencia
+    ].join(','));
+    const csv  = [cols.join(','), ...rows].join('\n');
+    const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+    const url  = URL.createObjectURL(blob);
+    const a    = document.createElement('a');
+    a.href = url;
+    a.download = `eidertech-ventas-${new Date().toISOString().slice(0,10)}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  // ── Vista previa correo ganador ────────────────────────────────
+  function previsualizarCorreoGanador() {
+    const codigo = document.getElementById('gan-codigo').value.trim();
+    const nombre = document.getElementById('gan-nombre').value.trim();
+    if (!codigo || !nombre) {
+      mostrarMsg('ganador-msg', '⚠️ Ingresa el código y el nombre para ver la vista previa', 'warning');
+      return;
+    }
+    const preview = document.getElementById('ganador-preview');
+    const inner   = document.getElementById('ganador-preview-inner');
+    preview.style.display = 'block';
+    inner.innerHTML = `
+      <div style="text-align:center;margin-bottom:20px">
+        <div style="font-size:48px">🏆</div>
+        <h2 style="color:gold;margin:8px 0 4px;font-size:22px">¡Felicitaciones, ${nombre}!</h2>
+        <p style="color:#9ca3af;margin:0;font-size:13px">Eres el ganador oficial del sorteo EiderTech Soluciones</p>
+      </div>
+      <div style="text-align:center;margin-bottom:20px">
+        <div style="display:inline-block;background:rgba(212,168,32,.12);border:2px solid gold;border-radius:12px;padding:16px 32px">
+          <div style="font-size:11px;color:gold;letter-spacing:.1em;text-transform:uppercase;margin-bottom:4px">Código ganador</div>
+          <div style="font-size:42px;font-weight:900;color:#fde68a;font-family:'Courier New',monospace;letter-spacing:.05em;text-shadow:0 0 20px rgba(253,230,138,.3)">${codigo}</div>
+        </div>
+      </div>
+      <div style="background:rgba(212,168,32,.08);border:1px solid rgba(212,168,32,.25);border-radius:10px;padding:16px;text-align:center;margin-bottom:20px">
+        <div style="font-size:11px;color:gold;text-transform:uppercase;letter-spacing:.1em;margin-bottom:4px">Premio</div>
+        <div style="font-size:28px;font-weight:900;color:#fff">$15.000.000 COP</div>
+      </div>
+      <p style="color:#9ca3af;font-size:12px;line-height:1.8;text-align:center;margin:0 0 20px">
+        Para reclamar tu premio comunícate con nosotros por WhatsApp al<br>
+        <strong style="color:#25D366">+57 305 322 8703</strong> con tu código ganador y documento de identidad.
+      </p>
+      <div style="text-align:center">
+        <a href="https://wa.me/573053228703" style="display:inline-block;background:#25D366;color:#fff;text-decoration:none;padding:13px 28px;border-radius:10px;font-weight:700;font-size:14px">
+          💬 Reclamar por WhatsApp
+        </a>
+      </div>
+      <hr style="border:none;border-top:1px solid #1f2937;margin:20px 0">
+      <p style="text-align:center;color:#6b7280;font-size:11px;margin:0">
+        EiderTech Soluciones · infoeidertechsoluciones@gmail.com
+      </p>
+    `;
+    preview.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
 </script>
 
 <!-- MODAL PREVIEW CORREO -->

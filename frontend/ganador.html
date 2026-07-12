@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ganador — EiderTech Soluciones</title>
+<link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Playfair+Display:wght@700;900&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: #060d1a;
+  color: #fff;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 16px;
+  overflow-x: hidden;
+}
+
+/* Fondo con gradiente dorado sutil */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 70% 50% at 50% -5%,  rgba(212,168,32,.13) 0%, transparent 65%),
+    radial-gradient(ellipse 40% 40% at 15% 80%,  rgba(212,168,32,.06) 0%, transparent 55%),
+    radial-gradient(ellipse 40% 40% at 85% 80%,  rgba(212,168,32,.06) 0%, transparent 55%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+#confetti-canvas {
+  position: fixed; inset: 0;
+  pointer-events: none; z-index: 50;
+}
+
+.wrap {
+  position: relative; z-index: 1;
+  width: 100%; max-width: 520px;
+  display: flex; flex-direction: column; gap: 0;
+}
+
+/* ════════════════════════════════
+   PÁGINA DE ESPERA
+════════════════════════════════ */
+#page-espera {
+  text-align: center;
+  padding: 20px 0;
+}
+
+.reloj-wrap {
+  position: relative;
+  width: 120px; height: 120px;
+  margin: 0 auto 28px;
+}
+.reloj-circulo {
+  width: 120px; height: 120px;
+  border-radius: 50%;
+  border: 2px solid rgba(212,168,32,.25);
+  background: rgba(212,168,32,.06);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 52px;
+  animation: glow-pulse 2.5s ease-in-out infinite;
+}
+@keyframes glow-pulse {
+  0%,100% { box-shadow: 0 0 20px rgba(212,168,32,.1); }
+  50%      { box-shadow: 0 0 40px rgba(212,168,32,.3); }
+}
+.reloj-ring {
+  position: absolute; inset: -6px;
+  border-radius: 50%;
+  border: 2px dashed rgba(212,168,32,.2);
+  animation: spin-slow 20s linear infinite;
+}
+@keyframes spin-slow { to { transform: rotate(360deg); } }
+
+.espera-titulo {
+  font-family: 'Great Vibes', cursive;
+  font-size: clamp(36px, 9vw, 54px);
+  color: #d4a820;
+  line-height: 1.1;
+  margin-bottom: 12px;
+  text-shadow: 0 0 30px rgba(212,168,32,.3);
+}
+.espera-sub {
+  font-size: 14px;
+  color: #6b7a99;
+  line-height: 1.8;
+  margin-bottom: 32px;
+  max-width: 340px;
+  margin-left: auto; margin-right: auto;
+}
+.espera-sub strong { color: #9aa5c0; }
+
+/* Línea decorativa */
+.linea-oro {
+  display: flex; align-items: center; gap: 12px;
+  margin: 0 auto 32px;
+  max-width: 300px;
+}
+.linea-oro::before, .linea-oro::after {
+  content: ''; flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(212,168,32,.4), transparent);
+}
+.linea-oro span { color: #d4a820; font-size: 16px; }
+
+.btn-comprar {
+  display: inline-block;
+  background: linear-gradient(135deg, #d4a820, #b8920a);
+  color: #0a0f1e;
+  font-weight: 700;
+  font-size: 15px;
+  padding: 14px 36px;
+  border-radius: 50px;
+  text-decoration: none;
+  letter-spacing: .02em;
+  box-shadow: 0 4px 24px rgba(212,168,32,.3);
+  transition: transform .15s, box-shadow .15s;
+}
+.btn-comprar:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 32px rgba(212,168,32,.4);
+}
+
+/* ════════════════════════════════
+   PÁGINA GANADOR
+════════════════════════════════ */
+#page-ganador { display: none; text-align: center; }
+
+/* Estrellas decorativas */
+.estrellas {
+  font-size: 22px;
+  letter-spacing: 6px;
+  margin-bottom: 16px;
+  opacity: .8;
+  animation: parpadeo 2s ease-in-out infinite;
+}
+@keyframes parpadeo {
+  0%,100% { opacity: .6; } 50% { opacity: 1; }
+}
+
+/* Título principal */
+.titulo-ganador {
+  font-family: 'Great Vibes', cursive;
+  font-size: clamp(48px, 13vw, 78px);
+  color: #d4a820;
+  line-height: 1;
+  margin-bottom: 6px;
+  text-shadow:
+    0 0 40px rgba(212,168,32,.5),
+    0 2px 4px rgba(0,0,0,.4);
+  animation: title-glow 3s ease-in-out infinite;
+}
+@keyframes title-glow {
+  0%,100% { text-shadow: 0 0 30px rgba(212,168,32,.4), 0 2px 4px rgba(0,0,0,.4); }
+  50%      { text-shadow: 0 0 60px rgba(212,168,32,.7), 0 2px 4px rgba(0,0,0,.4); }
+}
+
+.subtitulo-ganador {
+  font-family: 'Great Vibes', cursive;
+  font-size: clamp(26px, 7vw, 40px);
+  color: rgba(255,255,255,.85);
+  margin-bottom: 28px;
+}
+
+/* Nombre */
+.nombre-ganador {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(24px, 6vw, 36px);
+  font-weight: 900;
+  color: #fff;
+  margin-bottom: 32px;
+  letter-spacing: .01em;
+}
+
+/* Badge de código — el protagonista */
+.codigo-wrap {
+  margin: 0 auto 32px;
+  position: relative;
+  display: inline-block;
+}
+
+.codigo-anillo-outer {
+  position: absolute; inset: -16px;
+  border-radius: 50%;
+  border: 1px solid rgba(212,168,32,.2);
+  animation: spin-slow 15s linear infinite reverse;
+}
+.codigo-anillo-inner {
+  position: absolute; inset: -8px;
+  border-radius: 50%;
+  border: 1px dashed rgba(212,168,32,.35);
+  animation: spin-slow 8s linear infinite;
+}
+
+.codigo-card {
+  width: 200px; height: 200px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 40% 35%, #1a2a10, #0d1a08);
+  border: 3px solid #d4a820;
+  box-shadow:
+    0 0 0 1px rgba(212,168,32,.2),
+    0 0 40px rgba(212,168,32,.25),
+    inset 0 0 30px rgba(212,168,32,.08);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  animation: codigo-bounce 1.8s ease-in-out infinite;
+}
+
+@keyframes codigo-bounce {
+  0%,100% { transform: translateY(0) scale(1);       box-shadow: 0 0 40px rgba(212,168,32,.25), inset 0 0 30px rgba(212,168,32,.08); }
+  25%      { transform: translateY(-8px) scale(1.02); box-shadow: 0 12px 50px rgba(212,168,32,.35), inset 0 0 30px rgba(212,168,32,.08); }
+  75%      { transform: translateY(3px) scale(.99);   box-shadow: 0 0 25px rgba(212,168,32,.2), inset 0 0 30px rgba(212,168,32,.08); }
+}
+
+.codigo-label {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: .15em;
+  text-transform: uppercase;
+  color: rgba(212,168,32,.7);
+  margin-bottom: 4px;
+}
+.codigo-numero {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(42px, 11vw, 60px);
+  font-weight: 900;
+  color: #fde68a;
+  line-height: 1;
+  text-shadow: 0 0 20px rgba(253,230,138,.5);
+  animation: num-pulse 1.8s ease-in-out infinite;
+}
+@keyframes num-pulse {
+  0%,100% { text-shadow: 0 0 20px rgba(253,230,138,.4); }
+  25%      { text-shadow: 0 0 40px rgba(253,230,138,.8), 0 0 80px rgba(212,168,32,.3); }
+}
+.codigo-sub {
+  font-size: 10px;
+  color: rgba(212,168,32,.5);
+  letter-spacing: .08em;
+  margin-top: 4px;
+}
+
+/* Premio */
+.premio-fila {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 32px;
+}
+.premio-linea {
+  flex: 1; max-width: 80px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(212,168,32,.4));
+}
+.premio-linea.der {
+  background: linear-gradient(90deg, rgba(212,168,32,.4), transparent);
+}
+.premio-monto {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(22px, 5vw, 30px);
+  font-weight: 700;
+  color: #fff;
+}
+.premio-monto span { color: #d4a820; }
+
+/* Instrucciones */
+.instrucciones {
+  background: rgba(37,211,102,.06);
+  border: 1px solid rgba(37,211,102,.2);
+  border-radius: 16px;
+  padding: 20px 24px;
+  margin-bottom: 24px;
+  text-align: left;
+}
+.inst-titulo {
+  font-family: 'Great Vibes', cursive;
+  font-size: 26px;
+  color: #25D366;
+  margin-bottom: 10px;
+}
+.inst-paso {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 13px;
+  color: #9ca3af;
+  line-height: 1.6;
+  margin-bottom: 8px;
+}
+.inst-paso:last-child { margin-bottom: 0; }
+.inst-num {
+  width: 20px; height: 20px;
+  border-radius: 50%;
+  background: rgba(37,211,102,.15);
+  border: 1px solid rgba(37,211,102,.3);
+  color: #25D366;
+  font-size: 10px;
+  font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; margin-top: 2px;
+}
+.inst-paso strong { color: #e2e8f0; }
+
+/* Botón WhatsApp */
+.btn-wa {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background: #25D366;
+  color: #fff;
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 16px;
+  padding: 16px 28px;
+  border-radius: 50px;
+  margin-bottom: 14px;
+  box-shadow: 0 4px 24px rgba(37,211,102,.3);
+  transition: transform .15s, box-shadow .15s;
+  animation: wa-pulse 3s ease-in-out infinite;
+}
+.btn-wa:hover { transform: translateY(-2px); box-shadow: 0 8px 32px rgba(37,211,102,.4); }
+@keyframes wa-pulse {
+  0%,100% { box-shadow: 0 4px 24px rgba(37,211,102,.25); }
+  50%      { box-shadow: 0 4px 36px rgba(37,211,102,.5); }
+}
+.btn-wa-icon { font-size: 22px; }
+
+.btn-volver {
+  display: block;
+  text-align: center;
+  color: #374151;
+  font-size: 13px;
+  text-decoration: none;
+  padding: 10px;
+  transition: color .15s;
+}
+.btn-volver:hover { color: #9ca3af; }
+
+/* Footer */
+.footer {
+  text-align: center;
+  font-size: 11px;
+  color: #1f2937;
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(255,255,255,.04);
+}
+
+/* ── Responsive ── */
+@media (max-width: 400px) {
+  body { padding: 16px 12px; }
+  .titulo-ganador { font-size: clamp(40px, 12vw, 60px); }
+  .codigo-card { width: 170px; height: 170px; }
+  .codigo-numero { font-size: clamp(36px, 10vw, 50px); }
+  .instrucciones { padding: 16px; }
+  .btn-wa { font-size: 14px; padding: 14px 20px; }
+  .espera-titulo { font-size: clamp(30px, 9vw, 46px); }
+}
+</style>
+</head>
+<body>
+
+<canvas id="confetti-canvas"></canvas>
+
+<div class="wrap">
+
+  <!-- ══ ESPERA ══ -->
+  <div id="page-espera">
+    <div class="reloj-wrap">
+      <div class="reloj-ring"></div>
+      <div class="reloj-circulo">⏳</div>
+    </div>
+
+    <div class="espera-titulo">Pronto habrá un Ganador</div>
+
+    <div class="linea-oro"><span>✦</span></div>
+
+    <p class="espera-sub">
+      El resultado se anuncia aquí en tiempo real una vez se realice el sorteo
+      con la <strong>Lotería de Medellín</strong>.<br><br>
+      ¿Aún no tienes tus códigos? ¡Aún hay tiempo!
+    </p>
+
+    <a href="/" class="btn-comprar">🎟️ Comprar mis códigos</a>
+  </div>
+
+  <!-- ══ GANADOR ══ -->
+  <div id="page-ganador">
+
+    <div class="estrellas">✦ ✦ ✦</div>
+
+    <div class="titulo-ganador">¡Felicitaciones!</div>
+    <div class="subtitulo-ganador">al Ganador Oficial</div>
+
+    <div class="nombre-ganador" id="g-nombre">—</div>
+
+    <div class="codigo-wrap">
+      <div class="codigo-anillo-outer"></div>
+      <div class="codigo-anillo-inner"></div>
+      <div class="codigo-card">
+        <div class="codigo-label">Código N°</div>
+        <div class="codigo-numero" id="g-codigo">—</div>
+        <div class="codigo-sub">GANADOR</div>
+      </div>
+    </div>
+
+    <div class="premio-fila">
+      <div class="premio-linea"></div>
+      <div class="premio-monto">Premio: <span id="g-premio">$15.000.000</span> COP</div>
+      <div class="premio-linea der"></div>
+    </div>
+
+    <div class="instrucciones">
+      <div class="inst-titulo">¿Cómo reclamar?</div>
+      <div class="inst-paso">
+        <div class="inst-num">1</div>
+        <div>Haz clic en el botón de abajo — se abrirá WhatsApp con el mensaje <strong>"Quiero reclamar mi premio"</strong> listo para enviar.</div>
+      </div>
+      <div class="inst-paso">
+        <div class="inst-num">2</div>
+        <div>Ten a mano tu <strong>documento de identidad</strong> y el correo con el que compraste los códigos.</div>
+      </div>
+      <div class="inst-paso">
+        <div class="inst-num">3</div>
+        <div>Nuestro equipo verificará tu código y coordinará la <strong>entrega del premio</strong>.</div>
+      </div>
+    </div>
+
+    <a id="btn-wa" href="#" class="btn-wa" target="_blank">
+      <span class="btn-wa-icon">💬</span>
+      Quiero reclamar mi premio
+    </a>
+
+    <a href="/" class="btn-volver">← Volver al inicio</a>
+
+  </div>
+
+  <div class="footer">EiderTech Soluciones &nbsp;·&nbsp; infoeidertechsoluciones@gmail.com</div>
+</div>
+
+<script>
+// ── Confetti ──────────────────────────────────────────────────
+function lanzarConfetti() {
+  const canvas = document.getElementById('confetti-canvas');
+  const ctx    = canvas.getContext('2d');
+  canvas.width  = window.innerWidth;
+  canvas.height = window.innerHeight;
+
+  const COLORES = ['#fde68a','#d4a820','#f5c518','#fff','#22c55e','#f97316','#a855f7'];
+  const piezas  = Array.from({ length: 180 }, () => ({
+    x:     Math.random() * canvas.width,
+    y:     -20 - Math.random() * canvas.height * .5,
+    w:     5 + Math.random() * 9,
+    h:     3 + Math.random() * 5,
+    r:     Math.random() * Math.PI * 2,
+    vx:    (Math.random() - .5) * 3,
+    vy:    1.5 + Math.random() * 3.5,
+    vr:    (Math.random() - .5) * .12,
+    color: COLORES[Math.floor(Math.random() * COLORES.length)],
+    alpha: 1,
+  }));
+
+  let frame = 0;
+  function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    piezas.forEach(p => {
+      if (p.y > canvas.height + 20) {
+        p.y  = -20;
+        p.x  = Math.random() * canvas.width;
+        p.vy = 1.5 + Math.random() * 3.5;
+      }
+      ctx.save();
+      ctx.globalAlpha = Math.max(0, frame < 300 ? 1 : 1 - (frame - 300) / 120);
+      ctx.translate(p.x, p.y);
+      ctx.rotate(p.r);
+      ctx.fillStyle = p.color;
+      ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+      ctx.restore();
+      p.x += p.vx; p.y += p.vy; p.r += p.vr;
+    });
+    frame++;
+    if (frame < 420) requestAnimationFrame(draw);
+    else ctx.clearRect(0, 0, canvas.width, canvas.height);
+  }
+  draw();
+
+  // Relanzar 3 veces
+  [1800, 4000].forEach(t => setTimeout(() => { frame = 0; draw(); }, t));
+}
+
+// ── Cargar ganador ────────────────────────────────────────────
+async function cargarGanador() {
+  try {
+    const r = await fetch('/api/config');
+    const d = await r.json();
+    const g = d.ganador;
+    const premio = d.premioTotal || 15000000;
+
+    if (g && g.activo && g.codigo && g.nombre) {
+      // Mostrar página ganador
+      document.getElementById('page-espera').style.display  = 'none';
+      document.getElementById('page-ganador').style.display = 'block';
+
+      document.getElementById('g-nombre').textContent  = g.nombre;
+      document.getElementById('g-codigo').textContent  = g.codigo;
+      document.getElementById('g-premio').textContent  = '$' + premio.toLocaleString('es-CO');
+
+      // Link WhatsApp con mensaje personalizado
+      const msg = encodeURIComponent(
+        `Hola, soy ${g.nombre} y quiero reclamar mi premio 🏆\nMi código ganador es: ${g.codigo}`
+      );
+      document.getElementById('btn-wa').href =
+        `https://wa.me/573053228703?text=${msg}`;
+
+      // Lanzar efectos
+      setTimeout(lanzarConfetti, 400);
+    }
+  } catch(e) {
+    console.error('Error cargando ganador:', e);
+  }
+}
+
+cargarGanador();
+</script>
+</body>
+</html>

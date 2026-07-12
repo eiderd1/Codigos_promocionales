@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<meta name="theme-color" content="#050A14">
+<meta name="theme-color" content="#FFFFFF">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta http-equiv="X-Content-Type-Options" content="nosniff">
@@ -24,22 +24,22 @@
 }
 
 :root {
-  --gold: #E8B84B;
-  --gold-light: #F5D07A;
-  --gold-dim: rgba(232,184,75,.18);
-  --orange: #E07B3C;
-  --bg: #050A14;
-  --surface: #0A1020;
-  --card: #0F1928;
-  --card-hover: #162035;
-  --border: rgba(255,255,255,.07);
-  --border-gold: rgba(232,184,75,.3);
-  --muted: #6B7A99;
-  --text: #ECF0FF;
-  --text-dim: #9AA5C0;
+  --gold: #C9930A;
+  --gold-light: #E8A800;
+  --gold-dim: rgba(201,147,10,.12);
+  --orange: #D06020;
+  --bg: #FFFFFF;
+  --surface: #F7F5F0;
+  --card: #FFFFFF;
+  --card-hover: #FDF9F0;
+  --border: rgba(0,0,0,.09);
+  --border-gold: rgba(201,147,10,.35);
+  --muted: #7A7060;
+  --text: #1A150A;
+  --text-dim: #5C5040;
   --radius: 16px;
   --radius-sm: 10px;
-  --shadow-gold: 0 0 40px rgba(232,184,75,.15);
+  --shadow-gold: 0 0 40px rgba(201,147,10,.12);
   --font-display: 'Syne', sans-serif;
   --font-body: 'DM Sans', sans-serif;
 }
@@ -61,8 +61,8 @@ body::before {
   position: fixed;
   inset: 0;
   background:
-    radial-gradient(ellipse 70% 50% at 50% -10%, rgba(232,184,75,.08) 0%, transparent 60%),
-    radial-gradient(ellipse 40% 40% at 90% 80%, rgba(224,123,60,.05) 0%, transparent 50%);
+    radial-gradient(ellipse 70% 50% at 50% -10%, rgba(201,147,10,.07) 0%, transparent 60%),
+    radial-gradient(ellipse 40% 40% at 90% 80%, rgba(208,96,32,.04) 0%, transparent 50%);
   pointer-events: none;
   z-index: 0;
 }
@@ -159,12 +159,13 @@ body::after {
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  padding: 16px 18px;
+  padding: 18px 20px;
   margin: 20px 0 16px;
 }
 .progress-labels {
   display: flex;
   justify-content: space-between;
+  align-items: center;
   font-size: 0.76rem;
   font-weight: 500;
   color: var(--muted);
@@ -174,10 +175,11 @@ body::after {
 }
 .progress-labels span:last-child { color: var(--gold); font-weight: 700; }
 .progress-track {
-  background: rgba(255,255,255,.05);
+  background: rgba(0,0,0,.06);
   border-radius: 999px;
-  height: 6px;
+  height: 14px;
   overflow: hidden;
+  margin-bottom: 12px;
 }
 .progress-bar {
   height: 100%;
@@ -185,9 +187,23 @@ body::after {
   background: linear-gradient(90deg, var(--gold), var(--orange));
   border-radius: 999px;
   transition: width 1.4s cubic-bezier(.4,0,.2,1);
-  box-shadow: 0 0 12px rgba(232,184,75,.5);
+  box-shadow: 0 0 12px rgba(201,147,10,.4);
 }
-
+.progress-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.72rem;
+  color: var(--muted);
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.progress-meta-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.progress-meta-item strong { color: var(--text); font-weight: 600; }
 /* ── Golden codes section ── */
 #seccionDorados {
   display: none;
@@ -467,7 +483,7 @@ input.error { border-color: rgba(248,113,113,.7); box-shadow: 0 0 0 3px rgba(248
 .trust-badge {
   font-size: .7rem;
   color: #6B7A99;
-  background: rgba(255,255,255,.04);
+  background: rgba(0,0,0,.04);
   padding: 4px 10px;
   border-radius: 999px;
   border: 1px solid var(--border);
@@ -550,7 +566,7 @@ input.error { border-color: rgba(248,113,113,.7); box-shadow: 0 0 0 3px rgba(248
 
 .terms-note {
   font-size: .72rem;
-  color: #374561;
+  color: #7A7060;
   text-align: center;
   margin-top: 10px;
   line-height: 1.6;
@@ -565,7 +581,7 @@ input.error { border-color: rgba(248,113,113,.7); box-shadow: 0 0 0 3px rgba(248
 /* ── Divider ── */
 .divider {
   border: none;
-  border-top: 1px solid rgba(255,255,255,.06);
+  border-top: 1px solid rgba(0,0,0,.07);
   margin: 32px 0;
 }
 
@@ -731,7 +747,7 @@ input.error { border-color: rgba(248,113,113,.7); box-shadow: 0 0 0 3px rgba(248
 #loadingPago {
   position: fixed;
   inset: 0;
-  background: rgba(5,10,20,.9);
+  background: rgba(255,253,248,.92);
   display: none;
   align-items: center;
   justify-content: center;
@@ -742,7 +758,7 @@ input.error { border-color: rgba(248,113,113,.7); box-shadow: 0 0 0 3px rgba(248
 .loading-ring {
   width: 64px;
   height: 64px;
-  border: 3px solid rgba(232,184,75,.15);
+  border: 3px solid rgba(201,147,10,.15);
   border-top: 3px solid var(--gold);
   border-radius: 50%;
   margin: auto;
@@ -767,7 +783,7 @@ input.error { border-color: rgba(248,113,113,.7); box-shadow: 0 0 0 3px rgba(248
   margin: 0 auto;
   padding: 24px clamp(14px, 5vw, 28px) 48px;
   text-align: center;
-  border-top: 1px solid rgba(255,255,255,.05);
+  border-top: 1px solid rgba(0,0,0,.07);
 }
 .footer-logo { max-width: 80px; height: auto; opacity: .5; margin-bottom: 14px; }
 .footer-wompi {
@@ -790,7 +806,7 @@ input.error { border-color: rgba(248,113,113,.7); box-shadow: 0 0 0 3px rgba(248
   color: #9D6FFF;
   font-size: .82rem;
 }
-.footer-text { font-size: .74rem; color: #2D3A52; line-height: 1.8; }
+.footer-text { font-size: .74rem; color: #9A8E7A; line-height: 1.8; }
 
 /* ── Admin trigger ── */
 #adminTrigger {
@@ -799,8 +815,8 @@ input.error { border-color: rgba(248,113,113,.7); box-shadow: 0 0 0 3px rgba(248
   right: 14px;
   width: 38px;
   height: 38px;
-  background: rgba(255,255,255,.04);
-  border: 1px solid rgba(255,255,255,.08);
+  background: rgba(0,0,0,.04);
+  border: 1px solid rgba(0,0,0,.10);
   border-radius: 10px;
   display: flex;
   flex-direction: column;
@@ -813,7 +829,7 @@ input.error { border-color: rgba(248,113,113,.7); box-shadow: 0 0 0 3px rgba(248
   text-decoration: none;
   transition: background .2s;
 }
-#adminTrigger:hover { background: rgba(255,255,255,.09); }
+#adminTrigger:hover { background: rgba(0,0,0,.08); }
 
 /* ── Modal transferencia ── */
 #modalTransferencia {
@@ -828,15 +844,15 @@ input.error { border-color: rgba(248,113,113,.7); box-shadow: 0 0 0 3px rgba(248
   backdrop-filter: blur(8px);
 }
 .modal-inner {
-  background: var(--surface);
-  border: 1px solid var(--border);
+  background: #0A1020;
+  border: 1px solid rgba(255,255,255,.08);
   border-radius: 20px;
   padding: 0;
   max-width: 430px;
   width: 100%;
   max-height: 92dvh;
   overflow-y: auto;
-  color: var(--text);
+  color: #ECF0FF;
   position: relative;
   box-shadow: 0 24px 80px rgba(0,0,0,.6);
 }
@@ -940,7 +956,7 @@ input.error { border-color: rgba(248,113,113,.7); box-shadow: 0 0 0 3px rgba(248
   .card-price { font-size: 1rem; }
 
   .progress-wrap { padding: 18px 22px; }
-  .progress-track { height: 7px; }
+  .progress-track { height: 16px; }
 
   input[type="text"], input[type="email"], input[type="tel"] { padding: 14px 16px; font-size: 1rem; }
   .btn { padding: 17px; font-size: 1.05rem; }
@@ -1010,7 +1026,7 @@ input.error { border-color: rgba(248,113,113,.7); box-shadow: 0 0 0 3px rgba(248
   .card.selected { transform: scale(1.06); }
 
   .progress-wrap { padding: 20px 24px; border-radius: 18px; }
-  .progress-track { height: 8px; }
+  .progress-track { height: 18px; }
 
   input[type="text"], input[type="email"], input[type="tel"] {
     padding: 15px 18px;
@@ -1069,6 +1085,17 @@ input.error { border-color: rgba(248,113,113,.7); box-shadow: 0 0 0 3px rgba(248
   .wa-float { bottom: calc(20px + env(safe-area-inset-bottom)); }
 }
 
+/* ── Móvil pequeño (<380px) ── */
+@media (max-width: 380px) {
+  .page { padding-left: 12px; padding-right: 12px; }
+  .title { font-size: 1.55rem; }
+  .cards-grid { gap: 7px; }
+  .card { padding: 14px 6px 12px; }
+  .card-qty { font-size: 1.5rem; }
+  .card-price { font-size: .82rem; }
+  .modal-inner { border-radius: 14px; }
+}
+
 /* ── Entrance animations ── */
 @keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
 .page { animation: fadeIn .5s ease; }
@@ -1078,9 +1105,9 @@ input.error { border-color: rgba(248,113,113,.7); box-shadow: 0 0 0 3px rgba(248
 <body>
 
 <a href="Admin.html" id="adminTrigger" title="Admin">
-  <span style="display:block;width:16px;height:1.5px;background:rgba(255,255,255,.4);border-radius:2px;"></span>
-  <span style="display:block;width:16px;height:1.5px;background:rgba(255,255,255,.4);border-radius:2px;"></span>
-  <span style="display:block;width:16px;height:1.5px;background:rgba(255,255,255,.4);border-radius:2px;"></span>
+  <span style="display:block;width:16px;height:1.5px;background:rgba(0,0,0,.35);border-radius:2px;"></span>
+  <span style="display:block;width:16px;height:1.5px;background:rgba(0,0,0,.35);border-radius:2px;"></span>
+  <span style="display:block;width:16px;height:1.5px;background:rgba(0,0,0,.35);border-radius:2px;"></span>
 </a>
 
 <div id="loadingPago">
@@ -1097,6 +1124,27 @@ input.error { border-color: rgba(248,113,113,.7); box-shadow: 0 0 0 3px rgba(248
       <img src="/frontend/imagenes/Logo.png" alt="EiderTech Soluciones"
            onerror="this.style.display='none'">
     </div>
+
+    <!-- Imagen de dinero -->
+    <div style="margin:0 auto 20px;max-width:320px;position:relative">
+      <!-- 👇 REEMPLAZA "imagenes/dinero.jpg" con el nombre de tu foto -->
+      <img
+        src="/frontend/imagenes/dinero.jpg"
+        alt="Premio en efectivo"
+        style="width:100%;border-radius:18px;box-shadow:0 8px 32px rgba(201,147,10,.15),0 2px 8px rgba(0,0,0,.07);display:block;object-fit:cover;aspect-ratio:16/9;"
+        onerror="this.parentElement.style.display='none'"
+      >
+      <div style="
+        position:absolute;bottom:10px;left:50%;transform:translateX(-50%);
+        background:rgba(26,122,60,.92);
+        color:#fff;font-family:var(--font-display);font-weight:800;
+        font-size:clamp(.85rem,3.5vw,1.05rem);
+        padding:6px 20px;border-radius:999px;white-space:nowrap;
+        letter-spacing:.02em;
+        box-shadow:0 2px 12px rgba(0,0,0,.2)
+      ">💰 $15.000.000 COP</div>
+    </div>
+
     <h1 class="title">🎟️ Compra tus <span>Códigos</span></h1>
     <p class="subtitle" id="subtituloPremio">Participa por <span>$15.000.000 COP</span></p>
     <div class="badge-wrap">
@@ -1118,6 +1166,14 @@ input.error { border-color: rgba(248,113,113,.7); box-shadow: 0 0 0 3px rgba(248
     </div>
     <div class="progress-track">
       <div id="barraProgreso" class="progress-bar"></div>
+    </div>
+    <div class="progress-meta">
+      <div class="progress-meta-item">
+        📅 Inicio: <strong>15 de junio, 2025</strong>
+      </div>
+      <div class="progress-meta-item">
+        🏁 Sorteo: <strong id="txtFechaSorteo">Por confirmar</strong>
+      </div>
     </div>
   </div>
 

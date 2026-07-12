@@ -47,16 +47,9 @@ function authAdmin(req, res, next) {
 }
 
 // ════════════════════════════════════════════
-// CONFIG en memoria
+// CONFIG compartido (services/appState.js)
 // ════════════════════════════════════════════
-let CONFIG = {
-  ventas_activas: true,
-  precio_codigo:  3750,
-  aviso_texto:    '',
-  aviso_color:    'gold',
-  correo_pie:     '',
-  ganador:        { activo: false, codigo: '', nombre: '' }
-};
+const { CONFIG } = require('../services/appState');
 
 // ════════════════════════════════════════════
 // RUTAS PÚBLICAS
@@ -94,28 +87,8 @@ router.get('/config-publica', (req, res) => {
   });
 });
 
-// Ruta que usa index.html — devuelve config pública con ganador y paquetes dinámicos
-router.get('/config', (req, res) => {
-  const precioCodigo = CONFIG.precio_codigo || 3750;
-  res.json({
-    ventas_activas: CONFIG.ventas_activas,
-    aviso_texto:    CONFIG.aviso_texto,
-    aviso_color:    CONFIG.aviso_color,
-    precioCodigo,
-    premioTotal:    15000000,
-    ganador:        CONFIG.ganador,
-    banner: CONFIG.aviso_texto ? {
-      activo: true,
-      texto:  CONFIG.aviso_texto,
-      color:  CONFIG.aviso_color || 'gold'
-    } : { activo: false },
-    paquetes: [
-      { cantidad: 4,  precio: 4  * precioCodigo, popular: false },
-      { cantidad: 8,  precio: 8  * precioCodigo, popular: true  },
-      { cantidad: 16, precio: 16 * precioCodigo, popular: false }
-    ]
-  });
-});
+// NOTA: GET /config es manejado por routes/config.js (lee de Supabase)
+// No registrar aquí para evitar conflicto de rutas.
 
 // ════════════════════════════════════════════
 // VERIFICAR LOGIN
@@ -654,4 +627,130 @@ router.post('/admin/ganador', (req, res) => {
   }
 });
 
+// ════════════════════════════════════════════
+// GET /api/admin/resumen-financiero
+// ════════════════════════════════════════════
+router.get('/admin/resumen-financiero', authAdmin, async (req, res) => {
+  try {
+    const { data: compras, error } = await supabase
+      .from('compras')
+      .select('nombre, correo, cantidad, referencia, estado, fecha')
+      .order('fecha', { ascending: false });
+
+    if (error) throw error;
+
+    const PRECIO = CONFIG.precio_codigo || 3750;
+
+    const pagadas       = compras.filter(c => c.estado === 'pagado');
+    const transferencias = compras.filter(c => c.estado === 'transferencia_aprobada');
+    const pendientes    = compras.filter(c => c.estado === 'pendiente');
+    const rechazadas    = compras.filter(c => ['DECLINED','transferencia_rechazada'].includes(c.estado));
+
+    const sumCodigos = arr => arr.reduce((s, c) => s + (c.cantidad || 0), 0);
+
+    const codigosPagados      = sumCodigos(pagadas);
+    const codigosTransf       = sumCodigos(transferencias);
+    const codigosTotales      = codigosPagados + codigosTransf;
+    const ingresosPagados     = codigosPagados * PRECIO;
+    const ingresosTransf      = codigosTransf  * PRECIO;
+    const ingresosTotal       = codigosTotales * PRECIO;
+    const ingresosPendientes  = sumCodigos(pendientes) * PRECIO;
+
+    res.json({
+      resumen: {
+        ingresos_total:      ingresosTotal,
+        ingresos_wompi:      ingresosPagados,
+        ingresos_transf:     ingresosTransf,
+        ingresos_pendientes: ingresosPendientes,
+        codigos_vendidos:    codigosTotales,
+        ventas_wompi:        pagadas.length,
+        ventas_transf:       transferencias.length,
+        ventas_pendientes:   pendientes.length,
+        ventas_rechazadas:   rechazadas.length,
+        precio_codigo:       PRECIO,
+      },
+      compras: compras.map(c => ({
+        nombre:     c.nombre,
+        correo:     c.correo,
+        cantidad:   c.cantidad,
+        monto:      (c.cantidad || 0) * PRECIO,
+        referencia: c.referencia,
+        estado:     c.estado,
+        fecha:      c.fecha,
+      }))
+    });
+  } catch(e) {
+    console.error('❌ Error resumen financiero:', e.message);
+    res.status(500).json({ error: e.message });
+  }
+});
+
+// ════════════════════════════════════════════
+// SSE — Contador de ventas en tiempo real
+// ════════════════════════════════════════════
+const sseStatsClientes = [];
+
+router.get('/admin/stats-stream', authAdmin, (req, res) => {
+  res.setHeader('Content-Type',  'text/event-stream');
+  res.setHeader('Cache-Control', 'no-cache');
+  res.setHeader('Connection',    'keep-alive');
+  res.flushHeaders();
+
+  const cliente = { res };
+  sseStatsClientes.push(cliente);
+  res.write('event: ping\ndata: ok\n\n');
+
+  req.on('close', () => {
+    const idx = sseStatsClientes.indexOf(cliente);
+    if (idx !== -1) sseStatsClientes.splice(idx, 1);
+  });
+});
+
+async function emitirStatsVentas() {
+  if (sseStatsClientes.length === 0) return;
+  try {
+    const { data: pagadas } = await supabase
+      .from('compras')
+      .select('cantidad, fecha')
+      .in('estado', ['pagado', 'transferencia_aprobada'])
+      .order('fecha', { ascending: false });
+
+    const { count: pendientes } = await supabase
+      .from('compras')
+      .select('*', { count: 'exact', head: true })
+      .eq('estado', 'pendiente');
+
+    const { count: disponibles } = await supabase
+      .from('codigos')
+      .select('*', { count: 'exact', head: true })
+      .eq('vendido', false);
+
+    const PRECIO        = CONFIG.precio_codigo || 3750;
+    const totalVentas   = pagadas?.length || 0;
+    const totalCodigos  = (pagadas || []).reduce((s, c) => s + (c.cantidad || 0), 0);
+    const ingresos      = totalCodigos * PRECIO;
+
+    const payload = JSON.stringify({
+      ventas:              totalVentas,
+      codigos_vendidos:    totalCodigos,
+      codigos_disponibles: disponibles || 0,
+      pendientes:          pendientes  || 0,
+      ingresos,
+      ultima_venta:        pagadas?.[0]?.fecha || null,
+      ventas_activas:      CONFIG.ventas_activas,
+      ts:                  Date.now()
+    });
+
+    for (const c of sseStatsClientes) {
+      try { c.res.write(`event: stats\ndata: ${payload}\n\n`); }
+      catch (_) {}
+    }
+  } catch (e) {
+    console.error('💥 SSE stats error:', e.message);
+  }
+}
+
+setInterval(emitirStatsVentas, 6000);
+
 module.exports = router;
+module.exports.emitirStatsVentas = emitirStatsVentas;

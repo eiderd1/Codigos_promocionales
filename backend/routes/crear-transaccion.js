@@ -1,8 +1,9 @@
 const express = require('express');
-const crypto = require('crypto');
-const router = express.Router();
+const crypto  = require('crypto');
+const router  = express.Router();
 const supabase = require('../config/supabase');
 const { getPromoActiva } = require('../services/promociones');
+const { CONFIG } = require('../services/appState');
 
 // Validación básica de formato de correo
 function esCorreoValido(correo) {
@@ -11,6 +12,13 @@ function esCorreoValido(correo) {
 
 router.post('/crear-transaccion', async (req, res) => {
   try {
+    // ── Verificar si las ventas están activas ─────────────────
+    if (!CONFIG.ventas_activas) {
+      return res.status(403).json({
+        error: 'Las ventas están temporalmente pausadas. Intenta de nuevo más tarde.'
+      });
+    }
+
     const { cliente, cantidad } = req.body;
 
     // ── Validaciones básicas ──────────────────────────────────
@@ -45,7 +53,7 @@ router.post('/crear-transaccion', async (req, res) => {
     */
 
     // ── Precios base (precio por código individual) ───────────
-    const precioPorCodigo = 3750; // $3750 por código = $20.000 x 4, $40.000 x 8, $80.000 x 16
+    const precioPorCodigo = CONFIG.precio_codigo || 3750;
 
     const cantidadesValidas = [4, 8, 16];
     if (!cantidadesValidas.includes(Number(cantidad))) {

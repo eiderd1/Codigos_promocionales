@@ -2,24 +2,6 @@
 const express = require('express');
 const router  = express.Router();
 const supabase = require('../config/supabase');
-const fs   = require('fs');
-const path = require('path');
-
-// Archivo local para ganador (no depende de Supabase)
-const GANADOR_FILE = path.join(__dirname, '../ganador.json');
-
-function leerGanadorLocal() {
-  try {
-    if (fs.existsSync(GANADOR_FILE)) {
-      return JSON.parse(fs.readFileSync(GANADOR_FILE, 'utf8'));
-    }
-  } catch(e) {}
-  return { activo: false, codigo: '', nombre: '' };
-}
-
-function guardarGanadorLocal(ganador) {
-  fs.writeFileSync(GANADOR_FILE, JSON.stringify(ganador, null, 2), 'utf8');
-}
 
 function authAdmin(req, res, next) {
   const token  = req.headers['x-admin-token'] || req.query.token;
@@ -29,7 +11,7 @@ function authAdmin(req, res, next) {
   next();
 }
 
-// ── Helper: leer config de Supabase ──────────────────────────────────────
+// ── Helpers Supabase ──────────────────────────────────────────────────────────
 async function leerConfig() {
   const { data, error } = await supabase
     .from('config')
@@ -51,13 +33,38 @@ async function guardarConfig(clave, valor) {
   if (error) throw error;
 }
 
+// ── Ganador desde Supabase ────────────────────────────────────────────────────
+async function leerGanador() {
+  try {
+    const { data, error } = await supabase
+      .from('config')
+      .select('valor')
+      .eq('clave', 'ganador')
+      .single();
+    if (error || !data) return { activo: false, codigo: '', nombre: '' };
+    return JSON.parse(data.valor);
+  } catch(e) {
+    return { activo: false, codigo: '', nombre: '' };
+  }
+}
+
+async function guardarGanador(ganador) {
+  const { error } = await supabase
+    .from('config')
+    .upsert(
+      { clave: 'ganador', valor: JSON.stringify(ganador) },
+      { onConflict: 'clave' }
+    );
+  if (error) throw error;
+}
+
 // ════════════════════════════════════════════════════════════════════════════
-// GET /api/config  — PÚBLICO — la página principal lo llama al cargar
+// GET /api/config  — PÚBLICO
 // ════════════════════════════════════════════════════════════════════════════
 router.get('/config', async (req, res) => {
   try {
     let cfg = {};
-    try { cfg = await leerConfig(); } catch(e) { /* Supabase falló, usar defaults */ }
+    try { cfg = await leerConfig(); } catch(e) {}
 
     const precioCodigo = cfg.precio_codigo ?? 3750;
     const paquetes     = cfg.paquetes ?? [
@@ -65,21 +72,34 @@ router.get('/config', async (req, res) => {
       { cantidad: 8,  popular: true  },
       { cantidad: 16, popular: false }
     ];
-    const banner    = cfg.banner    ?? null;
-    const premioTotal = cfg.premio_total ?? 15000000;
-
-    // Ganador siempre desde archivo local (más confiable)
-    const ganador = leerGanadorLocal();
+    const banner        = cfg.banner       ?? null;
+    const premioTotal   = cfg.premio_total ?? 15000000;
+    const ganador       = cfg.ganador      ?? { activo: false, codigo: '', nombre: '' };
+    const ventasActivas = cfg.ventas_activas !== undefined ? cfg.ventas_activas : true;
+    const avisoTexto    = cfg.aviso_texto  ?? '';
+    const avisoColor    = cfg.aviso_color  ?? 'gold';
 
     const paquetesConPrecio = paquetes.map(p => ({
       ...p,
       precio: p.cantidad * precioCodigo
     }));
 
-    res.json({ precioCodigo, paquetes: paquetesConPrecio, banner, ganador, premioTotal });
+    res.json({
+      ventas_activas: ventasActivas,
+      aviso_texto:    avisoTexto,
+      aviso_color:    avisoColor,
+      precioCodigo,
+      paquetes: paquetesConPrecio,
+      banner,
+      ganador,
+      premioTotal
+    });
   } catch (e) {
     console.error('❌ Error en /config:', e.message);
     res.json({
+      ventas_activas: true,
+      aviso_texto:    '',
+      aviso_color:    'gold',
       precioCodigo: 3750,
       paquetes: [
         { cantidad: 4,  popular: false, precio: 15000 },
@@ -87,21 +107,21 @@ router.get('/config', async (req, res) => {
         { cantidad: 16, popular: false, precio: 60000 }
       ],
       banner:    null,
-      ganador:   leerGanadorLocal(),
+      ganador:   { activo: false, codigo: '', nombre: '' },
       premioTotal: 15000000
     });
   }
 });
 
 // ════════════════════════════════════════════════════════════════════════════
-// POST /api/admin/config/ganador  — guarda ganador en archivo local
+// POST /api/admin/config/ganador  — guarda ganador en Supabase
 // ════════════════════════════════════════════════════════════════════════════
-router.post('/admin/config/ganador', authAdmin, (req, res) => {
+router.post('/admin/config/ganador', authAdmin, async (req, res) => {
   try {
     const { activo, codigo, nombre } = req.body;
 
     if (activo === false || activo === 'false') {
-      guardarGanadorLocal({ activo: false, codigo: '', nombre: '' });
+      await guardarGanador({ activo: false, codigo: '', nombre: '' });
       console.log('🏆 Ganador ocultado');
       return res.json({ ok: true, mensaje: 'Ganador ocultado' });
     }
@@ -111,7 +131,7 @@ router.post('/admin/config/ganador', authAdmin, (req, res) => {
     }
 
     const ganador = { activo: true, codigo: codigo.trim(), nombre: nombre.trim() };
-    guardarGanadorLocal(ganador);
+    await guardarGanador(ganador);
     console.log(`🏆 Ganador publicado: ${codigo} — ${nombre}`);
     res.json({ ok: true, mensaje: `Ganador publicado: ${codigo}` });
   } catch (e) {
@@ -171,8 +191,8 @@ router.get('/admin/config', authAdmin, async (req, res) => {
     res.json({
       precioCodigo: cfg.precio_codigo ?? 3750,
       paquetes:     cfg.paquetes ?? [{cantidad:4,popular:false},{cantidad:8,popular:true},{cantidad:16,popular:false}],
-      banner:       cfg.banner  ?? { activo: false, texto: '', color: 'gold' },
-      ganador:      leerGanadorLocal(),   // siempre desde archivo
+      banner:       cfg.banner   ?? { activo: false, texto: '', color: 'gold' },
+      ganador:      cfg.ganador  ?? { activo: false, codigo: '', nombre: '' },
       premioTotal:  cfg.premio_total ?? 15000000
     });
   } catch (e) {

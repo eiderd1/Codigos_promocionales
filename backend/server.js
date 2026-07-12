@@ -82,6 +82,13 @@ app.get('/Admin.html', (req, res) => {
   });
 });
 
+// Ganador — ruta pública /ganador y /ganador.html
+app.get(['/ganador', '/ganador.html'], (req, res) => {
+  res.sendFile(path.join(frontendPath, 'ganador.html'), err => {
+    if (err) console.error('❌ ganador.html no encontrado:', err.message);
+  });
+});
+
 // Todo lo demás → SPA index.html
 app.get('*', (req, res) => {
   res.sendFile(path.join(frontendPath, 'index.html'));
