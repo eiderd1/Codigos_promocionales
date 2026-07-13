@@ -351,6 +351,73 @@ body::after {
   text-transform: uppercase;
 }
 
+/* ── Custom quantity: ¿Deseas más? ── */
+#seccionPersonalizada {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px 18px;
+  margin: 4px 0 16px;
+  text-align: center;
+}
+#seccionPersonalizada .personalizada-titulo {
+  font-family: var(--font-display);
+  font-size: .85rem;
+  font-weight: 800;
+  color: var(--text);
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  margin-bottom: 12px;
+}
+.personalizada-row {
+  display: flex;
+  gap: 10px;
+  align-items: stretch;
+}
+input[type="number"].input-cantidad {
+  width: 90px;
+  flex-shrink: 0;
+  padding: 13px 10px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: var(--card);
+  color: var(--text);
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  font-weight: 700;
+  text-align: center;
+  outline: none;
+  transition: border-color .2s;
+}
+input[type="number"].input-cantidad:focus { border-color: var(--gold); }
+.btn-personalizada {
+  flex: 1;
+  background: linear-gradient(135deg, var(--orange), #B8481A);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-display);
+  font-size: .92rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all .2s;
+  letter-spacing: .01em;
+}
+.btn-personalizada:hover { filter: brightness(1.08); transform: translateY(-1px); }
+.btn-personalizada:active { transform: scale(.98); }
+.personalizada-hint {
+  font-size: .68rem;
+  color: var(--muted);
+  margin-top: 8px;
+  letter-spacing: .02em;
+}
+.personalizada-error {
+  display: none;
+  font-size: .74rem;
+  color: #E8825A;
+  margin-top: 8px;
+}
+
 /* ── Stock notice ── */
 #avisoStock {
   display: none;
@@ -1125,7 +1192,7 @@ input.error { border-color: rgba(248,113,113,.7); box-shadow: 0 0 0 3px rgba(248
            onerror="this.style.display='none'">
     </div>
 
-    <!-- Imagen de dinero -->
+    <!-- Imagen de la Dinamica -->
     <div style="margin:0 auto 20px;max-width:320px;position:relative">
       
       <img
@@ -1134,19 +1201,11 @@ input.error { border-color: rgba(248,113,113,.7); box-shadow: 0 0 0 3px rgba(248
         style="width:100%;border-radius:18px;box-shadow:0 8px 32px rgba(201,147,10,.15),0 2px 8px rgba(0,0,0,.07);display:block;object-fit:cover;aspect-ratio:16/9;"
         onerror="this.parentElement.style.display='none'"
       >
-      <div style="
-        position:absolute;bottom:10px;left:50%;transform:translateX(-50%);
-        background:rgba(26,122,60,.92);
-        color:#fff;font-family:var(--font-display);font-weight:800;
-        font-size:clamp(.85rem,3.5vw,1.05rem);
-        padding:6px 20px;border-radius:999px;white-space:nowrap;
-        letter-spacing:.02em;
-        box-shadow:0 2px 12px rgba(0,0,0,.2)
-      ">💰 $15.000.000 COP</div>
+    
     </div>
 
-    <h1 class="title">🎟️ Compra tus <span>Códigos</span></h1>
-    <p class="subtitle" id="subtituloPremio">Participa por <span>$15.000.000 COP</span></p>
+    <h6 class="title">🎟️ Compra tus <span>Códigos</span></h6>
+    <h6><p class="subtitle" id="subtituloPremio">Participa por <span>$15.000.000 COP</span></p></h6>
     <div class="badge-wrap">
       <span class="badge">💎 4 códigos dorados · $500.000 c/u</span>
     </div>
@@ -1189,6 +1248,16 @@ input.error { border-color: rgba(248,113,113,.7); box-shadow: 0 0 0 3px rgba(248
 
   <div class="cards-grid" id="cards-grid">
     <div style="text-align:center;padding:20px;color:var(--muted);font-size:.9rem;grid-column:1/-1">Cargando paquetes...</div>
+  </div>
+
+  <div id="seccionPersonalizada">
+    <div class="personalizada-titulo">¿Deseas más?</div>
+    <div class="personalizada-row">
+      <input type="number" class="input-cantidad" id="inputCantidadPersonalizada" value="17" min="4" max="500" step="1" inputmode="numeric" aria-label="Cantidad de códigos">
+      <button type="button" class="btn-personalizada" id="btnComprarPersonalizado">Comprar entradas</button>
+    </div>
+    <div class="personalizada-error" id="errorCantidadPersonalizada"></div>
+    <div class="personalizada-hint">Mínimo 4 · Máximo 500 códigos por compra</div>
   </div>
 
   <div id="resumenPedido">
@@ -1601,6 +1670,59 @@ function seleccionarCardLegacy(card) {
   seleccionarCard(card, []);
 }
 
+// ── Cantidad personalizada: "¿Deseas más?" (mín 4, máx 500) ─────────────
+const MIN_CANTIDAD_PERSONALIZADA = 4;
+const MAX_CANTIDAD_PERSONALIZADA = 500;
+
+function seleccionarCantidadPersonalizada() {
+  const input   = document.getElementById('inputCantidadPersonalizada');
+  const errorEl = document.getElementById('errorCantidadPersonalizada');
+  let cantidad  = parseInt(input.value, 10);
+
+  errorEl.style.display = 'none';
+
+  if (!Number.isFinite(cantidad) || cantidad <= 0) {
+    errorEl.textContent    = `Ingresa una cantidad válida (entre ${MIN_CANTIDAD_PERSONALIZADA} y ${MAX_CANTIDAD_PERSONALIZADA}).`;
+    errorEl.style.display  = 'block';
+    return;
+  }
+
+  if (cantidad < MIN_CANTIDAD_PERSONALIZADA) {
+    cantidad     = MIN_CANTIDAD_PERSONALIZADA;
+    input.value  = cantidad;
+  }
+  if (cantidad > MAX_CANTIDAD_PERSONALIZADA) {
+    cantidad     = MAX_CANTIDAD_PERSONALIZADA;
+    input.value  = cantidad;
+  }
+
+  // Deselecciona cualquier paquete fijo (4/8/16) para dejar claro que se usa la cantidad personalizada
+  document.querySelectorAll('.card').forEach(c => c.classList.remove('selected', 'disabled'));
+
+  cantidadSeleccionada = cantidad;
+  const total = cantidad * precioCodigo;
+
+  document.getElementById('resumenCodigos').textContent        = `${cantidadSeleccionada} códigos`;
+  document.getElementById('resumenPrecioUnitario').textContent = `$${precioCodigo.toLocaleString('es-CO')}`;
+  document.getElementById('resumenTotal').textContent          = `$${total.toLocaleString('es-CO')} COP`;
+  document.getElementById('resumenPedido').style.display       = 'block';
+  form.style.display = 'block';
+  document.getElementById('avisoStock').style.display = 'none';
+  document.getElementById('resumenPedido').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+document.getElementById('btnComprarPersonalizado').addEventListener('click', seleccionarCantidadPersonalizada);
+document.getElementById('inputCantidadPersonalizada').addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') { e.preventDefault(); seleccionarCantidadPersonalizada(); }
+});
+document.getElementById('inputCantidadPersonalizada').addEventListener('blur', () => {
+  const input = document.getElementById('inputCantidadPersonalizada');
+  let v = parseInt(input.value, 10);
+  if (!Number.isFinite(v)) return;
+  if (v < MIN_CANTIDAD_PERSONALIZADA) input.value = MIN_CANTIDAD_PERSONALIZADA;
+  if (v > MAX_CANTIDAD_PERSONALIZADA) input.value = MAX_CANTIDAD_PERSONALIZADA;
+});
+
 // ── Mostrar ganador con confeti ──────────────────────────────────────────
 function mostrarGanador(codigo, nombre) {
   const sec = document.getElementById('seccion-ganador');
@@ -1894,14 +2016,11 @@ document.getElementById('resultado').addEventListener('touchend', function() { w
             onfocus="this.style.borderColor='rgba(52,211,153,.5)'" onblur="this.style.borderColor='var(--border)'">
         </div>
         <div>
-          <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px;font-weight:600;text-transform:uppercase;letter-spacing:.06em">Cantidad de códigos *</label>
-          <select id="trfCantidadSelect" onchange="trfActualizarMonto()"
+          <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px;font-weight:600;text-transform:uppercase;letter-spacing:.06em">Cantidad de códigos * (mín 4, máx 500)</label>
+          <input id="trfCantidadSelect" type="number" min="4" max="500" step="1" value="4" inputmode="numeric"
+            oninput="trfActualizarMonto()" onchange="trfValidarRangoCantidad()"
             style="width:100%;padding:11px 13px;border-radius:10px;border:1px solid var(--border);background:var(--card);color:white;font-size:14px;outline:none;box-sizing:border-box;font-family:var(--font-body);"
-            onfocus="this.style.borderColor='rgba(52,211,153,.5)'" onblur="this.style.borderColor='var(--border)'">
-            <option value="4">4 códigos — $15.000 COP</option>
-            <option value="8">8 códigos — $30.000 COP</option>
-            <option value="16">16 códigos — $60.000 COP</option>
-          </select>
+            onfocus="this.style.borderColor='rgba(52,211,153,.5)'" onblur="this.style.borderColor='var(--border)'; trfValidarRangoCantidad();">
         </div>
       </div>
 
@@ -1973,12 +2092,24 @@ window.trfCopiarNumero = async function(numero, btn) {
 };
 
 window.trfActualizarMonto = function() {
-  const cant  = parseInt(document.getElementById('trfCantidadSelect')?.value || 4);
-  const monto = cant * TRF_PRECIO_COD;
+  const cantRaw = parseInt(document.getElementById('trfCantidadSelect')?.value, 10);
+  const cant    = Number.isFinite(cantRaw) && cantRaw > 0 ? cantRaw : 4;
+  const monto   = cant * TRF_PRECIO_COD;
   const dm = document.getElementById('trfMontoDisplay');
   const dc = document.getElementById('trfCodsDisplay');
   if (dm) dm.textContent = '$' + monto.toLocaleString('es-CO') + ' COP';
   if (dc) dc.textContent = cant + ' código' + (cant !== 1 ? 's' : '');
+};
+
+window.trfValidarRangoCantidad = function() {
+  const input = document.getElementById('trfCantidadSelect');
+  if (!input) return;
+  let v = parseInt(input.value, 10);
+  if (!Number.isFinite(v)) v = 4;
+  if (v < 4)   v = 4;
+  if (v > 500) v = 500;
+  input.value = v;
+  trfActualizarMonto();
 };
 trfActualizarMonto();
 
@@ -1992,7 +2123,7 @@ window.abrirModalTransferencia = function() {
   if (c) document.getElementById('trfCorreoInput').value   = c;
   if (d) document.getElementById('trfCedulaInput').value   = d;
   if (t) document.getElementById('trfTelefonoInput').value = t;
-  const cant = document.querySelector('.card.selected')?.dataset.cantidad;
+  const cant = document.querySelector('.card.selected')?.dataset.cantidad || (cantidadSeleccionada > 0 ? cantidadSeleccionada : null);
   if (cant) { const s = document.getElementById('trfCantidadSelect'); if(s){ s.value = cant; trfActualizarMonto(); } }
   document.getElementById('trfFormMsg').innerHTML = '';
   document.getElementById('modalTransferencia').style.display = 'flex';
@@ -2007,11 +2138,15 @@ window.enviarSolicitudTransferencia = async function() {
   const correo   = document.getElementById('trfCorreoInput').value.trim();
   const cedula   = document.getElementById('trfCedulaInput').value.trim();
   const telefono = document.getElementById('trfTelefonoInput').value.trim();
-  const cantidad = document.getElementById('trfCantidadSelect').value;
+  const cantidad = parseInt(document.getElementById('trfCantidadSelect').value, 10);
   const msgEl    = document.getElementById('trfFormMsg');
 
   if (!nombre || !correo) {
     msgEl.innerHTML = '<div style="background:rgba(248,113,113,.1);color:#f87171;padding:9px 12px;border-radius:8px;font-size:12px;border:1px solid rgba(248,113,113,.2)">⚠️ Nombre y correo son obligatorios</div>';
+    return;
+  }
+  if (!Number.isFinite(cantidad) || cantidad < 4 || cantidad > 500) {
+    msgEl.innerHTML = '<div style="background:rgba(248,113,113,.1);color:#f87171;padding:9px 12px;border-radius:8px;font-size:12px;border:1px solid rgba(248,113,113,.2)">⚠️ La cantidad debe estar entre 4 y 500 códigos</div>';
     return;
   }
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(correo)) {

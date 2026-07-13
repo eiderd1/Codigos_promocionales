@@ -55,9 +55,19 @@ router.post('/crear-transaccion', async (req, res) => {
     // ── Precios base (precio por código individual) ───────────
     const precioPorCodigo = CONFIG.precio_codigo || 3750;
 
-    const cantidadesValidas = [4, 8, 16];
-    if (!cantidadesValidas.includes(Number(cantidad))) {
-      return res.status(400).json({ error: "Cantidad inválida" });
+    // ── Validar cantidad: cualquier entero entre 4 y 500 ───────
+    const CANTIDAD_MIN = 4;
+    const CANTIDAD_MAX = 500;
+    const cantidadNum  = Number(cantidad);
+
+    if (
+      !Number.isInteger(cantidadNum) ||
+      cantidadNum < CANTIDAD_MIN ||
+      cantidadNum > CANTIDAD_MAX
+    ) {
+      return res.status(400).json({
+        error: `La cantidad debe ser un número entero entre ${CANTIDAD_MIN} y ${CANTIDAD_MAX}`
+      });
     }
 
     // ── Verificar stock disponible ────────────────────────────
@@ -77,7 +87,7 @@ router.post('/crear-transaccion', async (req, res) => {
 
     // ── Ajustar cantidad al stock real ────────────────────────
     // Si el cliente pidió 16 pero solo hay 2, se cobra solo por 2
-    const cantidadFinal = Math.min(Number(cantidad), disponibles);
+    const cantidadFinal = Math.min(cantidadNum, disponibles);
     const monto         = cantidadFinal * precioPorCodigo;
 
     // ── Variables Wompi ───────────────────────────────────────
@@ -147,9 +157,9 @@ router.post('/crear-transaccion', async (req, res) => {
       publicKey:          PUBLIC_KEY,
       tx,
       cantidadFinal,
-      cantidadSolicitada: Number(cantidad),
+      cantidadSolicitada: cantidadNum,
       montoTotal:         monto,
-      ajustado:           cantidadFinal < Number(cantidad),
+      ajustado:           cantidadFinal < cantidadNum,
       promoActiva:        promo ? {
         precioDorado: promo.precio_dorado,  // ej: 1500000
         expiraEn:     promo.expira_en
