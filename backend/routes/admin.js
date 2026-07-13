@@ -2,7 +2,6 @@ const express = require('express');
 const router  = express.Router();
 const supabase = require('../config/supabase');
 const { activarPromo, desactivarPromo, getPromoActiva } = require('../services/promociones');
-const { enviarCorreo } = require('../services/correo');
 const ExcelJS = require('exceljs');
 
 // ════════════════════════════════════════════
@@ -414,86 +413,13 @@ router.get('/admin/transferencias', async (req, res) => {
   }
 });
 
-router.post('/admin/transferencia-aprobar', async (req, res) => {
-  try {
-    const { referencia, notas } = req.body;
-    if (!referencia) return res.status(400).json({ ok: false, error: 'Referencia requerida' });
+// NOTA: las rutas /admin/transferencia-aprobar y /admin/transferencia-rechazar
+// se eliminaron de este archivo. Estaban duplicadas con routes/transferencias.js
+// y, al registrarse primero en server.js, interceptaban la petición e impedían
+// que la versión correcta (con generarCodigos, notif admin y envío de correo
+// con la firma adecuada) se ejecutara. Ahora esas rutas viven únicamente en
+// routes/transferencias.js.
 
-    const { data: compra, error } = await supabase
-      .from('compras').select('*').eq('referencia', referencia).single();
-    if (error || !compra) return res.status(404).json({ ok: false, error: 'Compra no encontrada' });
-    if (compra.estado !== 'transferencia_pendiente') return res.status(400).json({ ok: false, error: 'La transferencia ya fue procesada' });
-
-    const { data: disponibles, error: errCodigos } = await supabase
-      .from('codigos').select('*').eq('vendido', false).limit(compra.cantidad);
-    if (errCodigos || !disponibles || disponibles.length < compra.cantidad)
-      return res.status(400).json({ ok: false, error: 'No hay suficientes códigos disponibles' });
-
-    for (const cod of disponibles) {
-      await supabase.from('codigos').update({
-        vendido: true, referencia: compra.referencia,
-        nombre: compra.nombre, email: compra.correo, telefono: compra.telefono
-      }).eq('id', cod.id);
-    }
-
-    await supabase.from('compras').update({ estado: 'transferencia_aprobada', notas_admin: notas || null }).eq('referencia', referencia);
-
-    const { data: codigosAsignados } = await supabase.from('codigos').select('codigo, dorado').eq('referencia', referencia);
-
-    try {
-      const listaCodigos = (codigosAsignados || []).map(c => `${c.dorado ? '⭐ ' : ''}${c.codigo}`).join(', ');
-      await enviarCorreo({
-        para: compra.correo,
-        asunto: '✅ Compra aprobada — Tus códigos',
-        html: `<div style="font-family:Arial;padding:20px">
-          <h2>✅ Pago aprobado</h2>
-          <p>Hola <strong>${compra.nombre}</strong>,</p>
-          <p>Tu transferencia fue aprobada correctamente.</p>
-          <p><strong>Tus códigos:</strong></p>
-          <div style="padding:12px;background:#f5f5f5;border-radius:8px;margin:10px 0">${listaCodigos}</div>
-          <p>Referencia: <strong>${referencia}</strong></p>
-          <p>Gracias por tu compra.</p>
-        </div>`
-      });
-    } catch (correoErr) { console.error('❌ Error enviando correo:', correoErr); }
-
-    res.json({ ok: true, mensaje: '✅ Transferencia aprobada correctamente' });
-  } catch (e) {
-    console.error('💥 aprobar transferencia:', e);
-    res.status(500).json({ ok: false, error: 'Error interno' });
-  }
-});
-
-router.post('/admin/transferencia-rechazar', async (req, res) => {
-  try {
-    const { referencia, notas } = req.body;
-    if (!referencia) return res.status(400).json({ ok: false, error: 'Referencia requerida' });
-
-    const { data: compra, error } = await supabase.from('compras').select('*').eq('referencia', referencia).single();
-    if (error || !compra) return res.status(404).json({ ok: false, error: 'Compra no encontrada' });
-
-    await supabase.from('compras').update({ estado: 'transferencia_rechazada', notas_admin: notas || null }).eq('referencia', referencia);
-
-    try {
-      await enviarCorreo({
-        para: compra.correo,
-        asunto: '❌ Transferencia rechazada',
-        html: `<div style="font-family:Arial;padding:20px">
-          <h2>❌ Transferencia rechazada</h2>
-          <p>Hola <strong>${compra.nombre}</strong>,</p>
-          <p>Tu transferencia no pudo ser validada.</p>
-          ${notas ? `<p><strong>Motivo:</strong> ${notas}</p>` : ''}
-          <p>Si crees que esto es un error puedes comunicarte con soporte.</p>
-        </div>`
-      });
-    } catch (correoErr) { console.error(correoErr); }
-
-    res.json({ ok: true, mensaje: '✕ Transferencia rechazada' });
-  } catch (e) {
-    console.error('💥 rechazar transferencia:', e);
-    res.status(500).json({ ok: false, error: 'Error interno' });
-  }
-});
 
 // ════════════════════════════════════════════
 // BUSCADOR GLOBAL

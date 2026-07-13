@@ -1997,32 +1997,32 @@ document.getElementById('resultado').addEventListener('touchend', function() { w
         <div>
           <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px;font-weight:600;text-transform:uppercase;letter-spacing:.06em">Nombre completo *</label>
           <input id="trfNombreInput" type="text" placeholder="Tu nombre completo"
-            style="width:100%;padding:11px 13px;border-radius:10px;border:1px solid var(--border);background:var(--card);color:rgb(0, 0, 0);font-size:14px;outline:none;box-sizing:border-box;font-family:var(--font-body);"
+            style="width:100%;padding:11px 13px;border-radius:10px;border:1px solid var(--border);background:var(--card);color:white;font-size:14px;outline:none;box-sizing:border-box;font-family:var(--font-body);"
             onfocus="this.style.borderColor='rgba(52,211,153,.5)'" onblur="this.style.borderColor='var(--border)'">
         </div>
         <div>
           <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px;font-weight:600;text-transform:uppercase;letter-spacing:.06em">Correo electrónico *</label>
           <input id="trfCorreoInput" type="email" placeholder="tu@correo.com" inputmode="email"
-            style="width:100%;padding:11px 13px;border-radius:10px;border:1px solid var(--border);background:var(--card);color:rgb(0, 0, 0);font-size:14px;outline:none;box-sizing:border-box;font-family:var(--font-body);"
+            style="width:100%;padding:11px 13px;border-radius:10px;border:1px solid var(--border);background:var(--card);color:white;font-size:14px;outline:none;box-sizing:border-box;font-family:var(--font-body);"
             onfocus="this.style.borderColor='rgba(52,211,153,.5)'" onblur="this.style.borderColor='var(--border)'">
         </div>
         <div>
           <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px;font-weight:600;text-transform:uppercase;letter-spacing:.06em">Cédula</label>
           <input id="trfCedulaInput" type="text" placeholder="1234567890" inputmode="numeric"
-            style="width:100%;padding:11px 13px;border-radius:10px;border:1px solid var(--border);background:var(--card);color:rgb(0, 0, 0);font-size:14px;outline:none;box-sizing:border-box;font-family:var(--font-body);"
+            style="width:100%;padding:11px 13px;border-radius:10px;border:1px solid var(--border);background:var(--card);color:white;font-size:14px;outline:none;box-sizing:border-box;font-family:var(--font-body);"
             onfocus="this.style.borderColor='rgba(52,211,153,.5)'" onblur="this.style.borderColor='var(--border)'">
         </div>
         <div>
           <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px;font-weight:600;text-transform:uppercase;letter-spacing:.06em">Teléfono / WhatsApp</label>
           <input id="trfTelefonoInput" type="tel" placeholder="3001234567" inputmode="tel"
-            style="width:100%;padding:11px 13px;border-radius:10px;border:1px solid var(--border);background:var(--card);color:rgb(0, 0, 0);font-size:14px;outline:none;box-sizing:border-box;font-family:var(--font-body);"
+            style="width:100%;padding:11px 13px;border-radius:10px;border:1px solid var(--border);background:var(--card);color:white;font-size:14px;outline:none;box-sizing:border-box;font-family:var(--font-body);"
             onfocus="this.style.borderColor='rgba(52,211,153,.5)'" onblur="this.style.borderColor='var(--border)'">
         </div>
         <div>
           <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px;font-weight:600;text-transform:uppercase;letter-spacing:.06em">Cantidad de códigos * (mín 4, máx 500)</label>
           <input id="trfCantidadSelect" type="number" min="4" max="500" step="1" value="4" inputmode="numeric"
             oninput="trfActualizarMonto()" onchange="trfValidarRangoCantidad()"
-            style="width:100%;padding:11px 13px;border-radius:10px;border:1px solid var(--border);background:var(--card);color:rgb(0, 0, 0);font-size:14px;outline:none;box-sizing:border-box;font-family:var(--font-body);"
+            style="width:100%;padding:11px 13px;border-radius:10px;border:1px solid var(--border);background:var(--card);color:rgb(7, 7, 7);font-size:14px;outline:none;box-sizing:border-box;font-family:var(--font-body);"
             onfocus="this.style.borderColor='rgba(52,211,153,.5)'" onblur="this.style.borderColor='var(--border)'; trfValidarRangoCantidad();">
         </div>
       </div>
@@ -2032,7 +2032,7 @@ document.getElementById('resultado').addEventListener('touchend', function() { w
       <button onclick="enviarSolicitudTransferencia()" style="
         margin-top:16px;width:100%;
         background:linear-gradient(135deg,#166534,#22c55e);
-        color:rgb(3, 3, 3);border:none;padding:14px;border-radius:12px;
+        color:rgb(7, 7, 7);border:none;padding:14px;border-radius:12px;
         font-family:var(--font-display);font-size:15px;font-weight:700;cursor:pointer;transition:opacity .15s;letter-spacing:.01em;
       " onmouseover="this.style.opacity='.9'" onmouseout="this.style.opacity='1'">
         📨 Registrar mi solicitud de Compra
@@ -2065,15 +2065,17 @@ function trfRenderLista() {
   TRF_BANCOS.forEach(cuenta => {
     const icono = iconos[cuenta.banco] || '🏦';
     const card = document.createElement('div');
-    card.style.cssText = 'background:var(--card, #0F1928);border:1px solid rgba(255,255,255,.07);border-radius:12px;padding:14px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px';
+    // Colores forzados (no usar var(--card)/var(--muted) del tema claro del sitio):
+    // el modal de transferencia es oscuro por diseño, sin importar el tema general.
+    card.style.cssText = 'background:#0F1928;border:1px solid rgba(255,255,255,.07);border-radius:12px;padding:14px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px';
     card.innerHTML = `
       <div style="flex:1;min-width:0">
-        <div style="font-size:11px;font-weight:700;color:var(--muted, #6B7A99);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px">${icono} ${cuenta.tipo} ${cuenta.banco}</div>
-        <div style="font-family:var(--font-display, sans-serif);font-size:20px;font-weight:800;color:black;letter-spacing:.03em;margin-bottom:3px">${cuenta.numero}</div>
-        <div style="font-size:12px;color:var(--muted, #6B7A99)">Titular: ${cuenta.titular}</div>
+        <div style="font-size:11px;font-weight:700;color:#94A3B8;text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px">${icono} ${cuenta.tipo} ${cuenta.banco}</div>
+        <div style="font-family:var(--font-display, sans-serif);font-size:20px;font-weight:800;color:#FFFFFF;letter-spacing:.03em;margin-bottom:3px">${cuenta.numero}</div>
+        <div style="font-size:12px;color:#94A3B8">Titular: ${cuenta.titular}</div>
       </div>
       <button onclick="trfCopiarNumero('${cuenta.numero}', this)" style="
-        background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);color:black;
+        background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);color:#FFFFFF;
         border-radius:10px;padding:9px 14px;font-size:12px;font-weight:700;
         cursor:pointer;white-space:nowrap;flex-shrink:0;transition:all .2s;font-family:var(--font-display, sans-serif);letter-spacing:.02em;
       ">Copiar</button>`;
