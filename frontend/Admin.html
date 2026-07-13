@@ -1117,6 +1117,20 @@
     const codsHtml = (c.codigos||[]).length
       ? (c.codigos||[]).map(cod => `<span class="code-mono ${cod.dorado?'gold-code':''}" style="margin-right:6px;font-size:12px">${cod.dorado?'⭐':''}${cod.codigo}</span>`).join('')
       : '<span style="color:var(--text3);font-size:12px">Sin códigos asignados</span>';
+
+    // Solo se puede reenviar/corregir si ya tiene códigos asignados
+    const tieneCodigos = c.estado === 'pagado' || c.estado === 'transferencia_aprobada';
+    const idSafe = (c.referencia || '').replace(/[^a-zA-Z0-9_-]/g, '');
+    const reenvioHtml = tieneCodigos ? `
+      <div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--border)">
+        <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center">
+          <input type="email" id="correo-edit-${idSafe}" value="${(c.correo||'').replace(/"/g,'&quot;')}" placeholder="correo@ejemplo.com"
+            style="flex:1;min-width:160px;padding:6px 8px;font-size:12px;border:1px solid var(--border);border-radius:6px;background:transparent;color:inherit">
+          <button class="btn" style="padding:6px 12px;font-size:12px" onclick="reenviarCorreoAdmin('${c.referencia}','${idSafe}')">✉️ Reenviar</button>
+        </div>
+        <div id="reenviar-msg-${idSafe}" style="margin-top:6px"></div>
+      </div>` : '';
+
     return `<div style="background:var(--surface);border:0.5px solid var(--border);border-radius:var(--radius-lg);padding:16px;margin-bottom:10px">
       <div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:10px">
         <div>
@@ -1128,7 +1142,35 @@
         <div style="text-align:right">${badge}<div style="font-size:12px;font-weight:600;margin-top:4px">${c.cantidad||0} cód.</div><div style="font-size:11px;color:var(--text3)">${fecha}</div></div>
       </div>
       <div style="margin-top:4px">${codsHtml}</div>
+      ${reenvioHtml}
     </div>`;
+  }
+
+  // ── REENVIAR / CORREGIR CORREO (por comprador, admin) ───────────────────────
+  async function reenviarCorreoAdmin(referencia, idSafe) {
+    const inputEl = document.getElementById(`correo-edit-${idSafe}`);
+    const msgEl   = document.getElementById(`reenviar-msg-${idSafe}`);
+    const correoNuevo = (inputEl?.value || '').trim();
+    msgEl.innerHTML = '<div class="state-loading">Enviando...</div>';
+    try {
+      const r = await fetch('/api/admin/reenviar-correo', {
+        method: 'POST', headers: headers(),
+        body: JSON.stringify({ referencia, correoNuevo })
+      });
+      const d = await r.json();
+      if (d.ok) {
+        msgEl.innerHTML = `<div class="msg msg-ok">✓ ${d.mensaje}</div>`;
+        // Refrescar la lista para que se vea el correo corregido si cambió
+        if (typeof _todosCompradores !== 'undefined') {
+          const comp = _todosCompradores.find(x => x.referencia === referencia);
+          if (comp && correoNuevo) comp.correo = correoNuevo;
+        }
+      } else {
+        msgEl.innerHTML = `<div class="msg msg-err">${d.error || 'No se pudo enviar'}</div>`;
+      }
+    } catch (e) {
+      msgEl.innerHTML = '<div class="msg msg-err">Error de conexión</div>';
+    }
   }
 
   // ── BUSCADOR GLOBAL ─────────────────────────────────────────────────────────

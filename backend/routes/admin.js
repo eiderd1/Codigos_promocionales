@@ -2,6 +2,7 @@ const express = require('express');
 const router  = express.Router();
 const supabase = require('../config/supabase');
 const { activarPromo, desactivarPromo, getPromoActiva } = require('../services/promociones');
+const { enviarCorreo } = require('../services/correo');
 const ExcelJS = require('exceljs');
 
 // ════════════════════════════════════════════
@@ -178,7 +179,90 @@ router.get('/admin/compradores', async (req, res) => {
   }
 });
 
-// ── Activar / desactivar promo ───────────────
+// ── Reenviar correo (con opción de corregir el email) ────────
+// Body: { referencia, correoNuevo? }
+// Si el cliente escribió mal su correo, se puede pasar `correoNuevo`
+// para corregirlo en `compras` y `codigos` antes de reenviar.
+router.post('/admin/reenviar-correo', async (req, res) => {
+  try {
+    const { referencia, correoNuevo } = req.body;
+    if (!referencia) {
+      return res.status(400).json({ ok: false, error: 'Referencia requerida' });
+    }
+
+    const { data: compra, error: errCompra } = await supabase
+      .from('compras')
+      .select('*')
+      .eq('referencia', referencia)
+      .single();
+
+    if (errCompra || !compra) {
+      return res.status(404).json({ ok: false, error: 'Compra no encontrada' });
+    }
+
+    if (!['pagado', 'transferencia_aprobada'].includes(compra.estado)) {
+      return res.status(400).json({ ok: false, error: 'Esta compra no tiene códigos asignados (aún no está pagada/aprobada)' });
+    }
+
+    // ── Corregir correo si se envió uno nuevo y es distinto ────────────────
+    let correoFinal = compra.correo;
+    if (correoNuevo && correoNuevo.trim() && correoNuevo.trim() !== compra.correo) {
+      const nuevo = correoNuevo.trim();
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(nuevo)) {
+        return res.status(400).json({ ok: false, error: 'Correo electrónico inválido' });
+      }
+
+      const { error: errUpdCompra } = await supabase
+        .from('compras').update({ correo: nuevo }).eq('referencia', referencia);
+      if (errUpdCompra) {
+        console.error('❌ Error actualizando correo en compras:', errUpdCompra);
+        return res.status(500).json({ ok: false, error: 'Error actualizando correo' });
+      }
+
+      const { error: errUpdCodigos } = await supabase
+        .from('codigos').update({ email: nuevo }).eq('referencia', referencia);
+      if (errUpdCodigos) {
+        console.error('❌ Error actualizando correo en códigos:', errUpdCodigos);
+        // no bloqueamos el reenvío por esto, pero queda logueado
+      }
+
+      correoFinal = nuevo;
+      console.log(`✏️ Correo corregido para ${referencia}: ${compra.correo} → ${nuevo}`);
+    }
+
+    // ── Traer los códigos asignados a esta referencia ──────────────────────
+    const { data: codigos, error: errCodigos } = await supabase
+      .from('codigos')
+      .select('codigo, dorado, premio_dorado')
+      .eq('referencia', referencia);
+
+    if (errCodigos || !codigos || codigos.length === 0) {
+      return res.status(404).json({ ok: false, error: 'No se encontraron códigos para esta referencia' });
+    }
+
+    const codigosParaCorreo = codigos.map(c => ({
+      codigo: c.codigo,
+      dorado: c.dorado,
+      premioDorado: c.premio_dorado || null
+    }));
+    const codigoDorado = codigosParaCorreo.find(c => c.dorado);
+
+    try {
+      await enviarCorreo(correoFinal, codigosParaCorreo, codigoDorado?.premioDorado || null);
+      console.log(`📧 Correo reenviado manualmente a ${correoFinal} (${referencia})`);
+    } catch (err) {
+      console.error(`❌ FALLO AL REENVIAR CORREO a ${correoFinal}:`, err.message);
+      return res.status(500).json({ ok: false, error: `No se pudo enviar el correo: ${err.message}` });
+    }
+
+    res.json({ ok: true, mensaje: `✅ Correo reenviado a ${correoFinal}`, correo: correoFinal });
+  } catch (e) {
+    console.error('💥 Error reenviar-correo:', e);
+    res.status(500).json({ ok: false, error: 'Error interno del servidor' });
+  }
+});
+
+
 router.post('/admin/activar-promo', async (req, res) => {
   try {
     const { precioDorado, precioNormal, expiraEn } = req.body;
