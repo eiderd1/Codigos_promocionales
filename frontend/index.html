@@ -1453,12 +1453,15 @@ input.error { border-color: rgba(248,113,113,.7); box-shadow: 0 0 0 3px rgba(248
 </a>
 
 <script>
-document.addEventListener("DOMContentLoaded", () => {
-
-const API_URL = window.location.origin;
+// Variables globales (fuera del DOMContentLoaded) para que también
+// sean accesibles desde el script del modal de transferencia bancaria
 let cantidadSeleccionada = 0;
 let datoActual = "";
 let procesandoPago = false;
+
+document.addEventListener("DOMContentLoaded", () => {
+
+const API_URL = window.location.origin;
 
 const cards = document.querySelectorAll(".card");
 const form = document.getElementById("form");
