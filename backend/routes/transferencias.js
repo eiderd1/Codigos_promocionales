@@ -37,9 +37,17 @@ router.post('/transferencia-registrar', async (req, res) => {
     if (!esCorreoValido(correo)) {
       return res.status(400).json({ error: 'Correo electrónico inválido' });
     }
-    const cantidadesValidas = [4, 8, 16];
-    if (!cantidadesValidas.includes(Number(cantidad))) {
-      return res.status(400).json({ error: 'Cantidad inválida. Elige 4, 8 o 16' });
+    const CANTIDAD_MIN = 4;
+    const CANTIDAD_MAX = 500;
+    const cantidadNum  = Number(cantidad);
+    if (
+      !Number.isInteger(cantidadNum) ||
+      cantidadNum < CANTIDAD_MIN ||
+      cantidadNum > CANTIDAD_MAX
+    ) {
+      return res.status(400).json({
+        error: `La cantidad debe ser un número entero entre ${CANTIDAD_MIN} y ${CANTIDAD_MAX}`
+      });
     }
 
     const { count: disponibles } = await supabase
@@ -51,7 +59,7 @@ router.post('/transferencia-registrar', async (req, res) => {
       return res.status(400).json({ error: 'No hay códigos disponibles' });
     }
 
-    const cantidadFinal    = Math.min(Number(cantidad), disponibles);
+    const cantidadFinal    = Math.min(cantidadNum, disponibles);
     const precioPorCodigo  = 3750;
     const montoTotal       = cantidadFinal * precioPorCodigo;
     const referencia       = `TRF-${Date.now()}-${Math.floor(Math.random() * 9999)}`;
