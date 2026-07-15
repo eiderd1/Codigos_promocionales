@@ -504,6 +504,38 @@ router.get('/admin/transferencias', async (req, res) => {
 // con la firma adecuada) se ejecutara. Ahora esas rutas viven únicamente en
 // routes/transferencias.js.
 
+// ════════════════════════════════════════════
+// WOMPI — pagos por pasarela
+// ════════════════════════════════════════════
+
+router.get('/admin/wompi', authAdmin, async (req, res) => {
+  try {
+    const { data: compras, error } = await supabase
+      .from('compras')
+      .select('*')
+      .in('estado', ['pagado', 'pendiente', 'DECLINED'])
+      .order('fecha', { ascending: false });
+
+    if (error) return res.status(500).json({ ok: false });
+
+    const refs = (compras || []).map(x => x.referencia);
+    let codigosMap = {};
+    if (refs.length) {
+      const { data: codigos } = await supabase
+        .from('codigos').select('codigo, dorado, referencia').in('referencia', refs);
+      (codigos || []).forEach(c => {
+        if (!codigosMap[c.referencia]) codigosMap[c.referencia] = [];
+        codigosMap[c.referencia].push(c);
+      });
+    }
+
+    res.json({ ok: true, wompi: (compras || []).map(c => ({ ...c, codigos: codigosMap[c.referencia] || [] })) });
+  } catch (e) {
+    console.error('💥 wompi:', e);
+    res.status(500).json({ ok: false });
+  }
+});
+
 
 // ════════════════════════════════════════════
 // BUSCADOR GLOBAL

@@ -45,32 +45,112 @@
       align-items: center;
       justify-content: center;
       padding: 24px;
+      position: relative;
+      overflow: hidden;
+      background: radial-gradient(circle at 20% 20%, #16233f 0%, #0a1128 45%, #050810 100%);
+    }
+    #login-screen::before,
+    #login-screen::after {
+      content: '';
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(80px);
+      opacity: 0.35;
+      pointer-events: none;
+    }
+    #login-screen::before {
+      width: 420px; height: 420px; background: #d4a820;
+      top: -120px; left: -100px;
+      animation: loginFloat1 9s ease-in-out infinite;
+    }
+    #login-screen::after {
+      width: 380px; height: 380px; background: #185FA5;
+      bottom: -140px; right: -100px;
+      animation: loginFloat2 11s ease-in-out infinite;
+    }
+    @keyframes loginFloat1 {
+      0%, 100% { transform: translate(0,0) scale(1); }
+      50%      { transform: translate(30px, 40px) scale(1.08); }
+    }
+    @keyframes loginFloat2 {
+      0%, 100% { transform: translate(0,0) scale(1); }
+      50%      { transform: translate(-30px, -30px) scale(1.1); }
     }
 
     .login-card {
-      background: var(--surface);
-      border: 0.5px solid var(--border);
-      border-radius: var(--radius-lg);
-      padding: 40px 36px;
+      position: relative;
+      z-index: 1;
+      background: rgba(18, 26, 46, 0.65);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      border: 1px solid rgba(212, 168, 32, 0.25);
+      border-radius: 18px;
+      padding: 44px 38px 36px;
       width: 100%;
       max-width: 380px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.05);
+      animation: loginCardIn .6s cubic-bezier(.2,.9,.3,1);
+    }
+    @keyframes loginCardIn {
+      from { opacity: 0; transform: translateY(18px) scale(.97); }
+      to   { opacity: 1; transform: translateY(0) scale(1); }
     }
 
-    .login-card h1 { font-size: 20px; font-weight: 600; margin-bottom: 6px; }
-    .login-card p { font-size: 13px; color: var(--text2); margin-bottom: 28px; }
-    .login-card label { display: block; font-size: 12px; color: var(--text2); margin-bottom: 6px; }
+    .login-icon {
+      width: 56px; height: 56px; margin: 0 auto 20px;
+      border-radius: 16px;
+      background: linear-gradient(135deg, #e8c34a, #b8890f);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 26px;
+      box-shadow: 0 8px 24px rgba(212,168,32,0.35);
+    }
+
+    .login-card h1 {
+      font-size: 20px; font-weight: 600; margin-bottom: 6px;
+      text-align: center; color: #f4f1ea; letter-spacing: .01em;
+    }
+    .login-card p {
+      font-size: 13px; color: #9aa3b8; margin-bottom: 28px; text-align: center;
+    }
+    .login-card label {
+      display: block; font-size: 11px; color: #9aa3b8; margin-bottom: 7px;
+      text-transform: uppercase; letter-spacing: .06em; font-weight: 500;
+    }
+
+    .login-input-wrap { position: relative; margin-bottom: 18px; }
+    .login-input-wrap svg {
+      position: absolute; left: 13px; top: 50%; transform: translateY(-50%);
+      width: 16px; height: 16px; stroke: #6b7488; pointer-events: none;
+      transition: stroke .2s ease;
+    }
     .login-card input {
-      width: 100%; padding: 9px 12px; border: 0.5px solid var(--border2);
-      border-radius: var(--radius); font-size: 14px; outline: none;
-      margin-bottom: 16px; background: var(--surface); color: var(--text);
+      width: 100%; padding: 12px 14px 12px 38px;
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 10px; font-size: 14px; outline: none;
+      background: rgba(255,255,255,0.04); color: #f4f1ea;
+      transition: border-color .2s ease, background .2s ease, box-shadow .2s ease;
     }
-    .login-card input:focus { border-color: var(--blue); }
+    .login-card input::placeholder { color: #5b6478; }
+    .login-card input:focus {
+      border-color: #d4a820;
+      background: rgba(255,255,255,0.06);
+      box-shadow: 0 0 0 3px rgba(212,168,32,0.15);
+    }
+    .login-card input:focus + svg { stroke: #d4a820; }
+
     .login-card button {
-      width: 100%; padding: 9px; background: var(--blue); color: #E6F1FB;
-      border: none; border-radius: var(--radius); font-size: 14px; font-weight: 500; cursor: pointer;
+      width: 100%; padding: 12px; margin-top: 4px;
+      background: linear-gradient(135deg, #e8c34a, #b8890f);
+      color: #1a1408;
+      border: none; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer;
+      letter-spacing: .01em;
+      transition: transform .15s ease, box-shadow .15s ease, filter .15s ease;
+      box-shadow: 0 6px 18px rgba(212,168,32,0.3);
     }
-    .login-card button:hover { background: var(--blue-dark); }
-    #login-err { font-size: 12px; color: var(--red); margin-top: 10px; min-height: 16px; }
+    .login-card button:hover  { filter: brightness(1.08); transform: translateY(-1px); box-shadow: 0 8px 22px rgba(212,168,32,0.4); }
+    .login-card button:active { transform: translateY(0); }
+
+    #login-err { font-size: 12px; color: #f2a3a3; margin-top: 14px; min-height: 16px; text-align: center; }
 
     #app { display: none; }
 
@@ -280,10 +360,17 @@
 <!-- LOGIN -->
 <div id="login-screen">
   <div class="login-card">
-    <h1>🔐 Admin</h1>
+    <div class="login-icon">🔐</div>
+    <h1>Panel Admin</h1>
     <p>Ingresa la clave de administrador para continuar</p>
     <label for="secret-input">Clave de acceso</label>
-    <input type="password" id="secret-input" placeholder="••••••••" autocomplete="current-password">
+    <div class="login-input-wrap">
+      <input type="password" id="secret-input" placeholder="••••••••" autocomplete="current-password">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3" y="11" width="18" height="10" rx="2"></rect>
+        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+      </svg>
+    </div>
     <button onclick="doLogin()">Ingresar</button>
     <div id="login-err"></div>
   </div>
@@ -314,6 +401,7 @@
       <button class="nav-item"         onclick="showTab('financiero')">      <span class="nav-icon">💰</span> Financiero</button>
       <button class="nav-item"         onclick="showTab('promo')">           <span class="nav-icon">📣</span> Promoción</button>
       <button class="nav-item"         onclick="showTab('correo')">          <span class="nav-icon">✉️</span> Correo</button>
+      <button class="nav-item"         onclick="showTab('wompi')">           <span class="nav-icon">💳</span> Wompi</button>
       <button class="nav-item"         onclick="showTab('transferencias')">  <span class="nav-icon">🏦</span> Transferencias</button>
       <button class="nav-item"         onclick="showTab('notif')">           <span class="nav-icon">📢</span> Notificaciones</button>
       <button class="nav-item"         onclick="showTab('ganador')">         <span class="nav-icon">🏆</span> Ganador</button>
@@ -493,6 +581,31 @@
             <button class="btn btn-primary" onclick="reenviarCorreo()">✉️ Reenviar</button>
           </div>
           <div id="correo-msg"></div>
+        </div>
+      </div>
+
+      <!-- WOMPI -->
+      <div id="tab-wompi" class="section">
+        <div class="section-header">
+          <h2>Pagos por Wompi</h2>
+          <p>Compras realizadas con tarjeta u otros métodos a través de la pasarela Wompi.</p>
+        </div>
+        <div class="form-card" style="margin-bottom:16px">
+          <div class="form-row" style="margin-bottom:0">
+            <div class="form-field">
+              <label>Filtrar por estado</label>
+              <select id="wom-filtro" onchange="loadWompi()">
+                <option value="todas">Todas</option>
+                <option value="pagado" selected>Pagadas</option>
+                <option value="pendiente">Pendientes</option>
+                <option value="DECLINED">Rechazadas</option>
+              </select>
+            </div>
+            <button class="btn" onclick="loadWompi()" style="align-self:flex-end">↺ Actualizar</button>
+          </div>
+        </div>
+        <div id="wom-list">
+          <div class="state-loading"><div class="spin">⟳</div><br>Cargando...</div>
         </div>
       </div>
 
@@ -783,6 +896,7 @@
     <button class="mobile-nav-btn" onclick="showTab('compras')"><span class="nav-icon">🧾</span>Compras</button>
     <button class="mobile-nav-btn" onclick="showTab('buscador')"><span class="nav-icon">🔍</span>Buscar</button>
     <button class="mobile-nav-btn" onclick="showTab('financiero')"><span class="nav-icon">💰</span>Finanzas</button>
+    <button class="mobile-nav-btn" onclick="showTab('wompi')"><span class="nav-icon">💳</span>Wompi</button>
     <button class="mobile-nav-btn" onclick="showTab('transferencias')"><span class="nav-icon">🏦</span>Transf.</button>
     <button class="mobile-nav-btn" onclick="showTab('ganador')"><span class="nav-icon">🏆</span>Ganador</button>
     <button class="mobile-nav-btn" onclick="showTab('correo')"><span class="nav-icon">✉️</span>Correo</button>
@@ -862,6 +976,7 @@
         const d = JSON.parse(e.data);
         mostrarToast(`🛒 Nueva compra: ${d.nombre} — ${d.cantidad} cód.`);
         if (document.getElementById('tab-compras').classList.contains('active'))        loadCompras();
+        if (document.getElementById('tab-wompi').classList.contains('active'))          loadWompi();
         if (document.getElementById('tab-transferencias').classList.contains('active')) loadTransferencias();
         if (document.getElementById('tab-dashboard').classList.contains('active'))      loadDashboard();
       } catch(_) {}
@@ -988,7 +1103,7 @@
   }
 
   // ── NAVEGACIÓN ──────────────────────────────────────────────────────────────
-  const TAB_ORDER = ['dashboard','codigos','compras','buscador','financiero','promo','correo','transferencias','notif','ganador','exportar'];
+  const TAB_ORDER = ['dashboard','codigos','compras','buscador','financiero','promo','correo','wompi','transferencias','notif','ganador','exportar'];
 
   function showTab(tab) {
     document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
@@ -1007,6 +1122,7 @@
     if (tab === 'codigos')        loadCodigos();
     if (tab === 'compras')        loadCompras();
     if (tab === 'promo')          loadPromo();
+    if (tab === 'wompi')          loadWompi();
     if (tab === 'transferencias') loadTransferencias();
     if (tab === 'notif')          loadNotifStats();
     if (tab === 'ganador')        loadGanadorStatus();
@@ -1258,6 +1374,48 @@
         ? `<div class="msg msg-ok">✓ ${d.mensaje}</div>`
         : `<div class="msg msg-err">${d.mensaje||'No se pudo enviar'}</div>`;
     } catch(e){ el.innerHTML='<div class="msg msg-err">Error de conexión</div>'; }
+  }
+
+  // ── WOMPI ────────────────────────────────────────────────────────────────────
+  async function loadWompi() {
+    const el = document.getElementById('wom-list');
+    el.innerHTML = '<div class="state-loading"><div class="spin">⟳</div><br>Cargando...</div>';
+    try {
+      const r = await fetch('/api/admin/wompi', { headers: headers() });
+      const d = await r.json();
+      const filtro = document.getElementById('wom-filtro').value;
+      let lista = d.wompi || [];
+      if (filtro !== 'todas') lista = lista.filter(w => w.estado === filtro);
+      if (!lista.length) { el.innerHTML = '<div class="state-empty">No hay pagos Wompi en esta categoría</div>'; return; }
+      const montoXcod = 3750;
+      const filas = lista.map(w => {
+        const monto = '$' + (w.cantidad * montoXcod).toLocaleString('es-CO');
+        const fecha = w.fecha ? new Date(w.fecha).toLocaleString('es-CO') : '—';
+        let estadoBadge = '';
+        if (w.estado === 'pagado')     estadoBadge = '<span class="badge badge-ok">✅ Pagado</span>';
+        if (w.estado === 'pendiente')  estadoBadge = '<span class="badge badge-pend">⏳ Pendiente</span>';
+        if (w.estado === 'DECLINED')   estadoBadge = '<span class="badge badge-err">✕ Rechazado</span>';
+        const codsHtml = w.codigos?.length
+          ? w.codigos.map(c => `<span class="code-mono ${c.dorado ? 'gold-code' : ''}" style="margin-right:6px;font-size:12px">${c.dorado ? '⭐' : ''}${c.codigo}</span>`).join('')
+          : '<span style="color:var(--text3);font-size:12px">—</span>';
+        return `<div style="background:var(--surface);border:0.5px solid var(--border);border-radius:var(--radius-lg);padding:16px;margin-bottom:12px">
+          <div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:10px">
+            <div>
+              <div style="font-weight:600;font-size:14px">${w.nombre}</div>
+              <div style="font-size:12px;color:var(--text2)">${w.correo} ${w.cedula ? '· CC ' + w.cedula : ''} ${w.telefono ? '· 📱 ' + w.telefono : ''}</div>
+              <div style="font-size:11px;color:var(--text3);margin-top:2px">${fecha}</div>
+            </div>
+            <div style="text-align:right">${estadoBadge}<div style="font-size:13px;font-weight:600;margin-top:4px">${w.cantidad} códigos · ${monto}</div></div>
+          </div>
+          <div style="font-size:12px;color:var(--text2);margin-bottom:4px">
+            <strong style="color:var(--text3);text-transform:uppercase;font-size:10px;letter-spacing:.05em">Ref:</strong>
+            <span class="code-mono" style="font-size:12px">${w.referencia}</span>
+          </div>
+          ${w.codigos?.length ? `<div style="margin-bottom:6px">${codsHtml}</div>` : ''}
+        </div>`;
+      }).join('');
+      el.innerHTML = `<p style="font-size:13px;color:var(--text2);margin-bottom:12px">${lista.length} pago(s) Wompi</p>${filas}`;
+    } catch (e) { el.innerHTML = '<div class="msg msg-err">Error cargando pagos Wompi</div>'; }
   }
 
   // ── TRANSFERENCIAS ──────────────────────────────────────────────────────────
