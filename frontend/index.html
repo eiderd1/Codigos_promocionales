@@ -574,6 +574,34 @@ input.error { border-color: rgba(248,113,113,.7); box-shadow: 0 0 0 3px rgba(248
   overflow: hidden;
 }
 .btn:active { transform: scale(.98); }
+
+/* ── Trace Ignite: traza de luz dorada que recorre el borde y enciende el botón ── */
+.btn::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1.5px;
+  background: conic-gradient(from 0deg, transparent 0%, transparent 78%, var(--gold-light) 88%, #fff 92%, var(--gold-light) 96%, transparent 100%);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0;
+  pointer-events: none;
+}
+.btn.trace-ignite::after {
+  animation: traceIgniteSpin 900ms linear, traceIgniteFade 900ms ease-out;
+}
+@keyframes traceIgniteFade {
+  0%   { opacity: 0; }
+  8%   { opacity: 1; }
+  85%  { opacity: 1; }
+  100% { opacity: 0; }
+}
+@keyframes traceIgniteSpin {
+  to { transform: rotate(1turn); }
+}
 .btn-primary {
   background: linear-gradient(135deg, var(--gold), var(--orange));
   color: #0A0600;
@@ -1461,6 +1489,21 @@ let procesandoPago = false;
 
 document.addEventListener("DOMContentLoaded", () => {
 
+// ===============================
+// TRACE IGNITE (efecto de traza al hacer clic en botones .btn)
+// ===============================
+document.querySelectorAll(".btn").forEach((boton) => {
+  boton.addEventListener("click", () => {
+    boton.classList.remove("trace-ignite");
+    // forzar reflow para poder reiniciar la animación en clics rápidos
+    void boton.offsetWidth;
+    boton.classList.add("trace-ignite");
+  });
+  boton.addEventListener("animationend", (e) => {
+    if (e.target === boton) boton.classList.remove("trace-ignite");
+  });
+});
+
 const API_URL = window.location.origin;
 
 const cards = document.querySelectorAll(".card");
@@ -2048,7 +2091,7 @@ document.getElementById('resultado').addEventListener('touchend', function() { w
 
 <script>
 // ══════════════════════════════════════════════════════
-// DATOS BANCARIOS — edita aquí tus cuentas
+// DATOS BANCARIOS
 // ══════════════════════════════════════════════════════
 const TRF_BANCOS = [
   { banco: 'Nequi',     tipo: 'Billetera digital', numero: '3218921686', titular: 'Eider Cobo' },
