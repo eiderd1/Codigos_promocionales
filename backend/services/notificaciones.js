@@ -362,7 +362,7 @@ async function recordatorioPagosIncompletos(supabase) {
            <br>Puedes intentarlo nuevamente o contactarnos si necesitas ayuda.
          </p>
          <div style="text-align:center;margin:16px 0;">
-           <a href="${process.env.FRONTEND_URL || 'https://tu-sitio.com'}"
+           <a href="${process.env.FRONTEND_URL || 'https://eidertechsoluciones.online/'}"
               style="display:inline-block;background:#2563eb;color:white;text-decoration:none;padding:13px 28px;border-radius:10px;font-weight:bold;font-size:14px;">
              🎟️ Volver a comprar
            </a>
