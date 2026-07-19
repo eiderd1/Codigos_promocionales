@@ -47,84 +47,155 @@
       padding: 24px;
       position: relative;
       overflow: hidden;
-      background: radial-gradient(circle at 20% 20%, #16233f 0%, #0a1128 45%, #050810 100%);
-    }
-    #login-screen::before,
-    #login-screen::after {
-      content: '';
-      position: absolute;
-      border-radius: 50%;
-      filter: blur(80px);
-      opacity: 0.35;
-      pointer-events: none;
-    }
-    #login-screen::before {
-      width: 420px; height: 420px; background: #d4a820;
-      top: -120px; left: -100px;
-      animation: loginFloat1 9s ease-in-out infinite;
-    }
-    #login-screen::after {
-      width: 380px; height: 380px; background: #185FA5;
-      bottom: -140px; right: -100px;
-      animation: loginFloat2 11s ease-in-out infinite;
-    }
-    @keyframes loginFloat1 {
-      0%, 100% { transform: translate(0,0) scale(1); }
-      50%      { transform: translate(30px, 40px) scale(1.08); }
-    }
-    @keyframes loginFloat2 {
-      0%, 100% { transform: translate(0,0) scale(1); }
-      50%      { transform: translate(-30px, -30px) scale(1.1); }
+      background: #050810;
     }
 
-    .login-card {
+    .login-shell {
       position: relative;
       z-index: 1;
-      background: rgba(18, 26, 46, 0.65);
-      backdrop-filter: blur(18px);
-      -webkit-backdrop-filter: blur(18px);
-      border: 1px solid rgba(212, 168, 32, 0.25);
-      border-radius: 18px;
-      padding: 44px 38px 36px;
       width: 100%;
-      max-width: 380px;
-      box-shadow: 0 20px 60px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.05);
+      max-width: 1040px;
+      min-height: 640px;
+      display: flex;
+      border-radius: 22px;
+      overflow: hidden;
+      box-shadow: 0 30px 80px rgba(0,0,0,0.55);
+      border: 1px solid rgba(255,255,255,0.06);
       animation: loginCardIn .6s cubic-bezier(.2,.9,.3,1);
+    }
+    @media (max-width: 860px) {
+      .login-shell { flex-direction: column; min-height: 0; }
     }
     @keyframes loginCardIn {
       from { opacity: 0; transform: translateY(18px) scale(.97); }
       to   { opacity: 1; transform: translateY(0) scale(1); }
     }
 
-    .login-icon {
-      width: 56px; height: 56px; margin: 0 auto 20px;
-      border-radius: 16px;
-      background: linear-gradient(135deg, #e8c34a, #b8890f);
+    /* ── Panel izquierdo: branding ─────────────────────────────────── */
+    .login-brand {
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+      padding: 40px 36px;
+      background: radial-gradient(circle at 25% 15%, #1a1030 0%, #0b0a1a 55%, #050508 100%);
+      display: flex; flex-direction: column;
+    }
+    @media (max-width: 860px) { .login-brand { padding: 32px 28px 24px; } }
+
+    .login-diamond {
+      position: absolute; width: 10px; height: 10px;
+      background: linear-gradient(135deg, #f0cf6a, #b8890f);
+      transform: rotate(45deg);
+      opacity: .55; border-radius: 2px;
+      animation: diamondFloat 6s ease-in-out infinite;
+    }
+    .login-diamond.sm  { width: 6px; height: 6px; opacity: .4; }
+    .login-diamond.lg  { width: 13px; height: 13px; opacity: .65; }
+    @keyframes diamondFloat {
+      0%, 100% { transform: translateY(0) rotate(45deg); }
+      50%      { transform: translateY(-10px) rotate(55deg); }
+    }
+
+    .login-brand-inner { position: relative; z-index: 1; margin: auto 0; }
+
+    .login-brand-icon {
+      width: 64px; height: 64px; border-radius: 16px;
       display: flex; align-items: center; justify-content: center;
-      font-size: 26px;
-      box-shadow: 0 8px 24px rgba(212,168,32,0.35);
+      font-size: 30px; margin-bottom: 18px;
+      filter: drop-shadow(0 0 14px rgba(232,195,74,.55));
+    }
+
+    .login-brand-eyebrow { font-size: 14px; color: #e7e2d6; margin-bottom: 2px; }
+    .login-brand-title {
+      font-size: 34px; font-weight: 800; line-height: 1.15; color: #f4f1ea;
+      margin-bottom: 10px; letter-spacing: -.01em;
+    }
+    .login-brand-title span {
+      background: linear-gradient(135deg, #f0cf6a, #b8890f);
+      -webkit-background-clip: text; background-clip: text; color: transparent;
+      filter: drop-shadow(0 0 18px rgba(232,195,74,.35));
+    }
+    .login-brand-sub { font-size: 13.5px; color: #a9a6c2; line-height: 1.6; margin-bottom: 26px; max-width: 320px; }
+
+    .login-brand-features { list-style: none; display: flex; flex-direction: column; gap: 14px; margin-bottom: 30px; }
+    .login-brand-features li { display: flex; align-items: flex-start; gap: 12px; }
+    .lbf-icon {
+      flex-shrink: 0; width: 38px; height: 38px; border-radius: 10px;
+      background: rgba(139, 92, 246, 0.18); border: 1px solid rgba(139,92,246,.25);
+      display: flex; align-items: center; justify-content: center; font-size: 17px;
+    }
+    .login-brand-features strong { display: block; font-size: 13.5px; color: #f1eee6; margin-bottom: 1px; }
+    .login-brand-features small  { font-size: 12px; color: #9a97b3; line-height: 1.4; }
+
+    .login-brand-ticket {
+      position: relative;
+      align-self: flex-start;
+      background: linear-gradient(135deg, #17141f, #0c0a13);
+      border: 1px solid rgba(232,195,74,.35);
+      border-radius: 12px;
+      padding: 16px 44px 16px 18px;
+      box-shadow: 0 18px 40px rgba(0,0,0,.5), 0 0 0 1px rgba(0,0,0,.2);
+      transform: rotate(-3deg);
+      text-decoration: none;
+      display: block;
+      cursor: pointer;
+      transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+    }
+    .login-brand-ticket:hover {
+      transform: rotate(-1deg) translateY(-3px);
+      box-shadow: 0 22px 46px rgba(0,0,0,.55), 0 0 0 1px rgba(0,0,0,.2), 0 0 20px rgba(232,195,74,.25);
+      border-color: rgba(232,195,74,.6);
+    }
+    .login-brand-ticket::before {
+      content: ''; position: absolute; inset: 0; border-radius: 12px;
+      background: repeating-linear-gradient(90deg, rgba(255,255,255,.05) 0 2px, transparent 2px 5px);
+      opacity: .15; pointer-events: none;
+    }
+    .lbt-text { font-size: 12.5px; font-weight: 700; color: #e8c34a; line-height: 1.4; letter-spacing: .01em; }
+    .lbt-star { position: absolute; top: 12px; right: 14px; font-size: 18px; filter: drop-shadow(0 0 6px rgba(232,195,74,.6)); }
+
+    /* ── Panel derecho: formulario ─────────────────────────────────── */
+    .login-form-panel {
+      flex: 1;
+      background: #0b0d14;
+      display: flex; align-items: center; justify-content: center;
+      padding: 40px 36px;
+    }
+    @media (max-width: 860px) { .login-form-panel { padding: 34px 28px 40px; } }
+
+    .login-card { width: 100%; max-width: 340px; }
+
+    .login-avatar {
+      width: 56px; height: 56px; border-radius: 50%; margin: 0 auto 18px;
+      background: rgba(139,92,246,.15); border: 1px solid rgba(139,92,246,.3);
+      display: flex; align-items: center; justify-content: center; font-size: 24px;
     }
 
     .login-card h1 {
-      font-size: 20px; font-weight: 600; margin-bottom: 6px;
+      font-size: 21px; font-weight: 700; margin-bottom: 5px;
       text-align: center; color: #f4f1ea; letter-spacing: .01em;
     }
-    .login-card p {
-      font-size: 13px; color: #9aa3b8; margin-bottom: 28px; text-align: center;
+    .login-card p.login-sub {
+      font-size: 13px; color: #9aa3b8; margin-bottom: 20px; text-align: center;
+    }
+    .login-divider {
+      width: 46px; height: 3px; margin: 0 auto 26px; border-radius: 2px;
+      background: linear-gradient(90deg, #8b5cf6, #6d28d9);
     }
     .login-card label {
-      display: block; font-size: 11px; color: #9aa3b8; margin-bottom: 7px;
-      text-transform: uppercase; letter-spacing: .06em; font-weight: 500;
+      display: block; font-size: 11.5px; color: #c7c4d8; margin-bottom: 7px;
+      font-weight: 500;
     }
+    .login-field { margin-bottom: 18px; }
 
-    .login-input-wrap { position: relative; margin-bottom: 18px; }
+    .login-input-wrap { position: relative; }
     .login-input-wrap svg {
       position: absolute; left: 13px; top: 50%; transform: translateY(-50%);
       width: 16px; height: 16px; stroke: #6b7488; pointer-events: none;
       transition: stroke .2s ease;
     }
     .login-card input {
-      width: 100%; padding: 12px 14px 12px 38px;
+      width: 100%; padding: 12px 40px 12px 38px;
       border: 1px solid rgba(255,255,255,0.1);
       border-radius: 10px; font-size: 14px; outline: none;
       background: rgba(255,255,255,0.04); color: #f4f1ea;
@@ -132,25 +203,48 @@
     }
     .login-card input::placeholder { color: #5b6478; }
     .login-card input:focus {
-      border-color: #d4a820;
+      border-color: #8b5cf6;
       background: rgba(255,255,255,0.06);
-      box-shadow: 0 0 0 3px rgba(212,168,32,0.15);
+      box-shadow: 0 0 0 3px rgba(139,92,246,0.18);
     }
-    .login-card input:focus + svg { stroke: #d4a820; }
+    .login-card input:focus ~ svg { stroke: #8b5cf6; }
 
-    .login-card button {
-      width: 100%; padding: 12px; margin-top: 4px;
-      background: linear-gradient(135deg, #e8c34a, #b8890f);
-      color: #1a1408;
+    .login-eye {
+      position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
+      background: none; border: none; cursor: pointer; font-size: 15px;
+      color: #6b7488; padding: 4px; line-height: 1;
+    }
+    .login-eye:hover { color: #8b5cf6; }
+
+    .login-remember {
+      display: flex; align-items: center; gap: 8px; margin-bottom: 22px;
+      font-size: 12.5px; color: #c7c4d8; cursor: pointer; user-select: none;
+    }
+    .login-remember input {
+      width: 15px; height: 15px; accent-color: #8b5cf6; cursor: pointer;
+      padding: 0; border-radius: 4px;
+    }
+
+    .login-card button.login-submit {
+      width: 100%; padding: 13px; margin-top: 0;
+      background: linear-gradient(135deg, #8b5cf6, #6d28d9);
+      color: #fff;
       border: none; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer;
       letter-spacing: .01em;
+      display: flex; align-items: center; justify-content: center; gap: 8px;
       transition: transform .15s ease, box-shadow .15s ease, filter .15s ease;
-      box-shadow: 0 6px 18px rgba(212,168,32,0.3);
+      box-shadow: 0 10px 26px rgba(109,40,217,0.4);
     }
-    .login-card button:hover  { filter: brightness(1.08); transform: translateY(-1px); box-shadow: 0 8px 22px rgba(212,168,32,0.4); }
-    .login-card button:active { transform: translateY(0); }
+    .login-card button.login-submit:hover  { filter: brightness(1.08); transform: translateY(-1px); box-shadow: 0 12px 30px rgba(109,40,217,0.5); }
+    .login-card button.login-submit:active { transform: translateY(0); }
+    .login-card button.login-submit:disabled { opacity: .65; cursor: default; transform: none; }
 
     #login-err { font-size: 12px; color: #f2a3a3; margin-top: 14px; min-height: 16px; text-align: center; }
+
+    .login-credit {
+      text-align: center; font-size: 11px; color: #565c72;
+      margin-top: 26px; letter-spacing: .02em;
+    }
 
     #app { display: none; }
 
@@ -359,20 +453,77 @@
 
 <!-- LOGIN -->
 <div id="login-screen">
-  <div class="login-card">
-    <div class="login-icon">🔐</div>
-    <h1>Panel Admin</h1>
-    <p>Ingresa la clave de administrador para continuar</p>
-    <label for="secret-input">Clave de acceso</label>
-    <div class="login-input-wrap">
-      <input type="password" id="secret-input" placeholder="••••••••" autocomplete="current-password">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <rect x="3" y="11" width="18" height="10" rx="2"></rect>
-        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-      </svg>
+  <div class="login-shell">
+
+    <!-- Panel izquierdo: branding -->
+    <div class="login-brand">
+      <span class="login-diamond lg" style="top:8%; left:10%"></span>
+      <span class="login-diamond sm" style="top:14%; left:38%"></span>
+      <span class="login-diamond"    style="top:22%; left:70%; animation-delay:1s"></span>
+      <span class="login-diamond sm" style="top:38%; left:16%; animation-delay:2s"></span>
+      <span class="login-diamond"    style="top:48%; left:82%; animation-delay:.5s"></span>
+      <span class="login-diamond sm" style="top:64%; left:6%;  animation-delay:1.5s"></span>
+      <span class="login-diamond lg" style="top:70%; left:60%; animation-delay:2.5s"></span>
+      <span class="login-diamond sm" style="top:82%; left:30%; animation-delay:1.2s"></span>
+
+      <div class="login-brand-inner">
+        <div class="login-brand-icon">🎟️</div>
+        <p class="login-brand-eyebrow">Bienvenido a</p>
+        <h1 class="login-brand-title">Panel<br><span>Admin</span></h1>
+        <p class="login-brand-sub">Gestiona ventas, códigos y el ganador de tu rifa desde un solo lugar.</p>
+
+        <ul class="login-brand-features">
+          <li>
+            <span class="lbf-icon">🎫</span>
+            <div><strong>Control de códigos</strong><small>Sigue cada código vendido y dorado en tiempo real.</small></div>
+          </li>
+          <li>
+            <span class="lbf-icon">🛡️</span>
+            <div><strong>Acceso seguro</strong><small>Solo entra quien tenga la clave de administrador.</small></div>
+          </li>
+          <li>
+            <span class="lbf-icon">🏆</span>
+            <div><strong>Publica el ganador</strong><small>Anuncia el resultado al instante desde aquí.</small></div>
+          </li>
+        </ul>
+
+        <a class="login-brand-ticket" href="https://eidertechsoluciones.online/" target="_blank" rel="noopener">
+          <div class="lbt-text">TU CÓDIGO PUEDE<br>SER EL GANADOR</div>
+          <div class="lbt-star">⭐</div>
+        </a>
+      </div>
     </div>
-    <button onclick="doLogin()">Ingresar</button>
-    <div id="login-err"></div>
+
+    <!-- Panel derecho: formulario -->
+    <div class="login-form-panel">
+      <div class="login-card">
+        <div class="login-avatar">👤</div>
+        <h1>Iniciar sesión</h1>
+        <p class="login-sub">Panel de administrador</p>
+        <div class="login-divider"></div>
+
+        <div class="login-field">
+          <label for="secret-input">Clave de acceso</label>
+          <div class="login-input-wrap">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="11" width="18" height="10" rx="2"></rect>
+              <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+            </svg>
+            <input type="password" id="secret-input" placeholder="Ingresa tu clave de acceso" autocomplete="current-password">
+            <button type="button" class="login-eye" id="login-eye-btn" onclick="toggleClaveVisible()" aria-label="Mostrar clave">👁️</button>
+          </div>
+        </div>
+
+        <label class="login-remember">
+          <input type="checkbox" id="recordar-check"> Recordarme en este dispositivo
+        </label>
+
+        <button class="login-submit" id="login-btn" onclick="doLogin()">Ingresar <span>→</span></button>
+        <div id="login-err"></div>
+        <div class="login-credit">By: Inversiones Eidertechsoluciones</div>
+      </div>
+    </div>
+
   </div>
 </div>
 
@@ -406,6 +557,7 @@
       <button class="nav-item"         onclick="showTab('notif')">           <span class="nav-icon">📢</span> Notificaciones</button>
       <button class="nav-item"         onclick="showTab('ganador')">         <span class="nav-icon">🏆</span> Ganador</button>
       <button class="nav-item"         onclick="showTab('exportar')">        <span class="nav-icon">📥</span> Exportar</button>
+      <button class="nav-item"         onclick="showTab('eventos')">         <span class="nav-icon">🗄️</span> Eventos</button>
     </nav>
 
     <main class="main">
@@ -887,6 +1039,37 @@
         </div>
       </div>
 
+      <!-- EVENTOS -->
+      <div id="tab-eventos" class="section">
+        <div class="section-header">
+          <h2>Cerrar evento y empezar nuevo</h2>
+          <p>Guarda todo lo de esta dinámica en el historial y deja las tablas activas en cero</p>
+        </div>
+
+        <div class="form-card" style="border:0.5px solid #fca5a5;background:#fef2f2">
+          <p style="font-size:13px;color:#991b1b;line-height:1.7;margin-bottom:14px">
+            <strong>⚠️ Esta acción:</strong><br>
+            • Guarda <strong>todas</strong> las compras, códigos vendidos, el ganador y la config actual en el historial (no se pierde nada).<br>
+            • Vacía la tabla de compras y libera todos los códigos vendidos (el pool de códigos sigue igual, solo queda disponible de nuevo).<br>
+            • Oculta el ganador publicado y desactiva el banner y cualquier promoción vigente.<br>
+            • <strong>No se puede deshacer</strong> desde el panel: una vez cerrado, el evento nuevo empieza desde cero.
+          </p>
+          <div class="form-field" style="margin-bottom:14px">
+            <label>Nombre del evento a archivar (opcional)</label>
+            <input type="text" id="evt-nombre" placeholder="Ej: Rifa Mayo 2026">
+          </div>
+          <button class="btn btn-danger" onclick="cerrarEvento()" id="btn-cerrar-evento">🔒 Cerrar evento y empezar nuevo</button>
+          <div id="evt-msg"></div>
+        </div>
+
+        <div class="section-header" style="margin-top:28px">
+          <h2 style="font-size:15px">Historial de eventos</h2>
+        </div>
+        <div id="eventos-historial">
+          <div class="state-loading"><div class="spin">⟳</div><br>Cargando...</div>
+        </div>
+      </div>
+
     </main>
   </div>
 
@@ -902,6 +1085,7 @@
     <button class="mobile-nav-btn" onclick="showTab('correo')"><span class="nav-icon">✉️</span>Correo</button>
     <button class="mobile-nav-btn" onclick="showTab('notif')"><span class="nav-icon">📢</span>Notif.</button>
     <button class="mobile-nav-btn" onclick="showTab('exportar')"><span class="nav-icon">📥</span>Exportar</button>
+    <button class="mobile-nav-btn" onclick="showTab('eventos')"><span class="nav-icon">🗄️</span>Eventos</button>
   </nav>
 </div>
 
@@ -915,12 +1099,24 @@
   function fmt(n) { return Number(n).toLocaleString('es-CO'); }
 
   // ── LOGIN / LOGOUT ──────────────────────────────────────────────────────────
+  const REMEMBER_KEY = 'admin_token_recordado';
+
+  function toggleClaveVisible() {
+    const input = document.getElementById('secret-input');
+    const btn   = document.getElementById('login-eye-btn');
+    const show  = input.type === 'password';
+    input.type  = show ? 'text' : 'password';
+    btn.textContent = show ? '🙈' : '👁️';
+  }
+
   async function doLogin() {
     const input = document.getElementById('secret-input');
     const errEl = document.getElementById('login-err');
+    const btn   = document.getElementById('login-btn');
     const token = input.value.trim();
     if (!token) { errEl.textContent = 'Ingresa la clave'; return; }
-    errEl.textContent = 'Verificando...';
+    errEl.textContent = '';
+    btn.disabled = true; btn.textContent = 'Verificando...';
     try {
       const r = await fetch('/api/admin/verificar', {
         method: 'POST',
@@ -931,7 +1127,14 @@
       if (!r.ok) { errEl.textContent = '❌ Error del servidor'; return; }
       const d = await r.json();
       if (!d.ok) { errEl.textContent = '❌ Clave incorrecta'; return; }
+
       ADMIN_TOKEN = token;
+      if (document.getElementById('recordar-check').checked) {
+        localStorage.setItem(REMEMBER_KEY, token);
+      } else {
+        localStorage.removeItem(REMEMBER_KEY);
+      }
+
       document.getElementById('login-screen').style.display = 'none';
       document.getElementById('app').style.display = 'block';
       loadDashboard();
@@ -940,22 +1143,36 @@
       cargarEstadoVentas();
     } catch (e) {
       errEl.textContent = 'Error de conexión con el servidor';
+    } finally {
+      btn.disabled = false; btn.innerHTML = 'Ingresar <span>→</span>';
     }
   }
 
   function doLogout() {
     ADMIN_TOKEN = '';
+    localStorage.removeItem(REMEMBER_KEY);
     if (sseSource)  { sseSource.close();  sseSource  = null; }
     if (sseStats)   { sseStats.close();   sseStats   = null; }
     document.getElementById('sse-dot').className = '';
     document.getElementById('login-screen').style.display = 'flex';
     document.getElementById('app').style.display = 'none';
     document.getElementById('secret-input').value = '';
+    document.getElementById('recordar-check').checked = false;
   }
 
   document.getElementById('secret-input').addEventListener('keydown', e => {
     if (e.key === 'Enter') doLogin();
   });
+
+  // Si había una clave recordada en este dispositivo, la intenta usar sola
+  (function intentarSesionRecordada() {
+    const token = localStorage.getItem(REMEMBER_KEY);
+    if (!token) return;
+    document.getElementById('secret-input').value = token;
+    document.getElementById('recordar-check').checked = true;
+    doLogin();
+  })();
+
 
   // ── SSE — notificaciones en tiempo real ─────────────────────────────────────
   let sseSource = null;
@@ -1103,7 +1320,7 @@
   }
 
   // ── NAVEGACIÓN ──────────────────────────────────────────────────────────────
-  const TAB_ORDER = ['dashboard','codigos','compras','buscador','financiero','promo','correo','wompi','transferencias','notif','ganador','exportar'];
+  const TAB_ORDER = ['dashboard','codigos','compras','buscador','financiero','promo','correo','wompi','transferencias','notif','ganador','exportar','eventos'];
 
   function showTab(tab) {
     document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
@@ -1127,6 +1344,7 @@
     if (tab === 'notif')          loadNotifStats();
     if (tab === 'ganador')        loadGanadorStatus();
     if (tab === 'financiero')     loadFinanciero();
+    if (tab === 'eventos')        loadEventosHistorial();
   }
 
   // ── DASHBOARD ───────────────────────────────────────────────────────────────
@@ -1685,6 +1903,90 @@
     a.download = 'ganadores.xlsx';
     a.click();
     setTimeout(() => el.innerHTML = '', 3000);
+  }
+
+  // ── EVENTOS ──────────────────────────────────────────────────────────────────
+  async function cerrarEvento() {
+    const nombre = document.getElementById('evt-nombre').value.trim();
+    const msg    = document.getElementById('evt-msg');
+    const btn    = document.getElementById('btn-cerrar-evento');
+
+    const paso1 = confirm(
+      '¿Cerrar el evento actual y empezar uno nuevo?\n\n' +
+      'Se guardará todo (compras, códigos, ganador y config) en el historial, ' +
+      'y las tablas activas quedarán en cero.\n\nEsta acción no se puede deshacer desde el panel.'
+    );
+    if (!paso1) return;
+    const paso2 = confirm('Confirma de nuevo: esto reinicia las ventas AHORA MISMO. ¿Continuar?');
+    if (!paso2) return;
+
+    btn.disabled = true; btn.textContent = '⟳ Archivando evento...';
+    msg.innerHTML = '<div class="state-loading">Guardando historial y reiniciando...</div>';
+    try {
+      const r = await fetch('/api/admin/eventos/cerrar', {
+        method: 'POST', headers: headers(),
+        body: JSON.stringify({ nombre: nombre || null })
+      });
+      const d = await r.json();
+      if (d.ok) {
+        msg.innerHTML = `<div class="msg msg-ok">✓ Evento archivado: <strong>${d.evento.nombre}</strong>. Todo quedó en cero, listo para el próximo evento.</div>`;
+        document.getElementById('evt-nombre').value = '';
+        loadEventosHistorial();
+      } else {
+        msg.innerHTML = `<div class="msg msg-err">❌ ${d.error || 'Error al cerrar el evento'}</div>`;
+      }
+    } catch (e) {
+      msg.innerHTML = '<div class="msg msg-err">Error de conexión</div>';
+    } finally {
+      btn.disabled = false; btn.textContent = '🔒 Cerrar evento y empezar nuevo';
+    }
+  }
+
+  async function loadEventosHistorial() {
+    const el = document.getElementById('eventos-historial');
+    el.innerHTML = '<div class="state-loading"><div class="spin">⟳</div><br>Cargando...</div>';
+    try {
+      const r = await fetch('/api/admin/eventos', { headers: headers() });
+      const d = await r.json();
+      if (!d.ok) { el.innerHTML = '<div class="msg msg-err">Error cargando historial</div>'; return; }
+      if (!d.eventos.length) { el.innerHTML = '<div class="promo-inactive-box">⚪ Aún no hay eventos archivados</div>'; return; }
+
+      el.innerHTML = `
+        <table style="width:100%;border-collapse:collapse;font-size:13px">
+          <thead>
+            <tr style="text-align:left;color:var(--text3);border-bottom:0.5px solid var(--border)">
+              <th style="padding:8px 6px">Evento</th>
+              <th style="padding:8px 6px">Fecha de cierre</th>
+              <th style="padding:8px 6px">Compras pagadas</th>
+              <th style="padding:8px 6px">Códigos vendidos</th>
+              <th style="padding:8px 6px">Ingresos</th>
+              <th style="padding:8px 6px">Ganador</th>
+              <th style="padding:8px 6px"></th>
+            </tr>
+          </thead>
+          <tbody>
+            ${d.eventos.map(ev => `
+              <tr style="border-bottom:0.5px solid var(--border)">
+                <td style="padding:8px 6px">${ev.nombre}</td>
+                <td style="padding:8px 6px">${new Date(ev.fecha_cierre).toLocaleString('es-CO')}</td>
+                <td style="padding:8px 6px">${ev.resumen?.compras_pagadas ?? 0}</td>
+                <td style="padding:8px 6px">${ev.resumen?.codigos_vendidos ?? 0}</td>
+                <td style="padding:8px 6px">$${fmt(ev.resumen?.ingresos ?? 0)}</td>
+                <td style="padding:8px 6px">${ev.resumen?.ganador?.activo ? (ev.resumen.ganador.codigo + ' — ' + ev.resumen.ganador.nombre) : '—'}</td>
+                <td style="padding:8px 6px"><button class="btn" onclick="exportarEvento('${ev.id}')">📥 Excel</button></td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>`;
+    } catch (e) {
+      el.innerHTML = '<div class="msg msg-err">Error de conexión</div>';
+    }
+  }
+
+  function exportarEvento(id) {
+    const a = document.createElement('a');
+    a.href = `/api/admin/eventos/${id}/exportar?token=${encodeURIComponent(ADMIN_TOKEN)}`;
+    a.click();
   }
 
   // ── PREVIEW CORREOS ──────────────────────────────────────────────────────────

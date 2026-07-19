@@ -2,6 +2,12 @@
 const express = require('express');
 const router  = express.Router();
 const supabase = require('../config/supabase');
+const ExcelJS  = require('exceljs');
+const {
+  cerrarEventoYArchivar,
+  listarEventosHistorial,
+  obtenerEventoHistorial
+} = require('../services/eventos');
 
 function authAdmin(req, res, next) {
   const token  = req.headers['x-admin-token'] || req.query.token;
@@ -197,6 +203,89 @@ router.get('/admin/config', authAdmin, async (req, res) => {
     });
   } catch (e) {
     res.status(500).json({ error: e.message });
+  }
+});
+
+// ════════════════════════════════════════════════════════════════════════════
+// EVENTOS — archivar el evento actual y dejar todo en cero
+// ════════════════════════════════════════════════════════════════════════════
+
+// POST /api/admin/eventos/cerrar — guarda todo en el historial y reinicia
+router.post('/admin/eventos/cerrar', authAdmin, async (req, res) => {
+  try {
+    const { nombre } = req.body;
+    const evento = await cerrarEventoYArchivar(nombre);
+    console.log(`🗄️ Evento archivado y reiniciado: ${evento.nombre}`);
+    res.json({ ok: true, evento });
+  } catch (e) {
+    console.error('❌ Error cerrando evento:', e.message);
+    res.status(500).json({ ok: false, error: e.message });
+  }
+});
+
+// GET /api/admin/eventos — lista de eventos archivados (para el panel)
+router.get('/admin/eventos', authAdmin, async (req, res) => {
+  try {
+    const eventos = await listarEventosHistorial();
+    res.json({ ok: true, eventos });
+  } catch (e) {
+    console.error('❌ Error listando eventos:', e.message);
+    res.status(500).json({ ok: false, error: e.message });
+  }
+});
+
+// GET /api/admin/eventos/:id — detalle completo de un evento archivado
+router.get('/admin/eventos/:id', authAdmin, async (req, res) => {
+  try {
+    const evento = await obtenerEventoHistorial(req.params.id);
+    res.json({ ok: true, evento });
+  } catch (e) {
+    console.error('❌ Error obteniendo evento:', e.message);
+    res.status(500).json({ ok: false, error: e.message });
+  }
+});
+
+// GET /api/admin/eventos/:id/exportar — Excel con compras y códigos del evento
+router.get('/admin/eventos/:id/exportar', authAdmin, async (req, res) => {
+  try {
+    const evento = await obtenerEventoHistorial(req.params.id);
+    if (!evento) return res.status(404).json({ ok: false, error: 'Evento no encontrado' });
+
+    const wb = new ExcelJS.Workbook();
+
+    const wsCompras = wb.addWorksheet('Compras');
+    wsCompras.columns = [
+      { header: 'Referencia', key: 'referencia', width: 30 },
+      { header: 'Nombre',     key: 'nombre',     width: 26 },
+      { header: 'Correo',     key: 'correo',     width: 30 },
+      { header: 'Cédula',     key: 'cedula',     width: 14 },
+      { header: 'Teléfono',   key: 'telefono',   width: 14 },
+      { header: 'Cantidad',   key: 'cantidad',   width: 10 },
+      { header: 'Estado',     key: 'estado',     width: 14 },
+      { header: 'Fecha',      key: 'fecha',      width: 22 }
+    ];
+    wsCompras.getRow(1).font = { bold: true };
+    (evento.compras || []).forEach(c => wsCompras.addRow(c));
+
+    const wsCodigos = wb.addWorksheet('Códigos vendidos');
+    wsCodigos.columns = [
+      { header: 'Código',     key: 'codigo',     width: 14 },
+      { header: 'Dorado',     key: 'dorado',     width: 10 },
+      { header: 'Referencia', key: 'referencia', width: 30 },
+      { header: 'Nombre',     key: 'nombre',     width: 26 },
+      { header: 'Email',      key: 'email',      width: 30 },
+      { header: 'Teléfono',   key: 'telefono',   width: 14 }
+    ];
+    wsCodigos.getRow(1).font = { bold: true };
+    (evento.codigos || []).forEach(c => wsCodigos.addRow(c));
+
+    const safeName = evento.nombre.replace(/[^a-z0-9]+/gi, '_').slice(0, 40);
+    res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    res.setHeader('Content-Disposition', `attachment; filename=evento_${safeName}.xlsx`);
+    await wb.xlsx.write(res); res.end();
+  } catch (e) {
+    console.error('❌ Error exportando evento:', e.message);
+    res.status(500).json({ ok: false, error: e.message });
   }
 });
 
