@@ -555,6 +555,7 @@
       <button class="nav-item"         onclick="showTab('wompi')">           <span class="nav-icon">💳</span> Wompi</button>
       <button class="nav-item"         onclick="showTab('transferencias')">  <span class="nav-icon">🏦</span> Transferencias</button>
       <button class="nav-item"         onclick="showTab('notif')">           <span class="nav-icon">📢</span> Notificaciones</button>
+      <button class="nav-item"         onclick="showTab('dinamica')">        <span class="nav-icon">⚙️</span> Dinámica</button>
       <button class="nav-item"         onclick="showTab('ganador')">         <span class="nav-icon">🏆</span> Ganador</button>
       <button class="nav-item"         onclick="showTab('exportar')">        <span class="nav-icon">📥</span> Exportar</button>
       <button class="nav-item"         onclick="showTab('eventos')">         <span class="nav-icon">🗄️</span> Eventos</button>
@@ -965,6 +966,45 @@
       </div>
 
       <!-- GANADOR -->
+      <!-- DINÁMICA -->
+      <div id="tab-dinamica" class="section">
+        <div class="section-header">
+          <h2>⚙️ Configuración de la dinámica</h2>
+          <p>Nombre, precio por número, valor del código promocional, valor del premio e imagen. Se aplica de inmediato y queda guardado aunque el servidor se reinicie.</p>
+        </div>
+
+        <div class="form-card">
+          <div class="form-field" style="margin-bottom:14px">
+            <label>Nombre de la dinámica</label>
+            <input type="text" id="din-nombre" placeholder="Ej: Dinámica $15.000.000 COP">
+          </div>
+          <div class="form-field" style="margin-bottom:14px">
+            <label>Valor por número (COP)</label>
+            <input type="number" id="din-precio" min="100" step="1" placeholder="3750">
+          </div>
+          <div class="form-field" style="margin-bottom:14px">
+            <label>Valor del código promocional / dorado (COP)</label>
+            <input type="number" id="din-precio-dorado" min="0" step="1" placeholder="500000">
+          </div>
+          <div class="form-field" style="margin-bottom:14px">
+            <label>Valor del premio (COP)</label>
+            <input type="number" id="din-premio" min="0" step="1" placeholder="15000000">
+          </div>
+          <div class="form-field" style="margin-bottom:14px">
+            <label>Imagen del premio (URL)</label>
+            <input type="text" id="din-imagen" placeholder="/imagenes/DINAMICA_15M.png">
+            <small style="color:var(--text3)">Puede ser una ruta dentro de /imagenes o una URL externa (https://...)</small>
+          </div>
+          <div class="form-field" style="margin-bottom:14px">
+            <label>Cantidad de números en el pool actual</label>
+            <input type="text" id="din-total-numeros" disabled style="opacity:.7">
+            <small style="color:var(--text3)">Para cambiar la cantidad de números, hazlo desde "Cerrar evento y empezar nuevo" ↓</small>
+          </div>
+          <button class="btn btn-primary" onclick="guardarDinamica()" id="btn-guardar-dinamica">💾 Guardar cambios</button>
+          <div id="din-msg"></div>
+        </div>
+      </div>
+
       <div id="tab-ganador" class="section">
         <div class="section-header">
           <h2>🏆 Anunciar ganador</h2>
@@ -1063,6 +1103,38 @@
         </div>
 
         <div class="section-header" style="margin-top:28px">
+          <h2 style="font-size:15px">Configurar la nueva dinámica (opcional)</h2>
+          <p>Si la llenas, se aplica automáticamente al cerrar el evento actual. Si dejas "Cantidad de números" vacío, se conserva el pool actual tal cual.</p>
+        </div>
+        <div class="form-card">
+          <div class="form-field" style="margin-bottom:14px">
+            <label>Nombre de la nueva dinámica</label>
+            <input type="text" id="nva-nombre" placeholder="Ej: Dinámica $20.000.000 COP">
+          </div>
+          <div class="form-field" style="margin-bottom:14px">
+            <label>Cantidad de números a vender</label>
+            <input type="number" id="nva-total-numeros" min="10" max="1000000" step="1" placeholder="Ej: 10000">
+            <small style="color:var(--text3)">⚠️ Esto regenera por completo el pool de números (0000...N-1). Solo hazlo aquí, justo al cerrar el evento.</small>
+          </div>
+          <div class="form-field" style="margin-bottom:14px">
+            <label>Valor por número (COP)</label>
+            <input type="number" id="nva-precio" min="100" step="1" placeholder="3750">
+          </div>
+          <div class="form-field" style="margin-bottom:14px">
+            <label>Valor del código promocional / dorado (COP)</label>
+            <input type="number" id="nva-precio-dorado" min="0" step="1" placeholder="500000">
+          </div>
+          <div class="form-field" style="margin-bottom:14px">
+            <label>Valor del premio (COP)</label>
+            <input type="number" id="nva-premio" min="0" step="1" placeholder="15000000">
+          </div>
+          <div class="form-field" style="margin-bottom:14px">
+            <label>Imagen del premio (URL)</label>
+            <input type="text" id="nva-imagen" placeholder="/imagenes/NUEVA_DINAMICA.png">
+          </div>
+        </div>
+
+        <div class="section-header" style="margin-top:28px">
           <h2 style="font-size:15px">Historial de eventos</h2>
         </div>
         <div id="eventos-historial">
@@ -1081,6 +1153,7 @@
     <button class="mobile-nav-btn" onclick="showTab('financiero')"><span class="nav-icon">💰</span>Finanzas</button>
     <button class="mobile-nav-btn" onclick="showTab('wompi')"><span class="nav-icon">💳</span>Wompi</button>
     <button class="mobile-nav-btn" onclick="showTab('transferencias')"><span class="nav-icon">🏦</span>Transf.</button>
+    <button class="mobile-nav-btn" onclick="showTab('dinamica')"><span class="nav-icon">⚙️</span>Dinámica</button>
     <button class="mobile-nav-btn" onclick="showTab('ganador')"><span class="nav-icon">🏆</span>Ganador</button>
     <button class="mobile-nav-btn" onclick="showTab('correo')"><span class="nav-icon">✉️</span>Correo</button>
     <button class="mobile-nav-btn" onclick="showTab('notif')"><span class="nav-icon">📢</span>Notif.</button>
@@ -1320,7 +1393,7 @@
   }
 
   // ── NAVEGACIÓN ──────────────────────────────────────────────────────────────
-  const TAB_ORDER = ['dashboard','codigos','compras','buscador','financiero','promo','correo','wompi','transferencias','notif','ganador','exportar','eventos'];
+  const TAB_ORDER = ['dashboard','codigos','compras','buscador','financiero','promo','correo','wompi','transferencias','notif','dinamica','ganador','exportar','eventos'];
 
   function showTab(tab) {
     document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
@@ -1343,6 +1416,7 @@
     if (tab === 'transferencias') loadTransferencias();
     if (tab === 'notif')          loadNotifStats();
     if (tab === 'ganador')        loadGanadorStatus();
+    if (tab === 'dinamica')       cargarDinamica();
     if (tab === 'financiero')     loadFinanciero();
     if (tab === 'eventos')        loadEventosHistorial();
   }
@@ -1905,16 +1979,83 @@
     setTimeout(() => el.innerHTML = '', 3000);
   }
 
+  // ── DINÁMICA (nombre, precios, premio, imagen) ────────────────────────────────
+  async function cargarDinamica() {
+    const msg = document.getElementById('din-msg');
+    try {
+      const r = await fetch('/api/admin/config', { headers: headers() });
+      const d = await r.json();
+      document.getElementById('din-nombre').value        = d.nombre_dinamica || '';
+      document.getElementById('din-precio').value         = d.precio_codigo || '';
+      document.getElementById('din-precio-dorado').value  = d.precio_dorado || '';
+      document.getElementById('din-premio').value         = d.premio_total || '';
+      document.getElementById('din-imagen').value         = d.premio_imagen || '';
+      document.getElementById('din-total-numeros').value  = (d.total_numeros || 0).toLocaleString('es-CO');
+    } catch (e) {
+      msg.innerHTML = '<div class="msg msg-err">Error cargando la configuración</div>';
+    }
+  }
+
+  async function guardarDinamica() {
+    const btn = document.getElementById('btn-guardar-dinamica');
+    const msg = document.getElementById('din-msg');
+
+    const nombre_dinamica = document.getElementById('din-nombre').value.trim();
+    const precio_codigo   = Number(document.getElementById('din-precio').value);
+    const precio_dorado   = Number(document.getElementById('din-precio-dorado').value);
+    const premio_total    = Number(document.getElementById('din-premio').value);
+    const premio_imagen   = document.getElementById('din-imagen').value.trim();
+
+    if (!precio_codigo || precio_codigo < 100) {
+      msg.innerHTML = '<div class="msg msg-err">❌ El valor por número debe ser al menos $100</div>';
+      return;
+    }
+
+    btn.disabled = true; btn.textContent = '⟳ Guardando...';
+    msg.innerHTML = '';
+    try {
+      const r = await fetch('/api/admin/config', {
+        method: 'POST', headers: headers(),
+        body: JSON.stringify({ nombre_dinamica, precio_codigo, precio_dorado, premio_total, premio_imagen })
+      });
+      const d = await r.json();
+      if (d.ok) {
+        msg.innerHTML = '<div class="msg msg-ok">✓ Configuración guardada. Los cambios ya están activos para los clientes.</div>';
+      } else {
+        msg.innerHTML = `<div class="msg msg-err">❌ ${d.error || 'Error al guardar'}</div>`;
+      }
+    } catch (e) {
+      msg.innerHTML = '<div class="msg msg-err">Error de conexión</div>';
+    } finally {
+      btn.disabled = false; btn.textContent = '💾 Guardar cambios';
+    }
+  }
+
   // ── EVENTOS ──────────────────────────────────────────────────────────────────
   async function cerrarEvento() {
     const nombre = document.getElementById('evt-nombre').value.trim();
     const msg    = document.getElementById('evt-msg');
     const btn    = document.getElementById('btn-cerrar-evento');
 
+    const nvaTotalNumerosRaw = document.getElementById('nva-total-numeros').value.trim();
+    const nuevaDinamica = {};
+    if (document.getElementById('nva-nombre').value.trim())       nuevaDinamica.nombre           = document.getElementById('nva-nombre').value.trim();
+    if (nvaTotalNumerosRaw)                                        nuevaDinamica.cantidad_numeros = Number(nvaTotalNumerosRaw);
+    if (document.getElementById('nva-precio').value)              nuevaDinamica.precio_codigo    = Number(document.getElementById('nva-precio').value);
+    if (document.getElementById('nva-precio-dorado').value)       nuevaDinamica.precio_dorado    = Number(document.getElementById('nva-precio-dorado').value);
+    if (document.getElementById('nva-premio').value)              nuevaDinamica.premio_total     = Number(document.getElementById('nva-premio').value);
+    if (document.getElementById('nva-imagen').value.trim())       nuevaDinamica.premio_imagen    = document.getElementById('nva-imagen').value.trim();
+
+    let avisoPool = '';
+    if (nuevaDinamica.cantidad_numeros) {
+      avisoPool = `\n\n⚠️ Además se REGENERARÁ el pool de números a ${nuevaDinamica.cantidad_numeros.toLocaleString('es-CO')} números nuevos (0000...N-1). Los números actuales dejarán de existir.`;
+    }
+
     const paso1 = confirm(
       '¿Cerrar el evento actual y empezar uno nuevo?\n\n' +
       'Se guardará todo (compras, códigos, ganador y config) en el historial, ' +
-      'y las tablas activas quedarán en cero.\n\nEsta acción no se puede deshacer desde el panel.'
+      'y las tablas activas quedarán en cero.' + avisoPool +
+      '\n\nEsta acción no se puede deshacer desde el panel.'
     );
     if (!paso1) return;
     const paso2 = confirm('Confirma de nuevo: esto reinicia las ventas AHORA MISMO. ¿Continuar?');
@@ -1925,12 +2066,16 @@
     try {
       const r = await fetch('/api/admin/eventos/cerrar', {
         method: 'POST', headers: headers(),
-        body: JSON.stringify({ nombre: nombre || null })
+        body: JSON.stringify({
+          nombre: nombre || null,
+          nuevaDinamica: Object.keys(nuevaDinamica).length ? nuevaDinamica : undefined
+        })
       });
       const d = await r.json();
       if (d.ok) {
         msg.innerHTML = `<div class="msg msg-ok">✓ Evento archivado: <strong>${d.evento.nombre}</strong>. Todo quedó en cero, listo para el próximo evento.</div>`;
         document.getElementById('evt-nombre').value = '';
+        ['nva-nombre','nva-total-numeros','nva-precio','nva-precio-dorado','nva-premio','nva-imagen'].forEach(id => document.getElementById(id).value = '');
         loadEventosHistorial();
       } else {
         msg.innerHTML = `<div class="msg msg-err">❌ ${d.error || 'Error al cerrar el evento'}</div>`;

@@ -2,6 +2,7 @@ const express = require('express');
 const router  = express.Router();
 const supabase = require('../config/supabase');
 const { activarPromo, desactivarPromo, getPromoActiva } = require('../services/promociones');
+const { actualizarConfig } = require('../services/configStore');
 const { enviarCorreo } = require('../services/correo');
 const ExcelJS = require('exceljs');
 
@@ -300,15 +301,33 @@ router.get('/admin/config', (req, res) => {
   res.json(CONFIG);
 });
 
-router.post('/admin/config', (req, res) => {
-  const { ventas_activas, precio_codigo, aviso_texto, aviso_color, correo_pie } = req.body;
-  if (ventas_activas  !== undefined) CONFIG.ventas_activas = ventas_activas;
-  if (precio_codigo   !== undefined) CONFIG.precio_codigo  = Number(precio_codigo);
-  if (aviso_texto     !== undefined) CONFIG.aviso_texto    = aviso_texto;
-  if (aviso_color     !== undefined) CONFIG.aviso_color    = aviso_color;
-  if (correo_pie      !== undefined) CONFIG.correo_pie     = correo_pie;
-  console.log('⚙️ Config actualizada:', CONFIG);
-  res.json({ ok: true, config: CONFIG });
+router.post('/admin/config', async (req, res) => {
+  try {
+    const {
+      ventas_activas, precio_codigo, aviso_texto, aviso_color, correo_pie,
+      precio_dorado, premio_total, premio_imagen, nombre_dinamica
+    } = req.body;
+
+    const cambios = {};
+    if (ventas_activas  !== undefined) cambios.ventas_activas  = !!ventas_activas;
+    if (precio_codigo   !== undefined) cambios.precio_codigo   = Number(precio_codigo);
+    if (aviso_texto     !== undefined) cambios.aviso_texto     = aviso_texto;
+    if (aviso_color     !== undefined) cambios.aviso_color     = aviso_color;
+    if (correo_pie      !== undefined) cambios.correo_pie      = correo_pie;
+    if (precio_dorado   !== undefined) cambios.precio_dorado   = Number(precio_dorado);
+    if (premio_total    !== undefined) cambios.premio_total    = Number(premio_total);
+    if (premio_imagen   !== undefined) cambios.premio_imagen   = premio_imagen;
+    if (nombre_dinamica  !== undefined) cambios.nombre_dinamica = nombre_dinamica;
+
+    // Se guarda en Supabase Y en memoria, para que sobreviva reinicios del servidor
+    await actualizarConfig(cambios);
+
+    console.log('⚙️ Config actualizada:', CONFIG);
+    res.json({ ok: true, config: CONFIG });
+  } catch (e) {
+    console.error('❌ Error guardando config:', e.message);
+    res.status(500).json({ ok: false, error: e.message });
+  }
 });
 
 // ── Correo masivo ────────────────────────────

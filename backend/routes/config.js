@@ -8,6 +8,8 @@ const {
   listarEventosHistorial,
   obtenerEventoHistorial
 } = require('../services/eventos');
+const { actualizarConfig } = require('../services/configStore');
+const { CONFIG } = require('../services/appState');
 
 function authAdmin(req, res, next) {
   const token  = req.headers['x-admin-token'] || req.query.token;
@@ -84,6 +86,10 @@ router.get('/config', async (req, res) => {
     const ventasActivas = cfg.ventas_activas !== undefined ? cfg.ventas_activas : true;
     const avisoTexto    = cfg.aviso_texto  ?? '';
     const avisoColor    = cfg.aviso_color  ?? 'gold';
+    const precioDorado  = cfg.precio_dorado   ?? 500000;
+    const premioImagen  = cfg.premio_imagen   ?? '';
+    const nombreDinamica = cfg.nombre_dinamica ?? 'Dinámica';
+    const totalNumeros  = cfg.total_numeros   ?? 10000;
 
     const paquetesConPrecio = paquetes.map(p => ({
       ...p,
@@ -95,10 +101,14 @@ router.get('/config', async (req, res) => {
       aviso_texto:    avisoTexto,
       aviso_color:    avisoColor,
       precioCodigo,
+      precioDorado,
       paquetes: paquetesConPrecio,
       banner,
       ganador,
-      premioTotal
+      premioTotal,
+      premioImagen,
+      nombreDinamica,
+      totalNumeros
     });
   } catch (e) {
     console.error('❌ Error en /config:', e.message);
@@ -114,7 +124,11 @@ router.get('/config', async (req, res) => {
       ],
       banner:    null,
       ganador:   { activo: false, codigo: '', nombre: '' },
-      premioTotal: 15000000
+      premioTotal: 15000000,
+      precioDorado: 500000,
+      premioImagen: '',
+      nombreDinamica: 'Dinámica',
+      totalNumeros: 10000
     });
   }
 });
@@ -127,7 +141,9 @@ router.post('/admin/config/ganador', authAdmin, async (req, res) => {
     const { activo, codigo, nombre } = req.body;
 
     if (activo === false || activo === 'false') {
-      await guardarGanador({ activo: false, codigo: '', nombre: '' });
+      const oculto = { activo: false, codigo: '', nombre: '' };
+      await guardarGanador(oculto);
+      CONFIG.ganador = oculto;
       console.log('🏆 Ganador ocultado');
       return res.json({ ok: true, mensaje: 'Ganador ocultado' });
     }
@@ -138,6 +154,7 @@ router.post('/admin/config/ganador', authAdmin, async (req, res) => {
 
     const ganador = { activo: true, codigo: codigo.trim(), nombre: nombre.trim() };
     await guardarGanador(ganador);
+    CONFIG.ganador = ganador;
     console.log(`🏆 Ganador publicado: ${codigo} — ${nombre}`);
     res.json({ ok: true, mensaje: `Ganador publicado: ${codigo}` });
   } catch (e) {
@@ -157,9 +174,10 @@ router.post('/admin/config/precios', authAdmin, async (req, res) => {
     if (!Array.isArray(paquetes) || paquetes.length === 0)
       return res.status(400).json({ error: 'Debes tener al menos 1 paquete' });
 
-    await guardarConfig('precio_codigo', precioCodigo);
     await guardarConfig('paquetes', paquetes);
-    if (premioTotal) await guardarConfig('premio_total', premioTotal);
+    const cambios = { precio_codigo: precioCodigo };
+    if (premioTotal) cambios.premio_total = premioTotal;
+    await actualizarConfig(cambios); // guarda en Supabase Y sincroniza appState.CONFIG
 
     console.log(`⚙️ Precios actualizados: $${precioCodigo}/código`);
     res.json({ ok: true, mensaje: 'Precios y paquetes actualizados correctamente' });
@@ -186,25 +204,10 @@ router.post('/admin/config/banner', authAdmin, async (req, res) => {
   }
 });
 
-// ════════════════════════════════════════════════════════════════════════════
-// GET /api/admin/config  — lee config completa para el panel admin
-// ════════════════════════════════════════════════════════════════════════════
-router.get('/admin/config', authAdmin, async (req, res) => {
-  try {
-    let cfg = {};
-    try { cfg = await leerConfig(); } catch(e) {}
-
-    res.json({
-      precioCodigo: cfg.precio_codigo ?? 3750,
-      paquetes:     cfg.paquetes ?? [{cantidad:4,popular:false},{cantidad:8,popular:true},{cantidad:16,popular:false}],
-      banner:       cfg.banner   ?? { activo: false, texto: '', color: 'gold' },
-      ganador:      cfg.ganador  ?? { activo: false, codigo: '', nombre: '' },
-      premioTotal:  cfg.premio_total ?? 15000000
-    });
-  } catch (e) {
-    res.status(500).json({ error: e.message });
-  }
-});
+// NOTA: GET /api/admin/config es manejado por routes/admin.js (devuelve el
+// estado en memoria appState.CONFIG, ya sincronizado con Supabase por
+// services/configStore.js). No se registra aquí de nuevo para evitar que
+// Express use la primera ruta registrada y esta quede sin usarse.
 
 // ════════════════════════════════════════════════════════════════════════════
 // EVENTOS — archivar el evento actual y dejar todo en cero
@@ -213,8 +216,16 @@ router.get('/admin/config', authAdmin, async (req, res) => {
 // POST /api/admin/eventos/cerrar — guarda todo en el historial y reinicia
 router.post('/admin/eventos/cerrar', authAdmin, async (req, res) => {
   try {
-    const { nombre } = req.body;
-    const evento = await cerrarEventoYArchivar(nombre);
+    const { nombre, nuevaDinamica } = req.body;
+
+    if (nuevaDinamica?.cantidad_numeros) {
+      const cant = Number(nuevaDinamica.cantidad_numeros);
+      if (!Number.isInteger(cant) || cant < 10 || cant > 1000000) {
+        return res.status(400).json({ ok: false, error: 'Cantidad de números inválida (entre 10 y 1.000.000)' });
+      }
+    }
+
+    const evento = await cerrarEventoYArchivar(nombre, nuevaDinamica);
     console.log(`🗄️ Evento archivado y reiniciado: ${evento.nombre}`);
     res.json({ ok: true, evento });
   } catch (e) {

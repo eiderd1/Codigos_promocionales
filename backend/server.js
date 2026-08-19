@@ -6,6 +6,7 @@ const path = require('path');
 const helmet = require('helmet');
 
 const { generarDoradosIniciales } = require('./services/dorados');
+const { cargarConfigInicial } = require('./services/configStore');
 
 const app = express();
 
@@ -109,7 +110,13 @@ app.use((err, req, res, next) => {
 // ========================
 const PORT = process.env.PORT || 3000;
 
-app.listen(PORT, async () => {
-  console.log(`🚀 Servidor en puerto ${PORT}`);
-  await generarDoradosIniciales();
-});
+(async () => {
+  // Cargar config persistida (precio, premio, nombre de la dinámica, etc.)
+  // ANTES de aceptar tráfico, para que ninguna venta use valores por defecto.
+  await cargarConfigInicial();
+
+  app.listen(PORT, async () => {
+    console.log(`🚀 Servidor en puerto ${PORT}`);
+    await generarDoradosIniciales();
+  });
+})();
