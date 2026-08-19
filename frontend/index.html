@@ -1224,6 +1224,7 @@ input.error { border-color: rgba(248,113,113,.7); box-shadow: 0 0 0 3px rgba(248
     <div style="margin:0 auto 20px;max-width:320px;position:relative">
       
       <img
+        id="imgPremio"
         src="/imagenes/DINAMICA_15M.png"
         alt="Premio en efectivo"
         style="width:100%;border-radius:18px;box-shadow:0 8px 32px rgba(201,147,10,.15),0 2px 8px rgba(0,0,0,.07);display:block;object-fit:cover;aspect-ratio:16/9;"
@@ -1232,10 +1233,10 @@ input.error { border-color: rgba(248,113,113,.7); box-shadow: 0 0 0 3px rgba(248
     
     </div>
 
-    <h6 class="title">🎟️ Compra tus <span>Códigos</span></h6>
+    <h6 class="title" id="tituloDinamica">🎟️ Compra tus <span>Códigos</span></h6>
     <h6><p class="subtitle" id="subtituloPremio">Participa por <span>$15.000.000 COP</span></p></h6>
     <div class="badge-wrap">
-      <span class="badge">💎 4 códigos dorados · $500.000 c/u</span>
+      <span class="badge" id="badgeDorado">💎 código dorado · $500.000</span>
     </div>
   </div>
 
@@ -1630,11 +1631,28 @@ async function cargarConfig() {
 
     precioCodigo = cfg.precioCodigo || 3750;
 
+    // Nombre de la dinámica
+    if (cfg.nombreDinamica) {
+      const empresa = document.title.split('–')[0].trim();
+      document.title = `${empresa} – ${cfg.nombreDinamica}`;
+    }
+
     // Premio total
     if (cfg.premioTotal) {
       const premioFmt = Number(cfg.premioTotal).toLocaleString('es-CO');
       document.getElementById('subtituloPremio').innerHTML =
         `Participa por <span>$${premioFmt} COP</span>`;
+    }
+
+    // Imagen del premio (si el admin cargó una URL propia)
+    if (cfg.premioImagen) {
+      document.getElementById('imgPremio').src = cfg.premioImagen;
+    }
+
+    // Valor del código promocional / dorado
+    if (cfg.precioDorado) {
+      document.getElementById('badgeDorado').textContent =
+        `💎 código dorado · $${Number(cfg.precioDorado).toLocaleString('es-CO')}`;
     }
 
     // Banner

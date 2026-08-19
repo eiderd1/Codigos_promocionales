@@ -1,7 +1,17 @@
 const supabase = require('../config/supabase');
 const { getPromoActiva } = require('./promociones');
+const { CONFIG } = require('./appState');
 
-const HITOS_DORADOS = [700, 8000, 9000, 9999];
+// Hitos dorados como % del total de números de la dinámica actual, para que
+// escalen automáticamente sin importar si el pool tiene 1.000 o 100.000 números.
+const PORCENTAJES_HITOS_DORADOS = [0.07, 0.80, 0.90, 0.9999];
+
+function calcularHitosDorados() {
+  const total = CONFIG.total_numeros || 10000;
+  return PORCENTAJES_HITOS_DORADOS
+    .map(p => Math.max(1, Math.round(total * p)))
+    .sort((a, b) => a - b);
+}
 
 async function generarCodigos(cantidad, referencia) {
   try {
@@ -41,7 +51,8 @@ async function generarCodigos(cantidad, referencia) {
       mezclados.push(disponibles[idx]);
     }
 
-    // ─── 3. Lógica de código dorado (sin cambios) ────────────────────────────
+    // ─── 3. Lógica de código dorado (hitos calculados sobre el total actual) ─
+    const HITOS_DORADOS = calcularHitosDorados();
     let indexDorado = -1;
     if (doradosEntregados < HITOS_DORADOS.length) {
       const siguienteHito = HITOS_DORADOS[doradosEntregados];
@@ -52,7 +63,7 @@ async function generarCodigos(cantidad, referencia) {
 
     // ─── 4. Consultar promo activa para guardar el premio ───────────────────────
     const promo = await getPromoActiva();
-    const premioDorado = promo ? promo.precio_dorado : 500000;
+    const premioDorado = promo ? promo.precio_dorado : (CONFIG.precio_dorado || 500000);
 
     // ─── 5. Actualizar en BD (anti-repetición igual que antes) ───────────────
     const resultado = [];
