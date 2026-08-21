@@ -599,7 +599,7 @@
           </div>
           <div class="metric-card">
             <div class="metric-label">Total</div>
-            <div class="metric-value">10,000</div>
+            <div class="metric-value" id="d-total">—</div>
             <div class="metric-sub">capacidad máxima</div>
           </div>
           <div class="metric-card">
@@ -610,7 +610,7 @@
           <div class="metric-card">
             <div class="metric-label">Dorados vendidos</div>
             <div class="metric-value" id="d-dorados">—</div>
-            <div class="metric-sub">hitos: 700 · 8000 · 9000 · 9999</div>
+            <div class="metric-sub" id="d-hitos">hitos: —</div>
           </div>
         </div>
         <div class="progress-card">
@@ -1304,14 +1304,19 @@
         const dPct      = document.getElementById('d-pct');
         const barFill   = document.getElementById('bar-fill');
         const barLeft   = document.getElementById('bar-left');
+        const dTotal    = document.getElementById('d-total');
+        const barRight  = document.getElementById('bar-right');
         if (dVendidos) {
           const vendidos = d.codigos_vendidos || 0;
-          const pct = Math.min(100, ((vendidos / 10000) * 100).toFixed(1));
+          const total    = d.codigos_total || 10000;
+          const pct = total > 0 ? Math.min(100, ((vendidos / total) * 100).toFixed(1)) : 0;
           dVendidos.textContent = fmt(vendidos);
-          if (dDisp)   dDisp.textContent   = fmt(d.codigos_disponibles) + ' disponibles';
-          if (dPct)    dPct.textContent     = pct + '%';
-          if (barFill) barFill.style.width  = pct + '%';
-          if (barLeft) barLeft.textContent  = fmt(vendidos) + ' vendidos';
+          if (dDisp)    dDisp.textContent    = fmt(d.codigos_disponibles) + ' disponibles';
+          if (dPct)     dPct.textContent      = pct + '%';
+          if (barFill)  barFill.style.width   = pct + '%';
+          if (barLeft)  barLeft.textContent   = fmt(vendidos) + ' vendidos';
+          if (dTotal)   dTotal.textContent    = fmt(total);
+          if (barRight) barRight.textContent  = fmt(total) + ' total';
         }
         // Actualizar toggle de ventas
         actualizarToggleVentas(d.ventas_activas !== false);
@@ -1431,8 +1436,14 @@
       document.getElementById('d-vendidos').textContent = fmt(d.vendidos);
       document.getElementById('d-disp').textContent     = fmt(d.disponibles) + ' disponibles';
       document.getElementById('d-pct').textContent      = d.porcentaje + '%';
+      document.getElementById('d-total').textContent    = fmt(d.total);
       document.getElementById('bar-fill').style.width   = d.porcentaje + '%';
       document.getElementById('bar-left').textContent   = fmt(d.vendidos) + ' vendidos';
+      document.getElementById('bar-right').textContent  = fmt(d.total) + ' total';
+
+      // Hitos de dorados: mismos % que usa el backend (7%, 80%, 90%, 99.99% del total actual)
+      const hitos = [0.07, 0.80, 0.90, 0.9999].map(p => Math.max(1, Math.round(d.total * p)));
+      document.getElementById('d-hitos').textContent = 'hitos: ' + hitos.map(h => fmt(h)).join(' · ');
     } catch (e) { document.getElementById('d-vendidos').textContent = 'error'; }
     try {
       const r2 = await fetch('/api/admin/codigos-dorados', { headers: headers() });
