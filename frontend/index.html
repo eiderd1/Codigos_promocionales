@@ -1622,7 +1622,10 @@ verificarStock();
 // CONFIG DINÁMICA (precios, paquetes, banner, ganador)
 // ===============================
 let PRECIOS = {};
-let precioCodigo = 3750;
+// "var" a propósito (no "let"): esta variable se usa también en el segundo
+// bloque <script> más abajo (modal de transferencia), y "let" no se comparte
+// entre etiquetas <script> distintas — "var" sí, porque queda en window.
+var precioCodigo = 3750;
 
 async function cargarConfig() {
   try {
