@@ -177,7 +177,9 @@ router.post('/admin/transferencia-aprobar', authAdmin, async (req, res) => {
 
     let codigos;
     try {
-      codigos = await generarCodigos(compra.cantidad, referencia);
+      codigos = await generarCodigos(compra.cantidad, referencia, {
+        nombre: compra.nombre, email: compra.correo, telefono: compra.telefono
+      });
     } catch (err) {
       console.error('❌ Error generando códigos:', err);
       return res.status(500).json({ error: 'Error generando códigos' });

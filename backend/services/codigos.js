@@ -6,19 +6,24 @@ const { CONFIG } = require('./appState');
 // escalen automáticamente sin importar si el pool tiene 1.000 o 100.000 números.
 const PORCENTAJES_HITOS_DORADOS = [0.07, 0.80, 0.90, 0.9999];
 
-function calcularHitosDorados() {
-  const total = CONFIG.total_numeros || 10000;
+function calcularHitosDorados(totalReal) {
+  const total = totalReal || CONFIG.total_numeros || 10000;
   return PORCENTAJES_HITOS_DORADOS
     .map(p => Math.max(1, Math.round(total * p)))
     .sort((a, b) => a - b);
 }
 
-async function generarCodigos(cantidad, referencia) {
+async function generarCodigos(cantidad, referencia, datosComprador = {}) {
+  const { nombre = null, email = null, telefono = null } = datosComprador;
   try {
     const { count: vendidos } = await supabase
       .from('codigos')
       .select('*', { count: 'exact', head: true })
       .eq('vendido', true);
+
+    const { count: totalPool } = await supabase
+      .from('codigos')
+      .select('*', { count: 'exact', head: true });
 
     const { count: doradosEntregados } = await supabase
       .from('codigos')
@@ -51,8 +56,8 @@ async function generarCodigos(cantidad, referencia) {
       mezclados.push(disponibles[idx]);
     }
 
-    // ─── 3. Lógica de código dorado (hitos calculados sobre el total actual) ─
-    const HITOS_DORADOS = calcularHitosDorados();
+    // ─── 3. Lógica de código dorado (hitos calculados sobre el total real) ───
+    const HITOS_DORADOS = calcularHitosDorados(totalPool);
     let indexDorado = -1;
     if (doradosEntregados < HITOS_DORADOS.length) {
       const siguienteHito = HITOS_DORADOS[doradosEntregados];
@@ -74,7 +79,10 @@ async function generarCodigos(cantidad, referencia) {
 
       const { data: actualizado, error: errorUpdate } = await supabase
         .from('codigos')
-        .update({ vendido: true, referencia, dorado: esDorado, premio_dorado: esDorado ? premioDorado : null })
+        .update({
+          vendido: true, referencia, dorado: esDorado, premio_dorado: esDorado ? premioDorado : null,
+          nombre, email, telefono
+        })
         .eq('codigo', c.codigo)
         .eq('vendido', false)
         .select('codigo');

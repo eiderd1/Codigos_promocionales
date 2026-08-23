@@ -124,7 +124,7 @@ router.post('/webhook-wompi', async (req, res) => {
     // ========================
     let codigos;
     try {
-      codigos = await generarCodigos(cantidad, referencia);
+      codigos = await generarCodigos(cantidad, referencia, { nombre, email, telefono });
     } catch (err) {
       console.error("❌ Error generando códigos:", err);
       return res.sendStatus(500);
