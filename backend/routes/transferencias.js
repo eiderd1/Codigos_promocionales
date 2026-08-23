@@ -9,6 +9,7 @@ const { generarCodigos } = require('../services/codigos');
 const { enviarCorreo }   = require('../services/correo');
 const { enviarWhatsApp } = require('../services/whatsapp');
 const { enviarNotifAdmin } = require('../services/notificaciones');
+const { CONFIG } = require('../services/appState');
 
 // ── Validación básica de correo ──────────────────────────────────────────────
 function esCorreoValido(correo) {
@@ -60,7 +61,7 @@ router.post('/transferencia-registrar', async (req, res) => {
     }
 
     const cantidadFinal    = Math.min(cantidadNum, disponibles);
-    const precioPorCodigo  = 3750;
+    const precioPorCodigo  = CONFIG.precio_codigo || 3750;
     const montoTotal       = cantidadFinal * precioPorCodigo;
     const referencia       = `TRF-${Date.now()}-${Math.floor(Math.random() * 9999)}`;
 
@@ -294,7 +295,7 @@ router.post('/admin/transferencia-rechazar', authAdmin, async (req, res) => {
     if (error) return res.status(500).json({ error: 'Error actualizando estado' });
 
     const motivo = notas || 'No pudimos verificar tu transferencia.';
-    const precioPorCodigo = 3750;
+    const precioPorCodigo = CONFIG.precio_codigo || 3750;
     const monto = compra.cantidad * precioPorCodigo;
 
     try {
