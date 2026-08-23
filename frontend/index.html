@@ -1484,7 +1484,9 @@ input.error { border-color: rgba(248,113,113,.7); box-shadow: 0 0 0 3px rgba(248
 <script>
 // Variables globales (fuera del DOMContentLoaded) para que también
 // sean accesibles desde el script del modal de transferencia bancaria
-let cantidadSeleccionada = 0;
+// "var" (no "let"): esta también se usa desde el segundo bloque <script>
+// (el modal de transferencia, al abrirlo con la cantidad ya seleccionada).
+var cantidadSeleccionada = 0;
 let datoActual = "";
 let procesandoPago = false;
 
