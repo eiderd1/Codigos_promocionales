@@ -39,9 +39,7 @@ router.get('/progreso', async (req, res) => {
       porcentaje: Number(porcentaje.toFixed(2)),
       vendidos: cantidadVendidos,
       disponibles,
-      total: totalReal,
-      _debug_supabase_url: process.env.SUPABASE_URL,
-      _debug_service_key_tail: (process.env.SUPABASE_SERVICE_ROLE_KEY || '').slice(-8)
+      total: totalReal
     });
 
   } catch (error) {
