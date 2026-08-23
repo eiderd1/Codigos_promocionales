@@ -1464,11 +1464,13 @@
       const rows = d.map((x, i) => `<tr>
         <td style="color:var(--text3);font-size:12px">${i+1}</td>
         <td><span class="code-mono gold-code">⭐ ${x.codigo}</span></td>
+        <td>${x.nombre || '—'}</td>
+        <td>${x.telefono || '—'}</td>
         <td><span class="badge badge-gold">Dorado</span></td>
       </tr>`).join('');
       el.innerHTML = `<p style="font-size:13px;color:var(--text2);margin-bottom:12px">${d.length} código(s) dorado(s)</p>
         <div class="table-card"><table>
-          <thead><tr><th>#</th><th>Código</th><th>Tipo</th></tr></thead>
+          <thead><tr><th>#</th><th>Código</th><th>Nombre</th><th>Teléfono</th><th>Tipo</th></tr></thead>
           <tbody>${rows}</tbody>
         </table></div>`;
     } catch (e) { el.innerHTML = '<div class="msg msg-err">Error cargando códigos</div>'; }
