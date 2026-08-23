@@ -2115,7 +2115,9 @@ const TRF_BANCOS = [
   { banco: 'Nequi',     tipo: 'Billetera digital', numero: '3218921686', titular: 'Eider Cobo' },
   { banco: 'Llave',     tipo: 'Billetera digital', numero: '3128523589', titular: 'Eider Cobo' }
 ];
-const TRF_PRECIO_COD = 3750;
+// El precio se toma de la config real cargada por cargarConfig() (variable
+// global "precioCodigo"), NO de un valor fijo — así el modal de transferencia
+// siempre refleja el precio configurado en el Admin.
 
 // ── Renderiza las tarjetas de banco en el modal ────────────────────────────
 function trfRenderLista() {
@@ -2160,7 +2162,7 @@ window.trfCopiarNumero = async function(numero, btn) {
 window.trfActualizarMonto = function() {
   const cantRaw = parseInt(document.getElementById('trfCantidadSelect')?.value, 10);
   const cant    = Number.isFinite(cantRaw) && cantRaw > 0 ? cantRaw : 4;
-  const monto   = cant * TRF_PRECIO_COD;
+  const monto   = cant * precioCodigo;
   const dm = document.getElementById('trfMontoDisplay');
   const dc = document.getElementById('trfCodsDisplay');
   if (dm) dm.textContent = '$' + monto.toLocaleString('es-CO') + ' COP';
