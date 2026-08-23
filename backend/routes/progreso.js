@@ -1,10 +1,20 @@
 const express = require('express');
 const router = express.Router();
 const supabase = require('../config/supabase');
+const { CONFIG } = require('../services/appState');
 
 router.get('/progreso', async (req, res) => {
   try {
-    const total = 10000;
+    // El total SIEMPRE se cuenta directo de la tabla (fuente de verdad real),
+    // en vez de confiar en un valor guardado aparte que se puede desincronizar.
+    const { count: total, error: errorTotal } = await supabase
+      .from('codigos')
+      .select('*', { count: 'exact', head: true });
+
+    if (errorTotal) {
+      console.error(errorTotal);
+      return res.status(500).json({ ok: false });
+    }
 
     const { count: vendidos, error } = await supabase
       .from('codigos')
@@ -16,15 +26,22 @@ router.get('/progreso', async (req, res) => {
       return res.status(500).json({ ok: false });
     }
 
+    const totalReal = total || 0;
     const cantidadVendidos = vendidos || 0;
-    const disponibles = total - cantidadVendidos;
-    const porcentaje = (cantidadVendidos / total) * 100;
+    const disponibles = totalReal - cantidadVendidos;
+    const porcentaje = totalReal > 0 ? (cantidadVendidos / totalReal) * 100 : 0;
+
+    // Mantener CONFIG.total_numeros sincronizado con la realidad (por si se
+    // desincronizó, por ejemplo por una edición manual en Supabase)
+    if (CONFIG.total_numeros !== totalReal) CONFIG.total_numeros = totalReal;
 
     res.json({
       porcentaje: Number(porcentaje.toFixed(2)),
       vendidos: cantidadVendidos,
       disponibles,
-      total
+      total: totalReal,
+      _debug_supabase_url: process.env.SUPABASE_URL,
+      _debug_service_key_tail: (process.env.SUPABASE_SERVICE_ROLE_KEY || '').slice(-8)
     });
 
   } catch (error) {
