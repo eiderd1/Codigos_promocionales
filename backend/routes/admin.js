@@ -70,7 +70,9 @@ router.get('/admin/promo-activa', async (req, res) => {
 router.get('/admin/codigos-dorados', async (req, res) => {
   try {
     const { data, error } = await supabase
-      .from('codigos').select('codigo').eq('dorado', true).eq('vendido', true);
+      .from('codigos')
+      .select('codigo, nombre, email, telefono')
+      .eq('dorado', true).eq('vendido', true);
     if (error) return res.status(500).json({ ok: false });
     res.json(data);
   } catch (e) {
@@ -781,20 +783,29 @@ async function emitirStatsVentas() {
       .select('*', { count: 'exact', head: true })
       .eq('estado', 'pendiente');
 
-    const { count: disponibles } = await supabase
+    // Misma fuente de verdad que /api/progreso: conteo directo y en vivo de la
+    // tabla completa, sin sumar dos conteos parciales por separado.
+    const { count: totalPool } = await supabase
+      .from('codigos')
+      .select('*', { count: 'exact', head: true });
+
+    const { count: vendidosReal } = await supabase
       .from('codigos')
       .select('*', { count: 'exact', head: true })
-      .eq('vendido', false);
+      .eq('vendido', true);
+
+    const disponibles = Math.max(0, (totalPool || 0) - (vendidosReal || 0));
 
     const PRECIO        = CONFIG.precio_codigo || 3750;
     const totalVentas   = pagadas?.length || 0;
-    const totalCodigos  = (pagadas || []).reduce((s, c) => s + (c.cantidad || 0), 0);
+    const totalCodigos  = vendidosReal || 0;
     const ingresos      = totalCodigos * PRECIO;
 
     const payload = JSON.stringify({
       ventas:              totalVentas,
       codigos_vendidos:    totalCodigos,
-      codigos_disponibles: disponibles || 0,
+      codigos_disponibles: disponibles,
+      codigos_total:       totalPool || 0,
       pendientes:          pendientes  || 0,
       ingresos,
       ultima_venta:        pagadas?.[0]?.fecha || null,
