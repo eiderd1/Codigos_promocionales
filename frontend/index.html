@@ -982,6 +982,61 @@ input.error { border-color: rgba(248,113,113,.7); box-shadow: 0 0 0 3px rgba(248
 }
 .modal-close:hover { background: rgba(255,255,255,.2); }
 
+/* ── Modal estado (agotado / pausado) ── */
+#modalEstado {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.82);
+  z-index: 9900;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  backdrop-filter: blur(8px);
+}
+.modal-estado-inner {
+  max-width: 380px;
+  text-align: center;
+  padding: 40px 28px 28px;
+  background: linear-gradient(160deg, #0A1020 0%, #131B2E 100%);
+  border: 1px solid rgba(232,184,75,.25);
+  box-shadow: 0 24px 80px rgba(0,0,0,.6), 0 0 60px rgba(232,184,75,.08);
+}
+.modal-estado-icono {
+  font-size: 52px;
+  line-height: 1;
+  margin-bottom: 14px;
+}
+.modal-estado-titulo {
+  font-family: var(--font-display);
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: #F5D07A;
+  margin-bottom: 10px;
+  letter-spacing: .01em;
+}
+.modal-estado-texto {
+  font-size: .92rem;
+  color: rgba(236,240,255,.75);
+  line-height: 1.5;
+  margin-bottom: 24px;
+}
+.modal-estado-btn {
+  background: linear-gradient(135deg, #E8B84B, #C9930A);
+  color: #14100A;
+  border: none;
+  border-radius: 12px;
+  padding: 12px 32px;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: .95rem;
+  cursor: pointer;
+  letter-spacing: .02em;
+  transition: transform .15s, box-shadow .15s;
+}
+.modal-estado-btn:hover { transform: translateY(-1px); box-shadow: 0 8px 24px rgba(232,184,75,.3); }
+
+
 /* ══════════════════════════════════════════════
    RESPONSIVE SYSTEM
    xs  < 480px   → celular pequeño
@@ -1604,6 +1659,7 @@ async function verificarStock() {
       document.getElementById("resumenPedido").style.display = "none";
       document.getElementById("avisoStock").style.display = "block";
       document.getElementById("avisoStock").innerHTML = "🚫 Todos los códigos fueron vendidos.";
+      abrirModalEstado('agotado');
     }
 
     const resDorados = await fetch(`${API_URL}/api/admin/codigos-dorados`);
@@ -1649,6 +1705,7 @@ async function cargarConfig() {
       const aviso = document.getElementById("avisoStock");
       aviso.style.display = "block";
       aviso.innerHTML = "⏸ Las ventas están pausadas temporalmente. Vuelve pronto.";
+      abrirModalEstado('pausado');
     }
 
     // Nombre de la dinámica
@@ -2047,11 +2104,44 @@ document.addEventListener('copy', function(e) {
   }
 });
 document.getElementById('resultado').addEventListener('contextmenu', e => e.preventDefault());
-document.getElementById('resultado').addEventListener('touchstart', function() { this.style.webkitUserSelect = 'none'; }, { passive: true });
-document.getElementById('resultado').addEventListener('touchend', function() { window.getSelection()?.removeAllRanges(); });
+// ── Modal de estado (agotado / pausado) ─────────────────────────────────────
+let modalEstadoYaMostrado = false;
+window.cerrarModalEstado = function() {
+  document.getElementById('modalEstado').style.display = 'none';
+};
+function abrirModalEstado(tipo) {
+  if (modalEstadoYaMostrado) return;
+  modalEstadoYaMostrado = true;
+  const icono  = document.getElementById('modalEstadoIcono');
+  const titulo = document.getElementById('modalEstadoTitulo');
+  const texto  = document.getElementById('modalEstadoTexto');
+  if (tipo === 'pausado') {
+    icono.textContent  = '⏸️';
+    titulo.textContent = 'Ventas pausadas';
+    texto.textContent  = 'En este momento no estamos recibiendo nuevas compras. Vuelve a intentarlo más tarde.';
+  } else {
+    icono.textContent  = '🎉';
+    titulo.textContent = '¡Códigos agotados!';
+    texto.textContent  = 'Todos los códigos de esta dinámica ya fueron vendidos. Muy pronto anunciaremos al ganador.';
+  }
+  document.getElementById('modalEstado').style.display = 'flex';
+}
 
 });
 </script>
+
+<!-- ══════════ MODAL ESTADO (agotado / pausado) ══════════ -->
+<div id="modalEstado">
+  <div class="modal-inner modal-estado-inner">
+    <button class="modal-close" onclick="cerrarModalEstado()">✕</button>
+    <div class="modal-estado-icono" id="modalEstadoIcono">🎉</div>
+    <div class="modal-estado-titulo" id="modalEstadoTitulo">¡Códigos agotados!</div>
+    <div class="modal-estado-texto" id="modalEstadoTexto">
+      Todos los códigos de esta dinámica ya fueron vendidos. Muy pronto anunciaremos al ganador.
+    </div>
+    <button class="modal-estado-btn" onclick="cerrarModalEstado()">Entendido</button>
+  </div>
+</div>
 
 <!-- ══════════ MODAL TRANSFERENCIA BANCARIA ══════════ -->
 <div id="modalTransferencia">
