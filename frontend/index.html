@@ -1489,6 +1489,11 @@ input.error { border-color: rgba(248,113,113,.7); box-shadow: 0 0 0 3px rgba(248
 var cantidadSeleccionada = 0;
 let datoActual = "";
 let procesandoPago = false;
+// precioCodigo y PRECIOS también deben ser verdaderamente globales: se leen
+// desde el modal de transferencia (segundo bloque <script>, más abajo), que
+// no comparte closures con lo que está dentro de DOMContentLoaded.
+var precioCodigo = 3750;
+var PRECIOS = {};
 
 document.addEventListener("DOMContentLoaded", () => {
 
@@ -1623,11 +1628,9 @@ verificarStock();
 // ===============================
 // CONFIG DINÁMICA (precios, paquetes, banner, ganador)
 // ===============================
-let PRECIOS = {};
-// "var" a propósito (no "let"): esta variable se usa también en el segundo
-// bloque <script> más abajo (modal de transferencia), y "let" no se comparte
-// entre etiquetas <script> distintas — "var" sí, porque queda en window.
-var precioCodigo = 3750;
+// precioCodigo y PRECIOS ya están declaradas arriba, fuera de este bloque
+// (para que sean visibles también desde el segundo <script> del modal de
+// transferencia). Aquí solo se les asigna el valor real.
 
 async function cargarConfig() {
   try {
