@@ -1,6 +1,7 @@
 const supabase = require('../config/supabase');
 const { getPromoActiva } = require('./promociones');
 const { CONFIG } = require('./appState');
+const { actualizarConfig } = require('./configStore');
 
 // Hitos dorados como % del total de números de la dinámica actual, para que
 // escalen automáticamente sin importar si el pool tiene 1.000 o 100.000 números.
@@ -56,14 +57,23 @@ async function generarCodigos(cantidad, referencia, datosComprador = {}) {
       mezclados.push(disponibles[idx]);
     }
 
-    // ─── 3. Lógica de código dorado (hitos calculados sobre el total real) ───
+    // ─── 3. Lógica de código dorado — revisa TODOS los hitos que esta compra
+    // cruza de una vez (no solo el siguiente), por si la compra es grande y
+    // salta varios hitos en una sola transacción ──────────────────────────
     const HITOS_DORADOS = calcularHitosDorados(totalPool);
-    let indexDorado = -1;
-    if (doradosEntregados < HITOS_DORADOS.length) {
-      const siguienteHito = HITOS_DORADOS[doradosEntregados];
-      if (vendidos < siguienteHito && (vendidos + cantidad) >= siguienteHito) {
-        indexDorado = Math.floor(Math.random() * mezclados.length);
-      }
+    const hitosPendientes = HITOS_DORADOS.slice(doradosEntregados);
+    const hitosCruzados = hitosPendientes.filter(
+      h => vendidos < h && (vendidos + cantidad) >= h
+    );
+
+    // Elegir tantos índices dorados como hitos se cruzaron (sin repetir),
+    // sin pasarse de la cantidad de códigos que se están vendiendo
+    const cantidadDorados = Math.min(hitosCruzados.length, mezclados.length);
+    const indicesDisponibles = [...Array(mezclados.length).keys()];
+    const indicesDorados = [];
+    for (let i = 0; i < cantidadDorados; i++) {
+      const pos = Math.floor(Math.random() * indicesDisponibles.length);
+      indicesDorados.push(indicesDisponibles.splice(pos, 1)[0]);
     }
 
     // ─── 4. Consultar promo activa para guardar el premio ───────────────────────
@@ -75,7 +85,7 @@ async function generarCodigos(cantidad, referencia, datosComprador = {}) {
 
     for (let i = 0; i < mezclados.length; i++) {
       const c = mezclados[i];
-      const esDorado = i === indexDorado;
+      const esDorado = indicesDorados.includes(i);
 
       const { data: actualizado, error: errorUpdate } = await supabase
         .from('codigos')
@@ -102,6 +112,17 @@ async function generarCodigos(cantidad, referencia, datosComprador = {}) {
 
     if (resultado.length < cantidad) {
       console.warn(`⚠️ Solo se pudieron asignar ${resultado.length} de ${cantidad} códigos`);
+    }
+
+    // ─── 6. Si con esta venta se agotó el pool, pausar ventas automáticamente ──
+    const { count: disponiblesFinal } = await supabase
+      .from('codigos')
+      .select('*', { count: 'exact', head: true })
+      .eq('vendido', false);
+
+    if (disponiblesFinal === 0 && CONFIG.ventas_activas) {
+      await actualizarConfig({ ventas_activas: false });
+      console.log('🔒 Pool agotado — ventas pausadas automáticamente');
     }
 
     return resultado;
