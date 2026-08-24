@@ -424,7 +424,7 @@ input[type="number"].input-cantidad:focus { border-color: var(--gold); }
   background: rgba(251,191,36,.07);
   border: 1px solid rgba(251,191,36,.3);
   border-radius: var(--radius-sm);
-  color: #FBB F24;
+  color: #FBBF24;
   font-size: .84rem;
   padding: 12px 16px;
   margin-bottom: 12px;
@@ -2085,6 +2085,12 @@ document.getElementById('resultado').addEventListener('touchend', function() { w
             onfocus="this.style.borderColor='rgba(52,211,153,.5)'" onblur="this.style.borderColor='var(--border)'">
         </div>
         <div>
+          <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px;font-weight:600;text-transform:uppercase;letter-spacing:.06em">Dirección</label>
+          <input id="trfDireccionInput" type="text" placeholder="Dirección (opcional)"
+            style="width:100%;padding:11px 13px;border-radius:10px;border:1px solid var(--border);background:var(--card);color:#070707;font-size:14px;outline:none;box-sizing:border-box;font-family:var(--font-body);"
+            onfocus="this.style.borderColor='rgba(52,211,153,.5)'" onblur="this.style.borderColor='var(--border)'">
+        </div>
+        <div>
           <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px;font-weight:600;text-transform:uppercase;letter-spacing:.06em">Cantidad de códigos * (mín 4, máx 500)</label>
           <input id="trfCantidadSelect" type="number" min="4" max="500" step="1" value="4" inputmode="numeric"
             oninput="trfActualizarMonto()" onchange="trfValidarRangoCantidad()"
@@ -2187,74 +2193,186 @@ window.trfValidarRangoCantidad = function() {
 trfActualizarMonto();
 
 window.abrirModalTransferencia = function() {
+  const modal = document.getElementById('modalTransferencia');
+  if (!modal) {
+    console.error('❌ No existe #modalTransferencia');
+    alert('No se pudo abrir el formulario de transferencia.');
+    return;
+  }
+
   trfRenderLista();
-  const n = document.getElementById('nombre')?.value.trim();
-  const c = document.getElementById('correo')?.value.trim();
-  const d = document.getElementById('cedula')?.value.trim();
-  const t = document.getElementById('telefono')?.value.trim();
-  if (n) document.getElementById('trfNombreInput').value   = n;
-  if (c) document.getElementById('trfCorreoInput').value   = c;
-  if (d) document.getElementById('trfCedulaInput').value   = d;
-  if (t) document.getElementById('trfTelefonoInput').value = t;
-  const cant = document.querySelector('.card.selected')?.dataset.cantidad || (cantidadSeleccionada > 0 ? cantidadSeleccionada : null);
-  if (cant) { const s = document.getElementById('trfCantidadSelect'); if(s){ s.value = cant; trfActualizarMonto(); } }
-  document.getElementById('trfFormMsg').innerHTML = '';
-  document.getElementById('modalTransferencia').style.display = 'flex';
+
+  const campos = {
+    nombre: 'trfNombreInput',
+    correo: 'trfCorreoInput',
+    cedula: 'trfCedulaInput',
+    telefono: 'trfTelefonoInput',
+    direccion: 'trfDireccionInput'
+  };
+
+  Object.entries(campos).forEach(([origen, destino]) => {
+    const origenEl = document.getElementById(origen);
+    const destinoEl = document.getElementById(destino);
+    if (origenEl && destinoEl) destinoEl.value = origenEl.value.trim();
+  });
+
+  const cardSeleccionada = document.querySelector('.card.selected');
+  const cant = cardSeleccionada?.dataset.cantidad ||
+               (Number(cantidadSeleccionada) > 0 ? Number(cantidadSeleccionada) : null);
+
+  const cantidadInput = document.getElementById('trfCantidadSelect');
+
+  if (cant && cantidadInput) {
+    cantidadInput.value = cant;
+  }
+
+  trfValidarRangoCantidad();
+
+  const msg = document.getElementById('trfFormMsg');
+  if (msg) msg.innerHTML = '';
+
+  modal.style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+
+  requestAnimationFrame(() => {
+    modal.scrollTop = 0;
+  });
 };
 
 window.cerrarModalTransferencia = function() {
-  document.getElementById('modalTransferencia').style.display = 'none';
+  const modal = document.getElementById('modalTransferencia');
+  if (modal) modal.style.display = 'none';
+  document.body.style.overflow = '';
 };
 
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') cerrarModalTransferencia();
+});
+
+document.addEventListener('click', function(e) {
+  const modal = document.getElementById('modalTransferencia');
+  if (modal && e.target === modal) cerrarModalTransferencia();
+});
+
 window.enviarSolicitudTransferencia = async function() {
-  const nombre   = document.getElementById('trfNombreInput').value.trim();
-  const correo   = document.getElementById('trfCorreoInput').value.trim();
-  const cedula   = document.getElementById('trfCedulaInput').value.trim();
-  const telefono = document.getElementById('trfTelefonoInput').value.trim();
-  const cantidad = parseInt(document.getElementById('trfCantidadSelect').value, 10);
+  const nombre   = document.getElementById('trfNombreInput')?.value.trim() || '';
+  const correo   = document.getElementById('trfCorreoInput')?.value.trim() || '';
+  const cedula   = document.getElementById('trfCedulaInput')?.value.trim() || '';
+  const telefono = document.getElementById('trfTelefonoInput')?.value.trim() || '';
+  const direccion = document.getElementById('trfDireccionInput')?.value.trim() || '';
+  const cantidad = parseInt(document.getElementById('trfCantidadSelect')?.value, 10);
   const msgEl    = document.getElementById('trfFormMsg');
+
+  if (!msgEl) return;
 
   if (!nombre || !correo) {
     msgEl.innerHTML = '<div style="background:rgba(248,113,113,.1);color:#f87171;padding:9px 12px;border-radius:8px;font-size:12px;border:1px solid rgba(248,113,113,.2)">⚠️ Nombre y correo son obligatorios</div>';
     return;
   }
+
   if (!Number.isFinite(cantidad) || cantidad < 4 || cantidad > 500) {
     msgEl.innerHTML = '<div style="background:rgba(248,113,113,.1);color:#f87171;padding:9px 12px;border-radius:8px;font-size:12px;border:1px solid rgba(248,113,113,.2)">⚠️ La cantidad debe estar entre 4 y 500 códigos</div>';
     return;
   }
+
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(correo)) {
     msgEl.innerHTML = '<div style="background:rgba(248,113,113,.1);color:#f87171;padding:9px 12px;border-radius:8px;font-size:12px;border:1px solid rgba(248,113,113,.2)">⚠️ Correo electrónico inválido</div>';
     return;
   }
 
-  msgEl.innerHTML = '<div style="color:var(--muted);font-size:12px;padding:6px 0">⏳ Registrando solicitud...</div>';
+  const boton = document.querySelector('#modalTransferencia button[onclick*="enviarSolicitudTransferencia"]');
+  if (boton) {
+    boton.disabled = true;
+    boton.style.opacity = '.65';
+  }
+
+  msgEl.innerHTML = '<div style="color:#94A3B8;font-size:12px;padding:6px 0">⏳ Registrando solicitud...</div>';
 
   try {
     const r = await fetch('/api/transferencia-registrar', {
-      method:  'POST',
+      method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body:    JSON.stringify({ nombre, correo, cedula, telefono, cantidad: Number(cantidad) })
+      body: JSON.stringify({
+        nombre,
+        correo,
+        cedula,
+        telefono,
+        direccion,
+        cantidad: Number(cantidad)
+      })
     });
-    const d = await r.json();
-    if (d.ok) {
-      msgEl.innerHTML = `
-        <div style="background:rgba(52,211,153,.08);border:1px solid rgba(52,211,153,.2);border-radius:10px;padding:14px;font-size:12px">
-          <div style="color:#34D399;font-family:var(--font-display);font-weight:800;font-size:14px;margin-bottom:6px">✅ ¡Solicitud registrada!</div>
-          <div style="color:var(--text);line-height:1.7">${d.mensaje}</div>
-          <div style="margin-top:8px;font-size:11px;color:var(--muted)">
-            Referencia: <span style="font-family:monospace;color:var(--gold)">${d.referencia}</span>
-          </div>
-        </div>`;
-      ['trfNombreInput','trfCorreoInput','trfCedulaInput','trfTelefonoInput'].forEach(id => {
-        const el = document.getElementById(id); if (el) el.value = '';
-      });
-    } else {
-      msgEl.innerHTML = `<div style="background:rgba(248,113,113,.1);color:#f87171;padding:9px 12px;border-radius:8px;font-size:12px;border:1px solid rgba(248,113,113,.2)">⚠️ ${d.error || 'Error al registrar'}</div>`;
+
+    const raw = await r.text();
+    let d;
+
+    try {
+      d = JSON.parse(raw);
+    } catch {
+      throw new Error(`El servidor respondió con HTTP ${r.status} y no devolvió JSON.`);
     }
-  } catch(e) {
-    msgEl.innerHTML = '<div style="background:rgba(248,113,113,.1);color:#f87171;padding:9px 12px;border-radius:8px;font-size:12px;border:1px solid rgba(248,113,113,.2)">⚠️ Error de conexión. Intenta de nuevo.</div>';
+
+    if (!r.ok || !d.ok) {
+      throw new Error(d.error || d.mensaje || `No se pudo registrar la solicitud (HTTP ${r.status}).`);
+    }
+
+    msgEl.innerHTML = `
+      <div style="background:rgba(52,211,153,.08);border:1px solid rgba(52,211,153,.2);border-radius:10px;padding:14px;font-size:12px">
+        <div style="color:#34D399;font-family:var(--font-display);font-weight:800;font-size:14px;margin-bottom:6px">✅ ¡Solicitud registrada!</div>
+        <div style="color:#ECF0FF;line-height:1.7">${d.mensaje || 'Solicitud registrada correctamente.'}</div>
+        ${d.referencia ? `<div style="margin-top:8px;font-size:11px;color:#94A3B8">
+          Referencia: <span style="font-family:monospace;color:#E8A800">${d.referencia}</span>
+        </div>` : ''}
+        <div style="margin-top:10px;color:#94A3B8;font-size:11px;line-height:1.6">
+          Realiza la transferencia usando los datos mostrados arriba. Conserva la referencia para confirmar tu pago.
+        </div>
+      </div>`;
+
+    ['trfNombreInput','trfCorreoInput','trfCedulaInput','trfTelefonoInput','trfDireccionInput']
+      .forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.value = '';
+      });
+
+  } catch (e) {
+    console.error('❌ Error registrando transferencia:', e);
+    msgEl.innerHTML = `
+      <div style="background:rgba(248,113,113,.1);color:#f87171;padding:10px 12px;border-radius:8px;font-size:12px;border:1px solid rgba(248,113,113,.2)">
+        ⚠️ ${e.message || 'Error de conexión. Intenta de nuevo.'}
+      </div>`;
+  } finally {
+    if (boton) {
+      boton.disabled = false;
+      boton.style.opacity = '1';
+    }
   }
 };
+document.addEventListener('DOMContentLoaded', function() {
+  const btnTransferencia = document.getElementById('btnTransferencia');
+
+  if (!btnTransferencia) {
+    console.error('❌ No se encontró #btnTransferencia');
+    return;
+  }
+
+  btnTransferencia.addEventListener('click', function(e) {
+    e.preventDefault();
+    e.stopPropagation();
+
+    try {
+      abrirModalTransferencia();
+    } catch (error) {
+      console.error('❌ Error al abrir transferencia:', error);
+      const modal = document.getElementById('modalTransferencia');
+      if (modal) {
+        modal.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+      } else {
+        alert('No se encontró el formulario de transferencia.');
+      }
+    }
+  });
+});
+
 </script>
 
 </body>
