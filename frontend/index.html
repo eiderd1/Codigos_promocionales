@@ -1639,6 +1639,18 @@ async function cargarConfig() {
 
     precioCodigo = cfg.precioCodigo || 3750;
 
+    // Ventas pausadas por el admin: bloquear ambos botones de compra
+    if (cfg.ventas_activas === false) {
+      cards.forEach(c => c.classList.add("disabled"));
+      form.style.display = "none";
+      const btnTrf = document.getElementById("btnTransferencia");
+      if (btnTrf) { btnTrf.disabled = true; btnTrf.style.opacity = '0.5'; btnTrf.style.pointerEvents = 'none'; }
+      document.getElementById("resumenPedido").style.display = "none";
+      const aviso = document.getElementById("avisoStock");
+      aviso.style.display = "block";
+      aviso.innerHTML = "⏸ Las ventas están pausadas temporalmente. Vuelve pronto.";
+    }
+
     // Nombre de la dinámica
     if (cfg.nombreDinamica) {
       const empresa = document.title.split('–')[0].trim();

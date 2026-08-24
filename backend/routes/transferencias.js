@@ -32,6 +32,10 @@ router.post('/transferencia-registrar', async (req, res) => {
   try {
     const { nombre, correo, cedula, telefono, direccion, cantidad } = req.body;
 
+    if (!CONFIG.ventas_activas) {
+      return res.status(400).json({ error: 'Las ventas están pausadas en este momento' });
+    }
+
     if (!nombre || !correo || !cantidad) {
       return res.status(400).json({ error: 'Nombre, correo y cantidad son obligatorios' });
     }
