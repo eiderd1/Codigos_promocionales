@@ -124,7 +124,81 @@ body::after {
 }
 .subtitle strong, .subtitle span { color: var(--gold); font-weight: 700; }
 
+/* ── Habeas Data ── */
+.habeas-data-box {
+  margin: 14px 0;
+  padding: 12px 14px;
+  background: var(--card-bg, #fdf9f0);
+  border: 1px solid var(--border-gold, rgba(201,147,10,.2));
+  border-radius: 12px;
+}
+.habeas-data-label {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  font-size: .78rem;
+  line-height: 1.5;
+  color: var(--muted, #6b6455);
+  cursor: pointer;
+}
+.habeas-data-label input[type="checkbox"] {
+  margin-top: 2px;
+  width: 16px; height: 16px;
+  accent-color: var(--gold, #c9930a);
+  flex-shrink: 0;
+  cursor: pointer;
+}
+.habeas-data-link { color: var(--gold-light, #b8860b); font-weight: 700; text-decoration: underline; cursor: pointer; }
+.habeas-data-body {
+  display: none;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px dashed var(--border-gold, rgba(201,147,10,.2));
+  font-size: .74rem;
+  line-height: 1.6;
+  color: var(--muted, #8a8578);
+}
+.habeas-data-body.open { display: block; }
+
 .badge-wrap { display: flex; justify-content: center; margin-bottom: 0; }
+
+
+/* ── Ganadores anteriores ── */
+.ganadores-titulo {
+  font-family: var(--font-display, inherit);
+  font-weight: 800;
+  font-size: 1rem;
+  color: var(--text, #222);
+  text-align: center;
+  margin-bottom: 12px;
+}
+.ganadores-lista { display: flex; flex-direction: column; gap: 10px; }
+.ganador-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--card-bg, #fdf9f0);
+  border: 1px solid var(--border-gold, rgba(201,147,10,.2));
+  border-radius: 14px;
+  padding: 12px 14px;
+}
+.ganador-card-img {
+  width: 48px; height: 48px;
+  border-radius: 10px;
+  object-fit: cover;
+  flex-shrink: 0;
+  background: var(--gold-dim, #f4e4bd);
+}
+.ganador-card-info { flex: 1; min-width: 0; }
+.ganador-card-nombre { font-weight: 700; font-size: .88rem; color: var(--text, #222); }
+.ganador-card-dinamica { font-size: .76rem; color: var(--muted, #8a8578); margin-top: 1px; }
+.ganador-card-premio {
+  font-weight: 800;
+  font-size: .85rem;
+  color: var(--gold-light, #b8860b);
+  white-space: nowrap;
+}
+
 .badge {
   display: inline-flex;
   align-items: center;
@@ -1409,6 +1483,22 @@ input.error { border-color: rgba(248,113,113,.7); box-shadow: 0 0 0 3px rgba(248
       </div>
     </div>
 
+    <div class="habeas-data-box">
+      <label class="habeas-data-label">
+        <input type="checkbox" id="chkHabeasData">
+        <span>Autorizo el tratamiento de mis datos personales conforme a la
+          <span class="habeas-data-link" onclick="event.preventDefault(); toggleHabeasData();">Política de Tratamiento de Datos</span>
+          (Ley 1581 de 2012), únicamente para gestionar esta compra y la entrega de premios.</span>
+      </label>
+      <div class="habeas-data-body" id="habeasDataContent">
+        Los datos que ingresas (nombre, cédula, teléfono, correo, dirección) se usan exclusivamente para
+        procesar tu compra, generar tu factura, entregar tus códigos y contactarte si resultas ganador.
+        No se comparten con terceros distintos a nuestro procesador de pagos (Wompi) para efectos de la
+        transacción. Puedes solicitar la eliminación de tus datos escribiendo a
+        infoeidertechsoluciones@gmail.com una vez finalizada la dinámica.
+      </div>
+    </div>
+
     <button class="btn btn-primary" id="btnPagar">
       💳 Ir a pagar con Wompi
     </button>
@@ -1446,6 +1536,12 @@ input.error { border-color: rgba(248,113,113,.7); box-shadow: 0 0 0 3px rgba(248
     <button class="btn-reenviar" onclick="reenviarCorreo()">📧 Reenviar códigos al correo</button>
   </div>
   <div class="msg-reenvio" id="msgReenvio"></div>
+
+  <!-- ══════════ GANADORES ANTERIORES ══════════ -->
+  <div id="ganadoresAnterioresWrap" style="display:none;margin-top:22px">
+    <div class="ganadores-titulo">🏆 Ganadores anteriores</div>
+    <div id="ganadoresAnterioresLista" class="ganadores-lista"></div>
+  </div>
 
   <button class="btn-terminos" onclick="toggleTerminos()">
     📋 Ver Términos y Condiciones ▼
@@ -1520,7 +1616,7 @@ input.error { border-color: rgba(248,113,113,.7); box-shadow: 0 0 0 3px rgba(248
 </div>
 
 <footer class="footer">
-  <img src="/imagenes/Logo.png" alt="EiderTech Soluciones" class="footer-logo"
+  <img src="/imagenes/Logo.png" alt="EiderTech Soluciones" class="footer-logo" loading="lazy"
        onerror="this.style.display='none'">
   <div class="footer-wompi">
     🔒 Pagos seguros con <span class="wompi-badge">⚡ Wompi</span>
@@ -1586,6 +1682,13 @@ window.toggleTerminos = function () {
   btn.innerHTML = abierto ? "📋 Ver Términos y Condiciones ▼" : "📋 Ocultar Términos y Condiciones ▲";
   btn.style.color = abierto ? "" : "var(--gold)";
   btn.style.borderColor = abierto ? "" : "var(--gold)";
+};
+
+// ===============================
+// TOGGLE HABEAS DATA
+// ===============================
+window.toggleHabeasData = function () {
+  document.getElementById("habeasDataContent").classList.toggle("open");
 };
 
 
@@ -1941,6 +2044,39 @@ function lanzarConfeti() {
   draw();
 }
 
+// ── Ganadores anteriores (genera confianza en nuevos compradores) ──────────
+async function cargarGanadoresAnteriores() {
+  try {
+    const res  = await fetch(`${API_URL}/api/ganadores-historial`);
+    const data = await res.json();
+    const lista = data.ganadores || [];
+    if (!lista.length) return; // nada que mostrar todavía, se deja oculto
+
+    const wrap = document.getElementById('ganadoresAnterioresWrap');
+    const cont = document.getElementById('ganadoresAnterioresLista');
+    cont.innerHTML = lista.map(g => {
+      const premioFmt = g.premio_total ? `$${Number(g.premio_total).toLocaleString('es-CO')}` : '';
+      const fechaFmt  = g.fecha ? new Date(g.fecha).toLocaleDateString('es-CO', { day: 'numeric', month: 'short', year: 'numeric' }) : '';
+      const imgTag = g.premio_imagen
+        ? `<img class="ganador-card-img" src="${g.premio_imagen}" alt="" loading="lazy" onerror="this.style.display='none'">`
+        : `<div class="ganador-card-img" style="display:flex;align-items:center;justify-content:center;font-size:20px">🏆</div>`;
+      return `
+        <div class="ganador-card">
+          ${imgTag}
+          <div class="ganador-card-info">
+            <div class="ganador-card-nombre">${g.nombre_ganador || 'Ganador'} · <span style="font-family:monospace">${g.codigo_ganador}</span></div>
+            <div class="ganador-card-dinamica">${g.nombre_dinamica || 'Dinámica'}${fechaFmt ? ' · ' + fechaFmt : ''}</div>
+          </div>
+          ${premioFmt ? `<div class="ganador-card-premio">${premioFmt}</div>` : ''}
+        </div>`;
+    }).join('');
+    wrap.style.display = 'block';
+  } catch (e) {
+    // Si falla, simplemente no se muestra la sección — no es crítico
+  }
+}
+cargarGanadoresAnteriores();
+
 cargarConfig();
 
  
@@ -1962,6 +2098,10 @@ btnPagar.addEventListener("click", async () => {
   if (!esCedulaValida(cedula.value.trim()))     { mostrarError(cedula,   "err-cedula");   valido = false; }
   if (!esTelefonoValido(telefono.value.trim())) { mostrarError(telefono, "err-telefono"); valido = false; }
   if (!esCorreoValido(correo.value.trim()))     { mostrarError(correo,   "err-correo");   valido = false; }
+  if (!document.getElementById("chkHabeasData").checked) {
+    alert("Debes autorizar el tratamiento de tus datos personales para continuar.");
+    valido = false;
+  }
   if (!valido) return;
 
   procesandoPago = true;
@@ -2206,6 +2346,15 @@ function abrirModalEstado(tipo) {
 
       <div id="trfFormMsg" style="margin-top:10px;min-height:14px"></div>
 
+      <div class="habeas-data-box" style="margin:10px 0">
+        <label class="habeas-data-label">
+          <input type="checkbox" id="trfChkHabeasData">
+          <span>Autorizo el tratamiento de mis datos personales conforme a la
+            <span class="habeas-data-link" onclick="event.preventDefault(); toggleHabeasData();">Política de Tratamiento de Datos</span>
+            (Ley 1581 de 2012), únicamente para gestionar esta compra y la entrega de premios.</span>
+        </label>
+      </div>
+
       <button onclick="enviarSolicitudTransferencia()" style="
         margin-top:16px;width:100%;
         background:linear-gradient(135deg,#166534,#22c55e);
@@ -2372,6 +2521,10 @@ window.enviarSolicitudTransferencia = async function() {
 
   if (!nombre || !correo) {
     msgEl.innerHTML = '<div style="background:rgba(248,113,113,.1);color:#f87171;padding:9px 12px;border-radius:8px;font-size:12px;border:1px solid rgba(248,113,113,.2)">⚠️ Nombre y correo son obligatorios</div>';
+    return;
+  }
+  if (!document.getElementById('trfChkHabeasData')?.checked) {
+    msgEl.innerHTML = '<div style="background:rgba(248,113,113,.1);color:#f87171;padding:9px 12px;border-radius:8px;font-size:12px;border:1px solid rgba(248,113,113,.2)">⚠️ Debes autorizar el tratamiento de datos personales para continuar</div>';
     return;
   }
 

@@ -19,6 +19,56 @@ function authAdmin(req, res, next) {
   next();
 }
 
+// ════════════════════════════════════════════════════════════════════════════
+// GET /api/ganadores-historial — PÚBLICO, sin auth. Muestra dinámicas
+// anteriores que ya tuvieron un ganador publicado, para generar confianza en
+// nuevos compradores. Solo expone lo necesario (nunca compras/códigos crudos).
+// ════════════════════════════════════════════════════════════════════════════
+router.get('/ganadores-historial', async (req, res) => {
+  try {
+    const eventos = await listarEventosHistorial();
+    const conGanador = eventos
+      .filter(e => e.resumen?.ganador?.activo && e.resumen.ganador.codigo)
+      .slice(0, 12) // los últimos 12, la lista puede crecer mucho con el tiempo
+      .map(e => ({
+        id:              e.id,
+        nombre_dinamica: e.nombre,
+        fecha:           e.fecha_cierre,
+        codigo_ganador:  e.resumen.ganador.codigo,
+        nombre_ganador:  e.resumen.ganador.nombre
+      }));
+
+    // El premio real de cada dinámica vive en el snapshot de config guardado
+    // al cerrar el evento, no en "resumen" — se busca solo para los que sí
+    // tienen ganador, para no traer de más.
+    const idsNecesarios = conGanador.map(e => e.id);
+    let premiosPorId = {};
+    if (idsNecesarios.length) {
+      const { data: llenos } = await supabase
+        .from('eventos_historial')
+        .select('id, config')
+        .in('id', idsNecesarios);
+      (llenos || []).forEach(e => {
+        premiosPorId[e.id] = {
+          premio_total:  e.config?.premio_total ?? null,
+          premio_imagen: e.config?.premio_imagen ?? ''
+        };
+      });
+    }
+
+    const resultado = conGanador.map(e => ({
+      ...e,
+      premio_total:  premiosPorId[e.id]?.premio_total ?? null,
+      premio_imagen: premiosPorId[e.id]?.premio_imagen ?? ''
+    }));
+
+    res.json({ ganadores: resultado });
+  } catch (e) {
+    console.error('❌ Error obteniendo ganadores históricos:', e.message);
+    res.status(500).json({ ganadores: [] });
+  }
+});
+
 // ── Helpers Supabase ──────────────────────────────────────────────────────────
 async function leerConfig() {
   const { data, error } = await supabase
@@ -69,6 +119,38 @@ async function guardarGanador(ganador) {
 // ════════════════════════════════════════════════════════════════════════════
 // GET /api/config  — PÚBLICO
 // ════════════════════════════════════════════════════════════════════════════
+// ════════════════════════════════════════════════════════════════════════════
+// GET /api/ganadores-historial  — ganadores de dinámicas anteriores (público)
+// Solo expone lo necesario para mostrar confianza (nombre, premio, ganador,
+// fecha). NUNCA expone la lista de compradores ni sus datos personales.
+// ════════════════════════════════════════════════════════════════════════════
+router.get('/ganadores-historial', async (req, res) => {
+  try {
+    const { data, error } = await supabase
+      .from('eventos_historial')
+      .select('id, nombre, resumen, config, created_at')
+      .order('created_at', { ascending: false })
+      .limit(12);
+
+    if (error) return res.status(500).json({ ok: false, error: error.message });
+
+    const ganadores = (data || [])
+      .filter(ev => ev.resumen?.ganador?.activo)
+      .map(ev => ({
+        nombre_ganador:  ev.resumen.ganador.nombre,
+        codigo_ganador:  ev.resumen.ganador.codigo,
+        nombre_dinamica: ev.config?.nombre_dinamica || ev.nombre,
+        fecha:           ev.created_at,
+        premio_total:    ev.config?.premio_total ?? null,
+        premio_imagen:   ev.config?.premio_imagen ?? null
+      }));
+
+    res.json({ ok: true, ganadores });
+  } catch (e) {
+    res.status(500).json({ ok: false, error: e.message });
+  }
+});
+
 router.get('/config', async (req, res) => {
   try {
     let cfg = {};
