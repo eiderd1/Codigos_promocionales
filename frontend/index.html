@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#FFFFFF">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -1039,15 +1039,15 @@ input.error { border-color: rgba(248,113,113,.7); box-shadow: 0 0 0 3px rgba(248
 .modal-body { padding: 20px; }
 .modal-close {
   position: absolute;
-  top: 14px;
-  right: 14px;
+  top: 10px;
+  right: 10px;
   background: rgba(255,255,255,.1);
   border: none;
   color: rgba(255,255,255,.7);
   font-size: 16px;
-  width: 30px;
-  height: 30px;
-  border-radius: 8px;
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -1142,7 +1142,7 @@ input.error { border-color: rgba(248,113,113,.7); box-shadow: 0 0 0 3px rgba(248
   .btn { padding: 14px; font-size: .95rem; }
   .trust-badges { gap: 6px; }
   .trust-badge { font-size: .66rem; padding: 3px 8px; }
-  input[type="text"], input[type="email"], input[type="tel"] { font-size: .9rem; padding: 12px 13px; }
+  input[type="text"], input[type="email"], input[type="tel"] { font-size: 1rem; padding: 12px 13px; }
   .progress-wrap { padding: 13px 14px; }
   .site-header { margin-bottom: 22px; }
 }
@@ -2308,38 +2308,38 @@ function abrirModalEstado(tipo) {
         <div>
           <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px;font-weight:600;text-transform:uppercase;letter-spacing:.06em">Nombre completo *</label>
           <input id="trfNombreInput" type="text" placeholder="Tu nombre completo"
-            style="width:100%;padding:11px 13px;border-radius:10px;border:1px solid var(--border);background:var(--card);color:rgb(9, 9, 9);font-size:14px;outline:none;box-sizing:border-box;font-family:var(--font-body);"
+            style="width:100%;padding:11px 13px;border-radius:10px;border:1px solid var(--border);background:var(--card);color:rgb(9, 9, 9);font-size:16px;outline:none;box-sizing:border-box;font-family:var(--font-body);"
             onfocus="this.style.borderColor='rgba(52,211,153,.5)'" onblur="this.style.borderColor='var(--border)'">
         </div>
         <div>
           <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px;font-weight:600;text-transform:uppercase;letter-spacing:.06em">Correo electrónico *</label>
           <input id="trfCorreoInput" type="email" placeholder="tu@correo.com" inputmode="email"
-            style="width:100%;padding:11px 13px;border-radius:10px;border:1px solid var(--border);background:var(--card);color:rgb(7, 7, 7);font-size:14px;outline:none;box-sizing:border-box;font-family:var(--font-body);"
+            style="width:100%;padding:11px 13px;border-radius:10px;border:1px solid var(--border);background:var(--card);color:rgb(7, 7, 7);font-size:16px;outline:none;box-sizing:border-box;font-family:var(--font-body);"
             onfocus="this.style.borderColor='rgba(52,211,153,.5)'" onblur="this.style.borderColor='var(--border)'">
         </div>
         <div>
           <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px;font-weight:600;text-transform:uppercase;letter-spacing:.06em">Cédula</label>
           <input id="trfCedulaInput" type="text" placeholder="1234567890" inputmode="numeric"
-            style="width:100%;padding:11px 13px;border-radius:10px;border:1px solid var(--border);background:var(--card);color:rgb(0, 0, 0);font-size:14px;outline:none;box-sizing:border-box;font-family:var(--font-body);"
+            style="width:100%;padding:11px 13px;border-radius:10px;border:1px solid var(--border);background:var(--card);color:rgb(0, 0, 0);font-size:16px;outline:none;box-sizing:border-box;font-family:var(--font-body);"
             onfocus="this.style.borderColor='rgba(52,211,153,.5)'" onblur="this.style.borderColor='var(--border)'">
         </div>
         <div>
           <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px;font-weight:600;text-transform:uppercase;letter-spacing:.06em">Teléfono / WhatsApp</label>
           <input id="trfTelefonoInput" type="tel" placeholder="3001234567" inputmode="tel"
-            style="width:100%;padding:11px 13px;border-radius:10px;border:1px solid var(--border);background:var(--card);color:rgb(8, 8, 8);font-size:14px;outline:none;box-sizing:border-box;font-family:var(--font-body);"
+            style="width:100%;padding:11px 13px;border-radius:10px;border:1px solid var(--border);background:var(--card);color:rgb(8, 8, 8);font-size:16px;outline:none;box-sizing:border-box;font-family:var(--font-body);"
             onfocus="this.style.borderColor='rgba(52,211,153,.5)'" onblur="this.style.borderColor='var(--border)'">
         </div>
         <div>
           <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px;font-weight:600;text-transform:uppercase;letter-spacing:.06em">Dirección</label>
           <input id="trfDireccionInput" type="text" placeholder="Dirección (opcional)"
-            style="width:100%;padding:11px 13px;border-radius:10px;border:1px solid var(--border);background:var(--card);color:#070707;font-size:14px;outline:none;box-sizing:border-box;font-family:var(--font-body);"
+            style="width:100%;padding:11px 13px;border-radius:10px;border:1px solid var(--border);background:var(--card);color:#070707;font-size:16px;outline:none;box-sizing:border-box;font-family:var(--font-body);"
             onfocus="this.style.borderColor='rgba(52,211,153,.5)'" onblur="this.style.borderColor='var(--border)'">
         </div>
         <div>
           <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px;font-weight:600;text-transform:uppercase;letter-spacing:.06em">Cantidad de códigos * (mín 4, máx 500)</label>
           <input id="trfCantidadSelect" type="number" min="4" max="500" step="1" value="4" inputmode="numeric"
             oninput="trfActualizarMonto()" onchange="trfValidarRangoCantidad()"
-            style="width:100%;padding:11px 13px;border-radius:10px;border:1px solid var(--border);background:var(--card);color:rgb(7, 7, 7);font-size:14px;outline:none;box-sizing:border-box;font-family:var(--font-body);"
+            style="width:100%;padding:11px 13px;border-radius:10px;border:1px solid var(--border);background:var(--card);color:rgb(7, 7, 7);font-size:16px;outline:none;box-sizing:border-box;font-family:var(--font-body);"
             onfocus="this.style.borderColor='rgba(52,211,153,.5)'" onblur="this.style.borderColor='var(--border)'; trfValidarRangoCantidad();">
         </div>
       </div>
