@@ -1023,7 +1023,9 @@
             <div class="form-field">
               <label>Código ganador <span style="color:var(--red)">*</span></label>
               <input type="text" id="gan-codigo" placeholder="Ej: 1234" maxlength="10"
+                oninput="buscarCompradorGanador()"
                 style="font-family:monospace;font-size:16px;font-weight:700;letter-spacing:2px">
+              <small id="gan-codigo-info" style="color:var(--text3)"></small>
             </div>
             <div class="form-field">
               <label>Nombre del ganador <span style="color:var(--red)">*</span></label>
@@ -1113,8 +1115,8 @@
           </div>
           <div class="form-field" style="margin-bottom:14px">
             <label>Cantidad de números a vender</label>
-            <input type="number" id="nva-total-numeros" min="10" max="1000000" step="1" placeholder="Ej: 10000">
-            <small style="color:var(--text3)">⚠️ Esto regenera por completo el pool de números (0000...N-1). Solo hazlo aquí, justo al cerrar el evento.</small>
+            <input type="text" inputmode="numeric" id="nva-total-numeros" placeholder="Ej: 1000 o 1.000">
+            <small style="color:var(--text3)">⚠️ Esto regenera por completo el pool de números (0000...N-1). Solo hazlo aquí, justo al cerrar el evento. Puedes escribirlo con o sin puntos (1000 o 1.000).</small>
           </div>
           <div class="form-field" style="margin-bottom:14px">
             <label>Valor por número (COP)</label>
@@ -1464,13 +1466,11 @@
       const rows = d.map((x, i) => `<tr>
         <td style="color:var(--text3);font-size:12px">${i+1}</td>
         <td><span class="code-mono gold-code">⭐ ${x.codigo}</span></td>
-        <td>${x.nombre || '—'}</td>
-        <td>${x.telefono || '—'}</td>
         <td><span class="badge badge-gold">Dorado</span></td>
       </tr>`).join('');
       el.innerHTML = `<p style="font-size:13px;color:var(--text2);margin-bottom:12px">${d.length} código(s) dorado(s)</p>
         <div class="table-card"><table>
-          <thead><tr><th>#</th><th>Código</th><th>Nombre</th><th>Teléfono</th><th>Tipo</th></tr></thead>
+          <thead><tr><th>#</th><th>Código</th><th>Tipo</th></tr></thead>
           <tbody>${rows}</tbody>
         </table></div>`;
     } catch (e) { el.innerHTML = '<div class="msg msg-err">Error cargando códigos</div>'; }
@@ -1951,6 +1951,33 @@
     } catch(e) { el.innerHTML = '<div class="msg msg-err">Error cargando estado</div>'; }
   }
 
+  // ── Autocompletar nombre del ganador al escribir el código ──────────────
+  let ganBuscarTimeout = null;
+  async function buscarCompradorGanador() {
+    clearTimeout(ganBuscarTimeout);
+    const codigo = document.getElementById('gan-codigo').value.trim();
+    const info   = document.getElementById('gan-codigo-info');
+    if (!codigo) { info.textContent = ''; return; }
+
+    ganBuscarTimeout = setTimeout(async () => {
+      info.textContent = 'Buscando comprador...';
+      try {
+        const r = await fetch(`/api/admin/codigo/${encodeURIComponent(codigo)}`, { headers: headers() });
+        const d = await r.json();
+        if (d.ok && d.encontrado) {
+          document.getElementById('gan-nombre').value = d.nombre || '';
+          info.innerHTML = `✓ ${d.nombre || 'Sin nombre'}${d.telefono ? ' · ' + d.telefono : ''}${d.dorado ? ' · ⭐ dorado' : ''}`;
+          info.style.color = 'var(--green)';
+        } else {
+          info.textContent = 'Ese código no aparece como vendido — verifica que esté bien escrito.';
+          info.style.color = 'var(--red)';
+        }
+      } catch (e) {
+        info.textContent = '';
+      }
+    }, 500);
+  }
+
   async function publicarGanador() {
     const codigo = document.getElementById('gan-codigo').value.trim();
     const nombre = document.getElementById('gan-nombre').value.trim();
@@ -1962,7 +1989,13 @@
       const r = await fetch('/api/admin/config/ganador', { method:'POST', headers:headers(),
         body: JSON.stringify({ codigo, nombre, activo: true }) });
       const d = await r.json();
-      if (d.ok) { msg.innerHTML='<div class="msg msg-ok">🏆 Ganador publicado correctamente</div>'; loadGanadorStatus(); }
+      if (d.ok) {
+        const avisoCorreo = d.correoEnviado
+          ? '📧 Correo enviado al ganador con su código y premio.'
+          : '⚠️ Ganador publicado, pero no se pudo enviar el correo (no se encontró su email guardado).';
+        msg.innerHTML=`<div class="msg msg-ok">🏆 Ganador publicado correctamente<br>${avisoCorreo}</div>`;
+        loadGanadorStatus();
+      }
       else { msg.innerHTML=`<div class="msg msg-err">${d.error||'Error al publicar'}</div>`; }
     } catch(e){ msg.innerHTML='<div class="msg msg-err">Error de conexión</div>'; }
   }

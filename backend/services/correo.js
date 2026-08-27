@@ -263,4 +263,97 @@ async function enviarCorreo(destino, codigos, premioDoradoOverride = null) {
   }
 }
 
-module.exports = { enviarCorreo };
+// ── Correo al ganador: código + valor del premio de la dinámica ────────────
+async function enviarCorreoGanador(destino, nombre, codigo, premioTotal) {
+  try {
+    if (!process.env.BREVO_API_KEY) {
+      console.error("❌ BREVO_API_KEY no configurada");
+      return;
+    }
+    if (!destino || !codigo) {
+      console.error("❌ enviarCorreoGanador: destino o codigo vacíos", { destino, codigo });
+      return;
+    }
+
+    const NUM_SOPORTE  = process.env.WHATSAPP_SOPORTE || '573053228703';
+    const premioFmt    = Number(premioTotal || 0).toLocaleString('es-CO');
+    const mensajeWa    = encodeURIComponent(`Hola, soy ${nombre || ''}, gané con el código ${codigo} 🏆`);
+    const waReclamar   = `https://wa.me/${NUM_SOPORTE}?text=${mensajeWa}`;
+
+    const htmlContent = `
+      <div style="background:#0f172a;padding:24px 16px;font-family:Arial,sans-serif;color:white;">
+        <div style="max-width:500px;margin:auto;background:#111827;border-radius:16px;padding:28px 20px;">
+          <div style="text-align:center;margin-bottom:20px">
+            <div style="font-size:48px">🏆</div>
+            <h1 style="color:gold;margin:8px 0 4px;font-size:24px">¡Felicitaciones${nombre ? ', ' + nombre : ''}!</h1>
+            <p style="color:#9ca3af;margin:0;font-size:13px">Eres el ganador oficial de la dinámica EiderTech Soluciones</p>
+          </div>
+          <div style="text-align:center;margin-bottom:20px">
+            <div style="display:inline-block;background:rgba(212,168,32,.12);border:2px solid gold;border-radius:12px;padding:16px 32px">
+              <div style="font-size:11px;color:gold;letter-spacing:.1em;text-transform:uppercase;margin-bottom:4px">Código ganador</div>
+              <div style="font-size:42px;font-weight:900;color:#fde68a;font-family:'Courier New',monospace;letter-spacing:.05em">${codigo}</div>
+            </div>
+          </div>
+          <div style="background:rgba(212,168,32,.08);border:1px solid rgba(212,168,32,.25);border-radius:10px;padding:16px;text-align:center;margin-bottom:20px">
+            <div style="font-size:11px;color:gold;text-transform:uppercase;letter-spacing:.1em;margin-bottom:4px">Premio</div>
+            <div style="font-size:28px;font-weight:900;color:#fff">$${premioFmt} COP</div>
+          </div>
+          <p style="color:#9ca3af;font-size:12px;line-height:1.8;text-align:center;margin:0 0 20px">
+            Para reclamar tu premio comunícate con nosotros por WhatsApp con tu código ganador y documento de identidad.
+          </p>
+          <div style="text-align:center">
+            <a href="${waReclamar}" style="display:inline-block;background:#25D366;color:#fff;text-decoration:none;padding:13px 28px;border-radius:10px;font-weight:700;font-size:14px">
+              💬 Reclamar por WhatsApp
+            </a>
+          </div>
+          <hr style="border:none;border-top:1px solid #1f2937;margin:20px 0">
+          <p style="text-align:center;color:#6b7280;font-size:11px;margin:0">
+            EiderTech Soluciones · infoeidertechsoluciones@gmail.com
+          </p>
+        </div>
+      </div>
+    `;
+
+    const payload = JSON.stringify({
+      sender: {
+        name:  "EiderTech Soluciones",
+        email: process.env.BREVO_FROM_EMAIL || "eidercobo383@gmail.com"
+      },
+      to:      [{ email: destino }],
+      subject: "🏆 ¡Eres el ganador! Tu código y premio",
+      htmlContent
+    });
+
+    console.log("📧 Enviando correo de ganador a:", destino);
+
+    await new Promise((resolve, reject) => {
+      const req = https.request({
+        hostname: 'api.brevo.com',
+        path:     '/v3/smtp/email',
+        method:   'POST',
+        headers: {
+          'Content-Type':   'application/json',
+          'api-key':        process.env.BREVO_API_KEY,
+          'Content-Length': Buffer.byteLength(payload)
+        }
+      }, (res) => {
+        let data = '';
+        res.on('data', chunk => data += chunk);
+        res.on('end', () => {
+          if (res.statusCode >= 200 && res.statusCode < 300) resolve(data);
+          else reject(new Error(`Brevo error ${res.statusCode}: ${data}`));
+        });
+      });
+      req.on('error', reject);
+      req.write(payload);
+      req.end();
+    });
+
+    console.log("📧 Correo de ganador enviado a:", destino);
+  } catch (error) {
+    console.error("❌ Error enviando correo de ganador a", destino, "→", error.message);
+    throw error;
+  }
+}
+
+module.exports = { enviarCorreo, enviarCorreoGanador };

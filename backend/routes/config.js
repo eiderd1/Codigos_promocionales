@@ -136,6 +136,8 @@ router.get('/config', async (req, res) => {
 // ════════════════════════════════════════════════════════════════════════════
 // POST /api/admin/config/ganador  — guarda ganador en Supabase
 // ════════════════════════════════════════════════════════════════════════════
+const { enviarCorreoGanador } = require('../services/correo');
+
 router.post('/admin/config/ganador', authAdmin, async (req, res) => {
   try {
     const { activo, codigo, nombre } = req.body;
@@ -156,7 +158,24 @@ router.post('/admin/config/ganador', authAdmin, async (req, res) => {
     await guardarGanador(ganador);
     CONFIG.ganador = ganador;
     console.log(`🏆 Ganador publicado: ${codigo} — ${nombre}`);
-    res.json({ ok: true, mensaje: `Ganador publicado: ${codigo}` });
+
+    // Enviar correo al ganador con su código y el premio real de la dinámica,
+    // buscando su email guardado en la tabla codigos por el código ganador.
+    let correoEnviado = false;
+    try {
+      const { data: fila } = await supabase
+        .from('codigos').select('email').eq('codigo', codigo.trim()).maybeSingle();
+      if (fila?.email) {
+        await enviarCorreoGanador(fila.email, nombre.trim(), codigo.trim(), CONFIG.premio_total);
+        correoEnviado = true;
+      } else {
+        console.warn(`⚠️ No se encontró correo para el código ${codigo} — no se envió correo al ganador`);
+      }
+    } catch (eCorreo) {
+      console.error('❌ Error enviando correo al ganador:', eCorreo.message);
+    }
+
+    res.json({ ok: true, mensaje: `Ganador publicado: ${codigo}`, correoEnviado });
   } catch (e) {
     console.error('❌ Error guardando ganador:', e.message);
     res.status(500).json({ ok: false, error: e.message });

@@ -559,6 +559,29 @@ router.get('/admin/wompi', authAdmin, async (req, res) => {
 
 
 // ════════════════════════════════════════════
+// BUSCAR COMPRADOR POR CÓDIGO EXACTO (para autocompletar el nombre del ganador)
+// ════════════════════════════════════════════
+router.get('/admin/codigo/:codigo', authAdmin, async (req, res) => {
+  try {
+    const codigo = (req.params.codigo || '').trim();
+    if (!codigo) return res.status(400).json({ ok: false, error: 'Código requerido' });
+
+    const { data, error } = await supabase
+      .from('codigos')
+      .select('codigo, nombre, email, telefono, vendido, dorado')
+      .eq('codigo', codigo)
+      .maybeSingle();
+
+    if (error) return res.status(500).json({ ok: false, error: 'Error buscando código' });
+    if (!data || !data.vendido) return res.json({ ok: true, encontrado: false });
+
+    res.json({ ok: true, encontrado: true, ...data });
+  } catch (e) {
+    res.status(500).json({ ok: false, error: e.message });
+  }
+});
+
+// ════════════════════════════════════════════
 // BUSCADOR GLOBAL
 // ════════════════════════════════════════════
 
