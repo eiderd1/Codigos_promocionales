@@ -1713,9 +1713,8 @@
       let lista = d.wompi || [];
       if (filtro !== 'todas') lista = lista.filter(w => w.estado === filtro);
       if (!lista.length) { el.innerHTML = '<div class="state-empty">No hay pagos Wompi en esta categoría</div>'; return; }
-      const montoXcod = 3750;
       const filas = lista.map(w => {
-        const monto = '$' + (w.cantidad * montoXcod).toLocaleString('es-CO');
+        const monto = '$' + (Number(w.monto) || 0).toLocaleString('es-CO');
         const fecha = w.fecha ? new Date(w.fecha).toLocaleString('es-CO') : '—';
         let estadoBadge = '';
         if (w.estado === 'pagado')     estadoBadge = '<span class="badge badge-ok">✅ Pagado</span>';
@@ -1757,9 +1756,9 @@
       let lista = d.transferencias || [];
       if (filtro !== 'todas') lista = lista.filter(t => t.estado === filtro);
       if (!lista.length) { el.innerHTML='<div class="state-empty">No hay transferencias en esta categoría</div>'; return; }
-      const montoXcod = 3750;
       const filas = lista.map(t => {
-        const monto = '$' + (t.cantidad * montoXcod).toLocaleString('es-CO');
+        const montoReal = Number(t.monto) || 0;
+        const monto = '$' + montoReal.toLocaleString('es-CO');
         const fecha = t.fecha ? new Date(t.fecha).toLocaleString('es-CO') : '—';
         let estadoBadge = '';
         if (t.estado==='transferencia_pendiente')  estadoBadge='<span class="badge badge-pend">⏳ Pendiente</span>';
@@ -1771,7 +1770,7 @@
         const acciones = t.estado==='transferencia_pendiente' ? `
           <div style="display:flex;gap:6px;margin-top:6px">
             <button class="btn btn-primary" style="font-size:12px;padding:5px 10px"
-              onclick="abrirModalAprobar('${t.referencia}','${t.nombre}',${t.cantidad},${t.cantidad*montoXcod})">✅ Aprobar</button>
+              onclick="abrirModalAprobar('${t.referencia}','${t.nombre}',${t.cantidad},${montoReal})">✅ Aprobar</button>
             <button class="btn btn-danger" style="font-size:12px;padding:5px 10px"
               onclick="abrirModalRechazar('${t.referencia}','${t.nombre}')">✕ Rechazar</button>
           </div>` : '';
