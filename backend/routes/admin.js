@@ -10,7 +10,7 @@ const ExcelJS = require('exceljs');
 // SUBIR IMAGEN DEL PREMIO (a Supabase Storage — sobrevive a reinicios/deploys,
 // a diferencia de guardar el archivo en el disco de Render, que se borra)
 // ════════════════════════════════════════════
-router.post('/admin/upload-imagen', express.json({ limit: '8mb' }), authAdmin, async (req, res) => {
+router.post('/admin/upload-imagen', authAdmin, async (req, res) => {
   try {
     const { filename, contentType, base64 } = req.body;
     if (!filename || !contentType || !base64) {
