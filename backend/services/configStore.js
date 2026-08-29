@@ -9,7 +9,7 @@ const { CONFIG } = require('./appState');
 // Claves que se persisten en la tabla `config` (clave/valor JSON)
 const CLAVES_SIMPLES = [
   'ventas_activas', 'precio_codigo', 'precio_dorado', 'premio_total',
-  'premio_imagen', 'nombre_dinamica', 'total_numeros',
+  'premio_imagen', 'nombre_dinamica', 'fecha_inicio', 'total_numeros',
   'aviso_texto', 'aviso_color', 'correo_pie'
 ];
 
