@@ -762,12 +762,16 @@ router.get('/admin/resumen-financiero', authAdmin, async (req, res) => {
   try {
     const { data: compras, error } = await supabase
       .from('compras')
-      .select('nombre, correo, cantidad, referencia, estado, fecha')
+      .select('nombre, correo, cantidad, monto, referencia, estado, fecha')
       .order('fecha', { ascending: false });
 
     if (error) throw error;
 
-    const PRECIO = CONFIG.precio_codigo || 3750;
+    const PRECIO_ACTUAL = CONFIG.precio_codigo || 3750;
+    // Usa el monto REAL guardado en cada compra. Solo para compras viejas de
+    // antes de este fix (monto en 0 o vacío) se estima con el precio actual,
+    // como mejor aproximación posible ya que ese dato nunca se guardó.
+    const montoReal = c => (c.monto && c.monto > 0) ? c.monto : (c.cantidad || 0) * PRECIO_ACTUAL;
 
     const pagadas       = compras.filter(c => c.estado === 'pagado');
     const transferencias = compras.filter(c => c.estado === 'transferencia_aprobada');
@@ -775,14 +779,15 @@ router.get('/admin/resumen-financiero', authAdmin, async (req, res) => {
     const rechazadas    = compras.filter(c => ['DECLINED','transferencia_rechazada'].includes(c.estado));
 
     const sumCodigos = arr => arr.reduce((s, c) => s + (c.cantidad || 0), 0);
+    const sumMontos  = arr => arr.reduce((s, c) => s + montoReal(c), 0);
 
     const codigosPagados      = sumCodigos(pagadas);
     const codigosTransf       = sumCodigos(transferencias);
     const codigosTotales      = codigosPagados + codigosTransf;
-    const ingresosPagados     = codigosPagados * PRECIO;
-    const ingresosTransf      = codigosTransf  * PRECIO;
-    const ingresosTotal       = codigosTotales * PRECIO;
-    const ingresosPendientes  = sumCodigos(pendientes) * PRECIO;
+    const ingresosPagados     = sumMontos(pagadas);
+    const ingresosTransf      = sumMontos(transferencias);
+    const ingresosTotal       = ingresosPagados + ingresosTransf;
+    const ingresosPendientes  = sumMontos(pendientes);
 
     res.json({
       resumen: {
@@ -795,13 +800,13 @@ router.get('/admin/resumen-financiero', authAdmin, async (req, res) => {
         ventas_transf:       transferencias.length,
         ventas_pendientes:   pendientes.length,
         ventas_rechazadas:   rechazadas.length,
-        precio_codigo:       PRECIO,
+        precio_codigo:       PRECIO_ACTUAL,
       },
       compras: compras.map(c => ({
         nombre:     c.nombre,
         correo:     c.correo,
         cantidad:   c.cantidad,
-        monto:      (c.cantidad || 0) * PRECIO,
+        monto:      montoReal(c),
         referencia: c.referencia,
         estado:     c.estado,
         fecha:      c.fecha,

@@ -119,6 +119,7 @@ router.post('/crear-transaccion', async (req, res) => {
         correo:    cliente.correo,
         direccion: cliente.direccion || "",
         cantidad:  cantidadFinal,
+        monto,
         referencia,
         estado:    "pendiente",
         fecha:     new Date()
@@ -162,7 +163,7 @@ router.post('/crear-transaccion', async (req, res) => {
       montoTotal:         monto,
       ajustado:           cantidadFinal < cantidadNum,
       promoActiva:        promo ? {
-        precioDorado: promo.precio_dorado,  // ej: 1500000
+        precioDorado: promo.precio_dorado,
         expiraEn:     promo.expira_en
       } : null
     });

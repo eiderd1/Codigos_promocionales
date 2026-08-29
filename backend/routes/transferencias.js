@@ -79,6 +79,7 @@ router.post('/transferencia-registrar', async (req, res) => {
         correo,
         direccion: direccion || '',
         cantidad:  cantidadFinal,
+        monto:     montoTotal,
         referencia,
         estado:    'transferencia_pendiente',
         fecha:     new Date()
