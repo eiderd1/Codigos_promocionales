@@ -1356,7 +1356,7 @@ input.error { border-color: rgba(248,113,113,.7); box-shadow: 0 0 0 3px rgba(248
         id="imgPremio"
         src="/imagenes/DINAMICA_15M.png"
         alt="Premio en efectivo"
-        style="width:100%;border-radius:18px;box-shadow:0 8px 32px rgba(201,147,10,.15),0 2px 8px rgba(0,0,0,.07);display:block;object-fit:cover;aspect-ratio:16/9;"
+        style="width:100%;height:auto;max-height:60vh;border-radius:18px;box-shadow:0 8px 32px rgba(201,147,10,.15),0 2px 8px rgba(0,0,0,.07);display:block;object-fit:contain;"
         onerror="this.parentElement.style.display='none'"
       >
     
@@ -1386,7 +1386,7 @@ input.error { border-color: rgba(248,113,113,.7); box-shadow: 0 0 0 3px rgba(248
     </div>
     <div class="progress-meta">
       <div class="progress-meta-item">
-        📅 Inicio: <strong>12 de julio, 2025</strong>
+        📅 Inicio: <strong id="txtFechaInicio">—</strong>
       </div>
       <div class="progress-meta-item">
         🏁 Sorteo: <strong id="txtFechaSorteo">Al llegar al 100% </strong>
@@ -1822,6 +1822,17 @@ async function cargarConfig() {
       const premioFmt = Number(cfg.premioTotal).toLocaleString('es-CO');
       document.getElementById('subtituloPremio').innerHTML =
         `Participa por <span>$${premioFmt} COP</span>`;
+    }
+
+    // Fecha de inicio de la dinámica
+    const elFechaInicio = document.getElementById('txtFechaInicio');
+    if (elFechaInicio) {
+      if (cfg.fechaInicio) {
+        const f = new Date(cfg.fechaInicio + 'T00:00:00');
+        elFechaInicio.textContent = f.toLocaleDateString('es-CO', { day: 'numeric', month: 'long', year: 'numeric' });
+      } else {
+        elFechaInicio.textContent = '—';
+      }
     }
 
     // Imagen del premio (si el admin cargó una URL propia)
