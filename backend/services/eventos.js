@@ -152,7 +152,7 @@ async function cerrarEventoYArchivar(nombre, nuevaDinamica) {
   if (nuevaDinamica) {
     const {
       cantidad_numeros, nombre: nombreNuevaDinamica,
-      precio_codigo, precio_dorado, premio_total, premio_imagen
+      precio_codigo, precio_dorado, premio_total, premio_imagen, fecha_inicio
     } = nuevaDinamica;
 
     if (cantidad_numeros) {
@@ -165,6 +165,9 @@ async function cerrarEventoYArchivar(nombre, nuevaDinamica) {
     if (precio_dorado)       cambios.precio_dorado   = Number(precio_dorado);
     if (premio_total)        cambios.premio_total    = Number(premio_total);
     if (premio_imagen !== undefined) cambios.premio_imagen = premio_imagen;
+    // Si no se especifica fecha de inicio para la nueva dinámica, se usa hoy
+    // por defecto (en vez de dejar la fecha vieja de la dinámica anterior).
+    cambios.fecha_inicio = fecha_inicio || new Date().toISOString().slice(0, 10);
 
     if (Object.keys(cambios).length) await actualizarConfig(cambios);
   }

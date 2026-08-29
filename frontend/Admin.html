@@ -991,9 +991,19 @@
             <input type="number" id="din-premio" min="0" step="1" placeholder="15000000">
           </div>
           <div class="form-field" style="margin-bottom:14px">
-            <label>Imagen del premio (URL)</label>
+            <label>Imagen del premio</label>
             <input type="text" id="din-imagen" placeholder="/imagenes/DINAMICA_15M.png">
             <small style="color:var(--text3)">Puede ser una ruta dentro de /imagenes o una URL externa (https://...)</small>
+            <div style="display:flex;align-items:center;gap:10px;margin-top:8px">
+              <input type="file" id="din-imagen-file" accept="image/*" style="max-width:220px">
+              <button type="button" class="btn" onclick="subirImagenPremio('din-imagen-file','din-imagen','din-imagen-msg')">📤 Subir imagen</button>
+            </div>
+            <small id="din-imagen-msg"></small>
+            <img id="din-imagen-preview" src="" alt="" style="display:none;max-width:180px;border-radius:8px;margin-top:8px">
+          </div>
+          <div class="form-field" style="margin-bottom:14px">
+            <label>Fecha de inicio de la dinámica</label>
+            <input type="date" id="din-fecha-inicio">
           </div>
           <div class="form-field" style="margin-bottom:14px">
             <label>Cantidad de números en el pool actual</label>
@@ -1114,6 +1124,11 @@
             <input type="text" id="nva-nombre" placeholder="Ej: Dinámica $20.000.000 COP">
           </div>
           <div class="form-field" style="margin-bottom:14px">
+            <label>Fecha de inicio</label>
+            <input type="date" id="nva-fecha-inicio">
+            <small style="color:var(--text3)">Si la dejas vacía, se usa la fecha de hoy.</small>
+          </div>
+          <div class="form-field" style="margin-bottom:14px">
             <label>Cantidad de números a vender</label>
             <input type="text" inputmode="numeric" id="nva-total-numeros" placeholder="Ej: 1000 o 1.000">
             <small style="color:var(--text3)">⚠️ Esto regenera por completo el pool de números (0000...N-1). Solo hazlo aquí, justo al cerrar el evento. Puedes escribirlo con o sin puntos (1000 o 1.000).</small>
@@ -1131,8 +1146,14 @@
             <input type="number" id="nva-premio" min="0" step="1" placeholder="15000000">
           </div>
           <div class="form-field" style="margin-bottom:14px">
-            <label>Imagen del premio (URL)</label>
+            <label>Imagen del premio</label>
             <input type="text" id="nva-imagen" placeholder="/imagenes/NUEVA_DINAMICA.png">
+            <div style="display:flex;align-items:center;gap:10px;margin-top:8px">
+              <input type="file" id="nva-imagen-file" accept="image/*" style="max-width:220px">
+              <button type="button" class="btn" onclick="subirImagenPremio('nva-imagen-file','nva-imagen','nva-imagen-msg')">📤 Subir imagen</button>
+            </div>
+            <small id="nva-imagen-msg"></small>
+            <img id="nva-imagen-preview" src="" alt="" style="display:none;max-width:180px;border-radius:8px;margin-top:8px">
           </div>
         </div>
 
@@ -2025,6 +2046,41 @@
     setTimeout(() => el.innerHTML = '', 3000);
   }
 
+  // ── Subir imagen del premio a Supabase Storage ──────────────────────────
+  async function subirImagenPremio(idInputFile, idInputUrl, idMsg) {
+    const fileInput = document.getElementById(idInputFile);
+    const msg       = document.getElementById(idMsg);
+    const preview   = document.getElementById(idInputUrl + '-preview');
+    const file = fileInput.files[0];
+    if (!file) { msg.innerHTML = '<span style="color:var(--red)">Elige un archivo primero</span>'; return; }
+    if (file.size > 6 * 1024 * 1024) { msg.innerHTML = '<span style="color:var(--red)">Máximo 6MB</span>'; return; }
+
+    msg.innerHTML = '⟳ Subiendo...';
+    try {
+      const base64 = await new Promise((resolve, reject) => {
+        const r = new FileReader();
+        r.onload  = () => resolve(r.result.split(',')[1]);
+        r.onerror = reject;
+        r.readAsDataURL(file);
+      });
+
+      const r = await fetch('/api/admin/upload-imagen', {
+        method: 'POST', headers: headers(),
+        body: JSON.stringify({ filename: file.name, contentType: file.type, base64 })
+      });
+      const d = await r.json();
+      if (d.ok) {
+        document.getElementById(idInputUrl).value = d.url;
+        msg.innerHTML = '<span style="color:var(--green)">✓ Imagen subida</span>';
+        if (preview) { preview.src = d.url; preview.style.display = 'block'; }
+      } else {
+        msg.innerHTML = `<span style="color:var(--red)">❌ ${d.error || 'Error al subir'}</span>`;
+      }
+    } catch (e) {
+      msg.innerHTML = '<span style="color:var(--red)">Error de conexión</span>';
+    }
+  }
+
   // ── DINÁMICA (nombre, precios, premio, imagen) ────────────────────────────────
   async function cargarDinamica() {
     const msg = document.getElementById('din-msg');
@@ -2036,6 +2092,7 @@
       document.getElementById('din-precio-dorado').value  = d.precio_dorado || '';
       document.getElementById('din-premio').value         = d.premio_total || '';
       document.getElementById('din-imagen').value         = d.premio_imagen || '';
+      document.getElementById('din-fecha-inicio').value   = d.fecha_inicio || '';
       document.getElementById('din-total-numeros').value  = (d.total_numeros || 0).toLocaleString('es-CO');
     } catch (e) {
       msg.innerHTML = '<div class="msg msg-err">Error cargando la configuración</div>';
@@ -2051,6 +2108,7 @@
     const precio_dorado   = Number(document.getElementById('din-precio-dorado').value);
     const premio_total    = Number(document.getElementById('din-premio').value);
     const premio_imagen   = document.getElementById('din-imagen').value.trim();
+    const fecha_inicio    = document.getElementById('din-fecha-inicio').value;
 
     if (!precio_codigo || precio_codigo < 100) {
       msg.innerHTML = '<div class="msg msg-err">❌ El valor por número debe ser al menos $100</div>';
@@ -2062,7 +2120,7 @@
     try {
       const r = await fetch('/api/admin/config', {
         method: 'POST', headers: headers(),
-        body: JSON.stringify({ nombre_dinamica, precio_codigo, precio_dorado, premio_total, premio_imagen })
+        body: JSON.stringify({ nombre_dinamica, precio_codigo, precio_dorado, premio_total, premio_imagen, fecha_inicio })
       });
       const d = await r.json();
       if (d.ok) {
@@ -2086,6 +2144,7 @@
     const nvaTotalNumerosRaw = document.getElementById('nva-total-numeros').value.trim();
     const nuevaDinamica = {};
     if (document.getElementById('nva-nombre').value.trim())       nuevaDinamica.nombre           = document.getElementById('nva-nombre').value.trim();
+    if (document.getElementById('nva-fecha-inicio').value)        nuevaDinamica.fecha_inicio      = document.getElementById('nva-fecha-inicio').value;
     if (nvaTotalNumerosRaw)                                        nuevaDinamica.cantidad_numeros = Number(nvaTotalNumerosRaw);
     if (document.getElementById('nva-precio').value)              nuevaDinamica.precio_codigo    = Number(document.getElementById('nva-precio').value);
     if (document.getElementById('nva-precio-dorado').value)       nuevaDinamica.precio_dorado    = Number(document.getElementById('nva-precio-dorado').value);
@@ -2121,7 +2180,7 @@
       if (d.ok) {
         msg.innerHTML = `<div class="msg msg-ok">✓ Evento archivado: <strong>${d.evento.nombre}</strong>. Todo quedó en cero, listo para el próximo evento.</div>`;
         document.getElementById('evt-nombre').value = '';
-        ['nva-nombre','nva-total-numeros','nva-precio','nva-precio-dorado','nva-premio','nva-imagen'].forEach(id => document.getElementById(id).value = '');
+        ['nva-nombre','nva-fecha-inicio','nva-total-numeros','nva-precio','nva-precio-dorado','nva-premio','nva-imagen'].forEach(id => document.getElementById(id).value = '');
         loadEventosHistorial();
       } else {
         msg.innerHTML = `<div class="msg msg-err">❌ ${d.error || 'Error al cerrar el evento'}</div>`;

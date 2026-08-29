@@ -7,8 +7,49 @@ const { enviarCorreo } = require('../services/correo');
 const ExcelJS = require('exceljs');
 
 // ════════════════════════════════════════════
-// RATE LIMITING — bloqueo tras 3 fallos
+// SUBIR IMAGEN DEL PREMIO (a Supabase Storage — sobrevive a reinicios/deploys,
+// a diferencia de guardar el archivo en el disco de Render, que se borra)
 // ════════════════════════════════════════════
+router.post('/admin/upload-imagen', express.json({ limit: '8mb' }), authAdmin, async (req, res) => {
+  try {
+    const { filename, contentType, base64 } = req.body;
+    if (!filename || !contentType || !base64) {
+      return res.status(400).json({ ok: false, error: 'Faltan datos de la imagen' });
+    }
+    if (!contentType.startsWith('image/')) {
+      return res.status(400).json({ ok: false, error: 'El archivo debe ser una imagen' });
+    }
+
+    const buffer = Buffer.from(base64, 'base64');
+    if (buffer.length > 6 * 1024 * 1024) {
+      return res.status(400).json({ ok: false, error: 'La imagen no puede pesar más de 6MB' });
+    }
+
+    const ext  = (filename.split('.').pop() || 'jpg').toLowerCase().replace(/[^a-z0-9]/g, '');
+    const path = `premios/premio-${Date.now()}.${ext}`;
+
+    const { error: errSubida } = await supabase.storage
+      .from('premios')
+      .upload(path, buffer, { contentType, upsert: true });
+
+    if (errSubida) {
+      console.error('❌ Error subiendo imagen a Supabase Storage:', errSubida.message);
+      return res.status(500).json({
+        ok: false,
+        error: 'No se pudo subir la imagen. Verifica que exista el bucket "premios" (público) en Supabase → Storage.'
+      });
+    }
+
+    const { data: pub } = supabase.storage.from('premios').getPublicUrl(path);
+    console.log('🖼️ Imagen del premio subida:', pub.publicUrl);
+    res.json({ ok: true, url: pub.publicUrl });
+  } catch (e) {
+    console.error('❌ Error en upload-imagen:', e.message);
+    res.status(500).json({ ok: false, error: e.message });
+  }
+});
+
+
 const loginAttempts = new Map();
 
 function checkLoginRateLimit(ip) {
@@ -307,7 +348,7 @@ router.post('/admin/config', async (req, res) => {
   try {
     const {
       ventas_activas, precio_codigo, aviso_texto, aviso_color, correo_pie,
-      precio_dorado, premio_total, premio_imagen, nombre_dinamica
+      precio_dorado, premio_total, premio_imagen, nombre_dinamica, fecha_inicio
     } = req.body;
 
     const cambios = {};
@@ -320,6 +361,7 @@ router.post('/admin/config', async (req, res) => {
     if (premio_total    !== undefined) cambios.premio_total    = Number(premio_total);
     if (premio_imagen   !== undefined) cambios.premio_imagen   = premio_imagen;
     if (nombre_dinamica  !== undefined) cambios.nombre_dinamica = nombre_dinamica;
+    if (fecha_inicio     !== undefined) cambios.fecha_inicio    = fecha_inicio;
 
     // Se guarda en Supabase Y en memoria, para que sobreviva reinicios del servidor
     await actualizarConfig(cambios);

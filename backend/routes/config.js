@@ -172,6 +172,7 @@ router.get('/config', async (req, res) => {
     const premioImagen  = cfg.premio_imagen   ?? '';
     const nombreDinamica = cfg.nombre_dinamica ?? 'Dinámica';
     const totalNumeros  = cfg.total_numeros   ?? 10000;
+    const fechaInicio   = cfg.fecha_inicio    ?? null;
 
     const paquetesConPrecio = paquetes.map(p => ({
       ...p,
@@ -190,7 +191,8 @@ router.get('/config', async (req, res) => {
       premioTotal,
       premioImagen,
       nombreDinamica,
-      totalNumeros
+      totalNumeros,
+      fechaInicio
     });
   } catch (e) {
     console.error('❌ Error en /config:', e.message);
@@ -210,7 +212,8 @@ router.get('/config', async (req, res) => {
       precioDorado: 500000,
       premioImagen: '',
       nombreDinamica: 'Dinámica',
-      totalNumeros: 10000
+      totalNumeros: 10000,
+      fechaInicio: null
     });
   }
 });
