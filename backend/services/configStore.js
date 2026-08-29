@@ -32,6 +32,26 @@ async function guardarClave(clave, valor) {
   if (error) throw error;
 }
 
+// ── Lectura EN VIVO directo de Supabase, sin pasar por la memoria ─────────
+// Se usa en los puntos donde se calcula cuánto cobrarle a un cliente
+// (crear-transaccion.js, transferencias.js). No hay que confiar en el
+// CONFIG en memoria de este proceso para dinero: si en algún momento hay
+// más de una instancia del servidor corriendo (durante un deploy/reinicio),
+// cada una puede tener una copia distinta en memoria — leer directo de
+// Supabase en el momento del cobro elimina esa posibilidad por completo.
+async function leerClaveLive(clave, porDefecto) {
+  try {
+    const { data, error } = await supabase
+      .from('config').select('valor').eq('clave', clave).maybeSingle();
+    if (error || !data) return porDefecto;
+    try { return JSON.parse(data.valor); }
+    catch (e) { return data.valor; }
+  } catch (e) {
+    console.error(`❌ Error leyendo "${clave}" en vivo de Supabase, usando valor de memoria:`, e.message);
+    return porDefecto;
+  }
+}
+
 // ── Carga inicial: se llama una vez al arrancar el servidor ──────────────
 async function cargarConfigInicial() {
   try {
@@ -64,4 +84,4 @@ async function actualizarConfig(cambios) {
   return aplicados;
 }
 
-module.exports = { cargarConfigInicial, actualizarConfig, leerTodaLaConfig, guardarClave };
+module.exports = { cargarConfigInicial, actualizarConfig, leerTodaLaConfig, guardarClave, leerClaveLive };

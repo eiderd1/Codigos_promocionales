@@ -4,6 +4,7 @@ const router  = express.Router();
 const supabase = require('../config/supabase');
 const { getPromoActiva } = require('../services/promociones');
 const { CONFIG } = require('../services/appState');
+const { leerClaveLive } = require('../services/configStore');
 
 // Validación básica de formato de correo
 function esCorreoValido(correo) {
@@ -53,7 +54,7 @@ router.post('/crear-transaccion', async (req, res) => {
     */
 
     // ── Precios base (precio por código individual) ───────────
-    const precioPorCodigo = CONFIG.precio_codigo || 3750;
+    const precioPorCodigo = await leerClaveLive('precio_codigo', CONFIG.precio_codigo || 3750);
 
     // ── Validar cantidad: cualquier entero entre 4 y 500 ───────
     const CANTIDAD_MIN = 4;
