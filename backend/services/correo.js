@@ -1,4 +1,5 @@
 const https = require('https');
+const { CONFIG } = require('../services/appState');
 
 // Importar config del admin (se actualiza en tiempo real)
 let _adminConfig = null;
@@ -17,6 +18,10 @@ async function enviarCorreo(destino, codigos, premioDoradoOverride = null) {
       console.error("❌ enviarCorreo: destino o codigos vacíos", { destino, cantidad: codigos?.length });
       return;
     }
+
+    // Nombre real del evento/dinámica activa (dinámico, no un texto fijo).
+    // Así, si el comprador reclama un código, se sabe en qué evento se vendió.
+    const nombreEvento = CONFIG.nombre_dinamica || 'Evento EiderTech';
 
     const dorados = codigos.filter(c => c.dorado);
     const normales = codigos.filter(c => !c.dorado);
@@ -51,7 +56,7 @@ async function enviarCorreo(destino, codigos, premioDoradoOverride = null) {
                   ">
                     <div style="color:#93c5fd;font-size:10px;letter-spacing:2px;text-transform:uppercase;margin-bottom:4px;font-family:Arial,sans-serif;">🎟️ Código</div>
                     <div style="color:#ffffff;font-size:22px;font-weight:bold;letter-spacing:4px;font-family:'Courier New',monospace;">${codigo}</div>
-                    <div style="color:#60a5fa;font-size:10px;margin-top:4px;font-family:Arial,sans-serif;">Evento EiderTech</div>
+                    <div style="color:#60a5fa;font-size:10px;margin-top:4px;font-family:Arial,sans-serif;">${nombreEvento}</div>
                   </td>
                   <!-- Lado derecho (talón) -->
                   <td style="
@@ -121,7 +126,7 @@ async function enviarCorreo(destino, codigos, premioDoradoOverride = null) {
 
     // ── Links WhatsApp ───────────────────────────────────────
     const mensajeCompartir = encodeURIComponent(
-      `🎟️ *Mis códigos del Evento EiderTech Soluciones*\n\n` +
+      `🎟️ *Mis códigos de ${nombreEvento}*\n\n` +
       codigos.map(c => c.dorado ? `✨ ${c.codigo} ✨ (DORADO)` : `🎟️ ${c.codigo}`).join('\n') +
       `\n\n💰 Premio: $15.000.000 COP\n🍀 ¡Suerte a todos!`
     );
