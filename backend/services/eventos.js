@@ -11,6 +11,7 @@ const { actualizarConfig } = require('./configStore');
 // se resetea su estado.
 const RESET_CODIGO = {
   vendido:       false,
+  reservado:     false,
   dorado:        false,
   referencia:    null,
   premio_dorado: null,
@@ -90,7 +91,23 @@ async function regenerarPoolCodigos(cantidad) {
 // nuevaDinamica (opcional) permite configurar de una vez la siguiente dinámica:
 // { nombre, cantidad_numeros, precio_codigo, precio_dorado, premio_total, premio_imagen }
 async function cerrarEventoYArchivar(nombre, nuevaDinamica) {
-  // 1. Leer todo lo que está activo ahora mismo
+  // No cerrar una dinámica mientras existan pagos que todavía podrían
+  // confirmarse. Si se borraran las compras activas, un webhook posterior ya
+  // no encontraría la referencia y no podría entregar los códigos.
+  const { data: pendientes, error: errPendientes } = await supabase
+    .from('compras')
+    .select('referencia, estado')
+    .in('estado', ['pendiente', 'transferencia_pendiente']);
+  if (errPendientes) throw errPendientes;
+  if (pendientes?.length) {
+    throw new Error(`No se puede cerrar la dinámica: hay ${pendientes.length} pago(s) pendiente(s). Primero deben completarse o rechazarse.`);
+  }
+
+  // 1. Bloquear nuevas ventas antes de tomar el snapshot para evitar que una
+  // compra llegue mientras el evento está siendo archivado.
+  await actualizarConfig({ ventas_activas: false });
+
+  // Leer todo lo que está activo ahora mismo
   const { data: compras, error: errCompras } = await supabase.from('compras').select('*');
   if (errCompras) throw errCompras;
 
@@ -168,6 +185,10 @@ async function cerrarEventoYArchivar(nombre, nuevaDinamica) {
     // Si no se especifica fecha de inicio para la nueva dinámica, se usa hoy
     // por defecto (en vez de dejar la fecha vieja de la dinámica anterior).
     cambios.fecha_inicio = fecha_inicio || new Date().toISOString().slice(0, 10);
+
+    // Una dinámica nueva comienza habilitada. El sistema volverá a pausarla
+    // automáticamente cuando se agote el pool.
+    cambios.ventas_activas = true;
 
     if (Object.keys(cambios).length) await actualizarConfig(cambios);
   }

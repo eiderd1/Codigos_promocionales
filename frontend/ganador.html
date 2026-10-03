@@ -417,7 +417,7 @@ body::before {
 
     <div class="premio-fila">
       <div class="premio-linea"></div>
-      <div class="premio-monto">Premio: <span id="g-premio">$15.000.000</span> COP</div>
+      <div class="premio-monto">Premio: <span id="g-premio">—</span> COP</div>
       <div class="premio-linea der"></div>
     </div>
 
@@ -505,7 +505,7 @@ async function cargarGanador() {
     const r = await fetch('/api/config');
     const d = await r.json();
     const g = d.ganador;
-    const premio = d.premioTotal || 15000000;
+    const premio = d.premioTotal || 0;
 
     if (g && g.activo && g.codigo && g.nombre) {
       // Mostrar página ganador

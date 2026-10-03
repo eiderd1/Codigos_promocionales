@@ -13,8 +13,9 @@ function esCorreoValido(correo) {
 
 router.post('/crear-transaccion', async (req, res) => {
   try {
-    // ── Verificar si las ventas están activas ─────────────────
-    if (!CONFIG.ventas_activas) {
+    // ── Verificar si las ventas están activas (fuente viva en Supabase) ────
+    const ventasActivas = await leerClaveLive('ventas_activas', CONFIG.ventas_activas);
+    if (!ventasActivas) {
       return res.status(403).json({
         error: 'Las ventas están temporalmente pausadas. Intenta de nuevo más tarde.'
       });
@@ -75,19 +76,21 @@ router.post('/crear-transaccion', async (req, res) => {
     const { count: disponibles, error: errorStock } = await supabase
       .from('codigos')
       .select('*', { count: 'exact', head: true })
-      .eq('vendido', false);
+      .eq('vendido', false)
+      .eq('reservado', false);
 
     if (errorStock) {
       console.error("❌ Error consultando stock:", errorStock);
       return res.status(500).json({ error: "Error interno del servidor" });
     }
 
-    if (!disponibles || disponibles === 0) {
-      return res.status(400).json({ error: "No hay códigos disponibles" });
+    if (!disponibles || disponibles < CANTIDAD_MIN) {
+      return res.status(400).json({ error: `No hay suficientes códigos disponibles. Mínimo actual: ${CANTIDAD_MIN}.` });
     }
 
     // ── Ajustar cantidad al stock real ────────────────────────
-    // Si el cliente pidió 16 pero solo hay 2, se cobra solo por 2
+    // Si el cliente pidió 16 pero solo quedan 9, se cobra por 9.
+    // Nunca se reduce por debajo del mínimo de compra.
     const cantidadFinal = Math.min(cantidadNum, disponibles);
     const monto         = cantidadFinal * precioPorCodigo;
 
@@ -147,6 +150,7 @@ router.post('/crear-transaccion', async (req, res) => {
         cedula:    cliente.cedula    || "",
         direccion: cliente.direccion || "",
         cantidad:  cantidadFinal,
+        monto:     monto,
         correo:    cliente.correo
       }
     };

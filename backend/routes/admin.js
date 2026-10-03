@@ -108,14 +108,15 @@ router.get('/admin/promo-activa', async (req, res) => {
   }
 });
 
-router.get('/admin/codigos-dorados', async (req, res) => {
+// Público: solo expone el código dorado y su tipo. Nunca datos personales.
+router.get('/codigos-dorados-publicos', async (req, res) => {
   try {
     const { data, error } = await supabase
       .from('codigos')
-      .select('codigo, nombre, email, telefono')
+      .select('codigo, dorado, premio_dorado')
       .eq('dorado', true).eq('vendido', true);
     if (error) return res.status(500).json({ ok: false });
-    res.json(data);
+    res.json(data || []);
   } catch (e) {
     res.status(500).json({ ok: false });
   }
@@ -181,6 +182,19 @@ function registrarAcceso(ip, exito, nota = '') {
 // ════════════════════════════════════════════
 router.use('/admin', authAdmin);
 
+router.get('/admin/codigos-dorados', async (req, res) => {
+  try {
+    const { data, error } = await supabase
+      .from('codigos')
+      .select('codigo, nombre, email, telefono, premio_dorado')
+      .eq('dorado', true).eq('vendido', true);
+    if (error) return res.status(500).json({ ok: false });
+    res.json(data || []);
+  } catch (e) {
+    res.status(500).json({ ok: false });
+  }
+});
+
 // ── Compras stats ────────────────────────────
 router.get('/admin/compras-stats', async (req, res) => {
   try {
@@ -190,7 +204,7 @@ router.get('/admin/compras-stats', async (req, res) => {
       .from('compras').select('*', { count: 'exact', head: true }).eq('estado', 'pendiente');
 
     const PRECIO = CONFIG.precio_codigo || 3750;
-    const ingresos = (pagadas || []).reduce((s, c) => s + c.cantidad * PRECIO, 0);
+    const ingresos = (pagadas || []).reduce((s, c) => s + (Number(c.monto) > 0 ? Number(c.monto) : c.cantidad * PRECIO), 0);
     res.json({ pagadas: pagadas?.length || 0, pendientes: pendientes || 0, ingresos, ultima: pagadas?.[0]?.fecha || null });
   } catch (e) {
     res.status(500).json({ ok: false });

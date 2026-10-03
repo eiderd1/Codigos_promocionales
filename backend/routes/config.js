@@ -124,33 +124,6 @@ async function guardarGanador(ganador) {
 // Solo expone lo necesario para mostrar confianza (nombre, premio, ganador,
 // fecha). NUNCA expone la lista de compradores ni sus datos personales.
 // ════════════════════════════════════════════════════════════════════════════
-router.get('/ganadores-historial', async (req, res) => {
-  try {
-    const { data, error } = await supabase
-      .from('eventos_historial')
-      .select('id, nombre, resumen, config, created_at')
-      .order('created_at', { ascending: false })
-      .limit(12);
-
-    if (error) return res.status(500).json({ ok: false, error: error.message });
-
-    const ganadores = (data || [])
-      .filter(ev => ev.resumen?.ganador?.activo)
-      .map(ev => ({
-        nombre_ganador:  ev.resumen.ganador.nombre,
-        codigo_ganador:  ev.resumen.ganador.codigo,
-        nombre_dinamica: ev.config?.nombre_dinamica || ev.nombre,
-        fecha:           ev.created_at,
-        premio_total:    ev.config?.premio_total ?? null,
-        premio_imagen:   ev.config?.premio_imagen ?? null
-      }));
-
-    res.json({ ok: true, ganadores });
-  } catch (e) {
-    res.status(500).json({ ok: false, error: e.message });
-  }
-});
-
 router.get('/config', async (req, res) => {
   try {
     let cfg = {};
@@ -196,25 +169,9 @@ router.get('/config', async (req, res) => {
     });
   } catch (e) {
     console.error('❌ Error en /config:', e.message);
-    res.json({
-      ventas_activas: true,
-      aviso_texto:    '',
-      aviso_color:    'gold',
-      precioCodigo: 3750,
-      paquetes: [
-        { cantidad: 4,  popular: false, precio: 15000 },
-        { cantidad: 8,  popular: true,  precio: 30000 },
-        { cantidad: 16, popular: false, precio: 60000 }
-      ],
-      banner:    null,
-      ganador:   { activo: false, codigo: '', nombre: '' },
-      premioTotal: 15000000,
-      precioDorado: 500000,
-      premioImagen: '',
-      nombreDinamica: 'Dinámica',
-      totalNumeros: 10000,
-      fechaInicio: null
-    });
+    // No devolver una configuración inventada/stale: la página pública debe
+    // detener las ventas si no puede leer la dinámica real desde Supabase.
+    res.status(503).json({ ok: false, error: 'No se pudo cargar la configuración de la dinámica' });
   }
 });
 
@@ -239,22 +196,35 @@ router.post('/admin/config/ganador', authAdmin, async (req, res) => {
       return res.status(400).json({ ok: false, error: 'Código y nombre son obligatorios' });
     }
 
-    const ganador = { activo: true, codigo: codigo.trim(), nombre: nombre.trim() };
+    const codigoLimpio = codigo.trim();
+    const nombreLimpio = nombre.trim();
+
+    // Un ganador solo puede publicarse si el código existe y fue realmente
+    // vendido en la dinámica activa. Evita publicar accidentalmente un código
+    // inventado o perteneciente a otro momento.
+    const { data: filaGanador, error: errGanador } = await supabase
+      .from('codigos')
+      .select('codigo, vendido, email')
+      .eq('codigo', codigoLimpio)
+      .maybeSingle();
+    if (errGanador) throw errGanador;
+    if (!filaGanador || !filaGanador.vendido) {
+      return res.status(400).json({ ok: false, error: 'El código ganador no existe o todavía no está vendido en la dinámica activa' });
+    }
+
+    const ganador = { activo: true, codigo: codigoLimpio, nombre: nombreLimpio };
     await guardarGanador(ganador);
     CONFIG.ganador = ganador;
-    console.log(`🏆 Ganador publicado: ${codigo} — ${nombre}`);
+    console.log(`🏆 Ganador publicado: ${codigoLimpio} — ${nombreLimpio}`);
 
-    // Enviar correo al ganador con su código y el premio real de la dinámica,
-    // buscando su email guardado en la tabla codigos por el código ganador.
+    // Enviar correo al ganador con el premio real de la dinámica activa.
     let correoEnviado = false;
     try {
-      const { data: fila } = await supabase
-        .from('codigos').select('email').eq('codigo', codigo.trim()).maybeSingle();
-      if (fila?.email) {
-        await enviarCorreoGanador(fila.email, nombre.trim(), codigo.trim(), CONFIG.premio_total);
+      if (filaGanador.email) {
+        await enviarCorreoGanador(filaGanador.email, nombreLimpio, codigoLimpio, CONFIG.premio_total);
         correoEnviado = true;
       } else {
-        console.warn(`⚠️ No se encontró correo para el código ${codigo} — no se envió correo al ganador`);
+        console.warn(`⚠️ No se encontró correo para el código ${codigoLimpio} — no se envió correo al ganador`);
       }
     } catch (eCorreo) {
       console.error('❌ Error enviando correo al ganador:', eCorreo.message);

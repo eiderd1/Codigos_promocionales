@@ -14,9 +14,46 @@ function calcularHitosDorados(totalReal) {
     .sort((a, b) => a - b);
 }
 
+async function liberarReservasTransferenciaExpiradas() {
+  try {
+    const ahora = new Date().toISOString();
+    const { data: vencidas, error } = await supabase
+      .from('compras')
+      .select('referencia')
+      .eq('estado', 'transferencia_pendiente')
+      .not('reserva_expira_at', 'is', null)
+      .lt('reserva_expira_at', ahora)
+      .limit(500);
+    if (error || !vencidas?.length) return 0;
+
+    const refs = vencidas.map(x => x.referencia);
+    const { error: errCodigos } = await supabase
+      .from('codigos')
+      .update({ reservado: false, referencia: null })
+      .eq('reservado', true)
+      .in('referencia', refs);
+    if (errCodigos) throw errCodigos;
+
+    const { error: errCompras } = await supabase
+      .from('compras')
+      .update({ estado: 'transferencia_expirada' })
+      .in('referencia', refs)
+      .eq('estado', 'transferencia_pendiente');
+    if (errCompras) throw errCompras;
+
+    console.log(`⏰ Reservas de transferencia liberadas: ${refs.length}`);
+    return refs.length;
+  } catch (e) {
+    console.error('❌ Error liberando reservas expiradas:', e.message);
+    return 0;
+  }
+}
+
 async function generarCodigos(cantidad, referencia, datosComprador = {}) {
   const { nombre = null, email = null, telefono = null } = datosComprador;
   try {
+    await liberarReservasTransferenciaExpiradas();
+
     const { count: vendidos } = await supabase
       .from('codigos')
       .select('*', { count: 'exact', head: true })
@@ -37,6 +74,7 @@ async function generarCodigos(cantidad, referencia, datosComprador = {}) {
       .from('codigos')
       .select('codigo')
       .eq('vendido', false)
+      .eq('reservado', false)
       .order('codigo', { ascending: true }); // orden numérico
 
     if (error || !disponibles?.length) {
@@ -95,6 +133,7 @@ async function generarCodigos(cantidad, referencia, datosComprador = {}) {
         })
         .eq('codigo', c.codigo)
         .eq('vendido', false)
+        .eq('reservado', false)
         .select('codigo');
 
       if (errorUpdate) {
@@ -111,7 +150,14 @@ async function generarCodigos(cantidad, referencia, datosComprador = {}) {
     }
 
     if (resultado.length < cantidad) {
-      console.warn(`⚠️ Solo se pudieron asignar ${resultado.length} de ${cantidad} códigos`);
+      console.warn(`⚠️ Solo se pudieron asignar ${resultado.length} de ${cantidad} códigos; se revierte la reserva.`);
+      if (resultado.length > 0) {
+        const refs = resultado.map(c => c.codigo);
+        await supabase.from('codigos')
+          .update({ vendido:false, referencia:null, premio_dorado:null, nombre:null, email:null, telefono:null, dorado:false })
+          .in('codigo', refs);
+      }
+      return [];
     }
 
     // ─── 6. Si con esta venta se agotó el pool, pausar ventas automáticamente ──
@@ -133,4 +179,4 @@ async function generarCodigos(cantidad, referencia, datosComprador = {}) {
   }
 }
 
-module.exports = { generarCodigos };
+module.exports = { generarCodigos, liberarReservasTransferenciaExpiradas };

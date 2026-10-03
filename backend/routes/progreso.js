@@ -28,7 +28,19 @@ router.get('/progreso', async (req, res) => {
 
     const totalReal = total || 0;
     const cantidadVendidos = vendidos || 0;
-    const disponibles = totalReal - cantidadVendidos;
+    const { count: reservados, error: errorReservados } = await supabase
+      .from('codigos')
+      .select('*', { count: 'exact', head: true })
+      .eq('vendido', false)
+      .eq('reservado', true);
+
+    if (errorReservados) {
+      console.error(errorReservados);
+      return res.status(500).json({ ok: false });
+    }
+
+    const disponibles = Math.max(0, totalReal - cantidadVendidos - (reservados || 0));
+    const reservadosCount = reservados || 0;
     const porcentaje = totalReal > 0 ? (cantidadVendidos / totalReal) * 100 : 0;
 
     // Mantener CONFIG.total_numeros sincronizado con la realidad (por si se
@@ -39,6 +51,7 @@ router.get('/progreso', async (req, res) => {
       porcentaje: Number(porcentaje.toFixed(2)),
       vendidos: cantidadVendidos,
       disponibles,
+      reservados: reservadosCount,
       total: totalReal
     });
 

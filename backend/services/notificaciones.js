@@ -7,6 +7,7 @@
 // ─────────────────────────────────────────────────────────────────────────────
 
 const https = require('https');
+const { leerClaveLive } = require('./configStore');
 
 // ── Helper: enviar un correo via Brevo ───────────────────────────────────────
 async function brevoEnviar({ para, asunto, html, nombrePara }) {
@@ -140,7 +141,7 @@ async function recordatorioTransferencias(supabase) {
 
   if (pendientes.length === 0) return { enviados: 0, detalle: [] };
 
-  const precioPorCodigo = 3750;
+  const precioPorCodigo = await leerClaveLive('precio_codigo', 3750);
   const resultados = [];
 
   for (const compra of pendientes) {
@@ -331,7 +332,7 @@ async function recordatorioPagosIncompletos(supabase) {
   }
   const lista = Object.values(mapaCorreos);
 
-  const precioPorCodigo = 3750;
+  const precioPorCodigo = await leerClaveLive('precio_codigo', 3750);
   const adminWA = process.env.WHATSAPP_SOPORTE || '573053228703';
   const resultados = [];
 

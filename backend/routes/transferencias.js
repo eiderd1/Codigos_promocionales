@@ -5,7 +5,7 @@ const express = require('express');
 const router  = express.Router();
 const https   = require('https');
 const supabase = require('../config/supabase');
-const { generarCodigos } = require('../services/codigos');
+const { liberarReservasTransferenciaExpiradas } = require('../services/codigos');
 const { enviarCorreo }   = require('../services/correo');
 const { enviarWhatsApp } = require('../services/whatsapp');
 const { enviarNotifAdmin } = require('../services/notificaciones');
@@ -15,6 +15,41 @@ const { leerClaveLive } = require('../services/configStore');
 // ── Validación básica de correo ──────────────────────────────────────────────
 function esCorreoValido(correo) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(correo);
+}
+
+const SOPORTE_MAX_BYTES = 5 * 1024 * 1024;
+const SOPORTE_TIPOS = new Set(['image/jpeg', 'image/png', 'application/pdf']);
+
+function limpiarNombreArchivo(nombre = 'comprobante') {
+  return String(nombre).replace(/[^a-zA-Z0-9._-]/g, '_').slice(0, 120) || 'comprobante';
+}
+
+function detectarFirmaArchivo(buffer) {
+  if (!buffer || buffer.length < 4) return null;
+  if (buffer.subarray(0, 4).equals(Buffer.from([0x25,0x50,0x44,0x46]))) return 'application/pdf';
+  if (buffer.subarray(0, 3).equals(Buffer.from([0xFF,0xD8,0xFF]))) return 'image/jpeg';
+  if (buffer.subarray(0, 8).equals(Buffer.from([0x89,0x50,0x4E,0x47,0x0D,0x0A,0x1A,0x0A]))) return 'image/png';
+  return null;
+}
+
+async function guardarSoporte(referencia, soporte) {
+  if (!soporte?.base64) throw new Error('Debes adjuntar el comprobante de pago para registrar la transferencia.');
+  const contentType = String(soporte.contentType || '').toLowerCase();
+  if (!SOPORTE_TIPOS.has(contentType)) throw new Error('El soporte debe ser PDF, JPG o PNG.');
+  const base64 = String(soporte.base64).replace(/^data:[^;]+;base64,/, '');
+  const buffer = Buffer.from(base64, 'base64');
+  if (!buffer.length || buffer.length > SOPORTE_MAX_BYTES) throw new Error('El soporte no puede superar 5 MB.');
+  const firma = detectarFirmaArchivo(buffer);
+  if (firma !== contentType) throw new Error('El tipo real del archivo no coincide con el archivo declarado.');
+  const original = limpiarNombreArchivo(soporte.filename);
+  const ext = contentType === 'application/pdf' ? 'pdf' : (contentType === 'image/png' ? 'png' : 'jpg');
+  const path = `transferencias/${referencia}-${Date.now()}.${ext}`;
+  const { error } = await supabase.storage.from('comprobantes').upload(path, buffer, { contentType, upsert: false });
+  if (error) {
+    console.error('❌ Error subiendo comprobante:', error.message);
+    throw new Error('No se pudo guardar el soporte de pago. Verifica el bucket "comprobantes" en Supabase.');
+  }
+  return { path, nombre: original, contentType, bytes: buffer.length };
 }
 
 // ── Auth middleware ──────────────────────────────────────────────────────────
@@ -31,9 +66,12 @@ function authAdmin(req, res, next) {
 // ════════════════════════════════════════════════════════════════════════════
 router.post('/transferencia-registrar', async (req, res) => {
   try {
-    const { nombre, correo, cedula, telefono, direccion, cantidad } = req.body;
+    const { nombre, correo, cedula, telefono, direccion, cantidad, soporte } = req.body;
 
-    if (!CONFIG.ventas_activas) {
+    await liberarReservasTransferenciaExpiradas();
+
+    const ventasActivas = await leerClaveLive('ventas_activas', CONFIG.ventas_activas);
+    if (!ventasActivas) {
       return res.status(400).json({ error: 'Las ventas están pausadas en este momento' });
     }
 
@@ -56,37 +94,68 @@ router.post('/transferencia-registrar', async (req, res) => {
       });
     }
 
+    if (!soporte?.base64) {
+      return res.status(400).json({ error: 'Debes adjuntar el comprobante de pago para registrar la transferencia.' });
+    }
+
     const { count: disponibles } = await supabase
       .from('codigos')
       .select('*', { count: 'exact', head: true })
-      .eq('vendido', false);
+      .eq('vendido', false)
+      .eq('reservado', false);
 
-    if (!disponibles || disponibles === 0) {
-      return res.status(400).json({ error: 'No hay códigos disponibles' });
+    if (!disponibles || disponibles < cantidadNum) {
+      return res.status(409).json({ error: `No hay suficientes códigos libres para reservar ${cantidadNum}. Quedan ${disponibles || 0} códigos disponibles; los códigos reservados por otras transferencias no se pueden reasignar.` });
     }
 
-    const cantidadFinal    = Math.min(cantidadNum, disponibles);
-    const precioPorCodigo  = await leerClaveLive('precio_codigo', CONFIG.precio_codigo || 3750);
-    const montoTotal       = cantidadFinal * precioPorCodigo;
-    const referencia       = `TRF-${Date.now()}-${Math.floor(Math.random() * 9999)}`;
+    const cantidadFinal = cantidadNum;
+    const precioPorCodigo = await leerClaveLive('precio_codigo', CONFIG.precio_codigo || 3750);
+    const montoTotal = cantidadFinal * precioPorCodigo;
+    const referencia = `TRF-${Date.now()}-${Math.floor(Math.random() * 9999)}`;
+    const reservaExpiraAt = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
+
+    const { data: reservados, error: errorReserva } = await supabase.rpc('reservar_codigos_transferencia', {
+      p_referencia: referencia,
+      p_cantidad: cantidadFinal
+    });
+    const cantidadReservada = Number(reservados || 0);
+    if (errorReserva || cantidadReservada !== cantidadFinal) {
+      console.error('❌ No se pudo reservar el lote completo:', errorReserva?.message);
+      return res.status(409).json({ error: 'Los códigos disponibles cambiaron mientras procesábamos tu solicitud. Intenta nuevamente.' });
+    }
+
+    let soporteGuardado = null;
+    try {
+      soporteGuardado = await guardarSoporte(referencia, soporte);
+    } catch (err) {
+      await supabase.from('codigos').update({ reservado: false, referencia: null }).eq('referencia', referencia).eq('reservado', true);
+      return res.status(400).json({ error: err.message });
+    }
 
     const { error: errorCompra } = await supabase
       .from('compras')
       .insert([{
         nombre,
-        cedula:    cedula    || '',
-        telefono:  telefono  || '',
+        cedula: cedula || '',
+        telefono: telefono || '',
         correo,
         direccion: direccion || '',
-        cantidad:  cantidadFinal,
-        monto:     montoTotal,
+        cantidad: cantidadFinal,
+        monto: montoTotal,
         referencia,
-        estado:    'transferencia_pendiente',
-        fecha:     new Date()
+        estado: 'transferencia_pendiente',
+        fecha: new Date(),
+        reserva_expira_at: reservaExpiraAt,
+        soporte_pago_path: soporteGuardado?.path || null,
+        soporte_pago_nombre: soporteGuardado?.nombre || null,
+        soporte_pago_tipo: soporteGuardado?.contentType || null,
+        soporte_pago_subido_at: soporteGuardado ? new Date() : null
       }]);
 
     if (errorCompra) {
       console.error('❌ Error guardando transferencia:', errorCompra);
+      await supabase.from('codigos').update({ reservado: false, referencia: null }).eq('referencia', referencia).eq('reservado', true);
+      if (soporteGuardado?.path) await supabase.storage.from('comprobantes').remove([soporteGuardado.path]);
       return res.status(500).json({ error: 'Error interno del servidor' });
     }
 
@@ -127,14 +196,24 @@ router.post('/transferencia-registrar', async (req, res) => {
 // ════════════════════════════════════════════════════════════════════════════
 router.get('/admin/transferencias', authAdmin, async (req, res) => {
   try {
+    await liberarReservasTransferenciaExpiradas();
     const { data: compras, error } = await supabase
       .from('compras')
-      .select('referencia, nombre, correo, cedula, telefono, cantidad, estado, fecha, premio_dorado, notas_admin')
-      .in('estado', ['transferencia_pendiente', 'transferencia_aprobada', 'transferencia_rechazada'])
+      .select('referencia, nombre, correo, cedula, telefono, direccion, cantidad, monto, estado, fecha, reserva_expira_at, soporte_pago_path, soporte_pago_nombre, soporte_pago_tipo, soporte_pago_subido_at, premio_dorado, notas_admin')
+      .in('estado', ['transferencia_pendiente', 'transferencia_aprobada', 'transferencia_rechazada', 'transferencia_expirada'])
       .order('fecha', { ascending: false })
       .limit(200);
 
     if (error) return res.status(500).json({ ok: false });
+
+    const transferenciasConSoporte = await Promise.all((compras || []).map(async c => {
+      let soporte_url = null;
+      if (c.soporte_pago_path) {
+        const { data: signed } = await supabase.storage.from('comprobantes').createSignedUrl(c.soporte_pago_path, 60 * 60);
+        soporte_url = signed?.signedUrl || null;
+      }
+      return { ...c, soporte_url };
+    }));
 
     const refs = (compras || [])
       .filter(c => c.estado === 'transferencia_aprobada')
@@ -151,7 +230,7 @@ router.get('/admin/transferencias', authAdmin, async (req, res) => {
     }
 
     res.json({
-      transferencias: (compras || []).map(c => ({
+      transferencias: transferenciasConSoporte.map(c => ({
         ...c,
         codigos: codigosMap[c.referencia] || []
       }))
@@ -171,32 +250,50 @@ router.post('/admin/transferencia-aprobar', authAdmin, async (req, res) => {
     const { referencia, notas } = req.body;
     if (!referencia) return res.status(400).json({ error: 'Referencia requerida' });
 
-    const { data: compra, error: errCompra } = await supabase
+    const { data: previa } = await supabase
       .from('compras')
       .select('*')
       .eq('referencia', referencia)
       .eq('estado', 'transferencia_pendiente')
-      .single();
+      .maybeSingle();
 
-    if (errCompra || !compra) {
-      return res.status(404).json({ error: 'Transferencia no encontrada o ya procesada' });
+    if (!previa) {
+      return res.status(404).json({ error: 'Transferencia no encontrada, ya procesada o está siendo revisada por otro administrador.' });
     }
 
-    let codigos;
-    try {
-      codigos = await generarCodigos(compra.cantidad, referencia, {
-        nombre: compra.nombre, email: compra.correo, telefono: compra.telefono
-      });
-    } catch (err) {
-      console.error('❌ Error generando códigos:', err);
-      return res.status(500).json({ error: 'Error generando códigos' });
+    if (!previa.soporte_pago_path) {
+      return res.status(409).json({ error: 'No hay comprobante adjunto. Solicita al cliente el soporte de pago antes de aprobar.' });
     }
 
-    if (!codigos || codigos.length === 0) {
-      return res.status(400).json({ error: 'Sin stock disponible para asignar' });
+    // Cerrojamos la revisión: solo un administrador puede pasar esta referencia
+    // de pendiente a procesando. Esto evita doble aprobación/doble envío.
+    const { data: compra, error: errClaim } = await supabase
+      .from('compras')
+      .update({ estado: 'transferencia_procesando' })
+      .eq('referencia', referencia)
+      .eq('estado', 'transferencia_pendiente')
+      .select('*')
+      .maybeSingle();
+    if (errClaim || !compra) {
+      return res.status(409).json({ error: 'Esta transferencia ya está siendo revisada o fue procesada por otro administrador.' });
     }
 
-    codigos = [...codigos].sort(() => Math.random() - 0.5);
+    const { data: codigosReservados, error: errReserva } = await supabase
+      .from('codigos')
+      .select('codigo, dorado, premio_dorado')
+      .eq('referencia', referencia)
+      .eq('reservado', true)
+      .eq('vendido', false);
+    if (errReserva || !codigosReservados || codigosReservados.length !== compra.cantidad) {
+      await supabase.from('compras').update({ estado: 'transferencia_pendiente' }).eq('referencia', referencia).eq('estado', 'transferencia_procesando');
+      return res.status(409).json({ error: 'La reserva de códigos de esta transferencia ya no está completa. No se enviarán códigos.' });
+    }
+
+    const codigos = codigosReservados.map(c => ({
+      codigo: c.codigo,
+      dorado: !!c.dorado,
+      premioDorado: c.premio_dorado || null
+    })).sort(() => Math.random() - 0.5);
 
     const wompiId = `MANUAL-${referencia}`;
     const { error: errorTx } = await supabase
@@ -212,7 +309,8 @@ router.post('/admin/transferencia-aprobar', authAdmin, async (req, res) => {
 
     if (errorTx && !errorTx.message?.includes('duplicate')) {
       console.error('❌ Error insertando transacción:', errorTx);
-      return res.status(500).json({ error: 'Error interno' });
+      await supabase.from('compras').update({ estado: 'transferencia_pendiente' }).eq('referencia', referencia).eq('estado', 'transferencia_procesando');
+      return res.status(500).json({ error: 'Error interno. La transferencia sigue pendiente y no se enviaron códigos.' });
     }
 
     const codigoDorado = codigos.find(c => c.dorado);
@@ -224,20 +322,39 @@ router.post('/admin/transferencia-aprobar', authAdmin, async (req, res) => {
       updateData.premio_dorado = codigoDorado.premioDorado;
     }
 
-    await supabase.from('compras').update(updateData).eq('referencia', referencia);
-
+    let actualizados = 0;
     for (const c of codigos) {
-      await supabase
+      const { data: actualizadosFila, error: errCodigo } = await supabase
         .from('codigos')
         .update({
-          vendido:   true,
+          vendido: true,
+          reservado: false,
           referencia,
-          email:     compra.correo,
-          nombre:    compra.nombre,
-          telefono:  compra.telefono || '',
+          email: compra.correo,
+          nombre: compra.nombre,
+          telefono: compra.telefono || '',
           direccion: compra.direccion || ''
         })
-        .eq('codigo', c.codigo);
+        .eq('codigo', c.codigo)
+        .eq('reservado', true)
+        .eq('vendido', false)
+        .select('codigo');
+      if (errCodigo || !actualizadosFila?.length) break;
+      actualizados += actualizadosFila.length;
+    }
+
+    if (actualizados !== compra.cantidad) {
+      console.error(`❌ Aprobación incompleta: ${actualizados}/${compra.cantidad} códigos para ${referencia}`);
+      await supabase.from('codigos').update({ vendido:false, reservado:true, referencia, email:null, nombre:null, telefono:null, direccion:null }).eq('referencia', referencia);
+      await supabase.from('transacciones').delete().eq('referencia', referencia);
+      await supabase.from('compras').update({ estado: 'transferencia_pendiente' }).eq('referencia', referencia).eq('estado', 'transferencia_procesando');
+      return res.status(409).json({ error: 'No se pudo convertir toda la reserva en códigos vendidos. La transferencia sigue pendiente y no se enviaron códigos.' });
+    }
+
+    const { error: errorEstadoCompra } = await supabase.from('compras').update(updateData).eq('referencia', referencia).eq('estado', 'transferencia_procesando');
+    if (errorEstadoCompra) {
+      console.error('❌ Error actualizando estado de transferencia:', errorEstadoCompra);
+      return res.status(500).json({ error: 'Los códigos fueron asignados, pero no se pudo cerrar el estado. Revisa esta referencia antes de volver a procesarla.' });
     }
 
     // ── Enviar correo (con log explícito para detectar fallos) ───────────────
@@ -299,6 +416,11 @@ router.post('/admin/transferencia-rechazar', authAdmin, async (req, res) => {
       .eq('referencia', referencia);
 
     if (error) return res.status(500).json({ error: 'Error actualizando estado' });
+
+    await supabase.from('codigos')
+      .update({ reservado: false, referencia: null, dorado: false, premio_dorado: null, nombre: null, email: null, telefono: null, direccion: null })
+      .eq('referencia', referencia)
+      .eq('reservado', true);
 
     const motivo = notas || 'No pudimos verificar tu transferencia.';
     const precioPorCodigo = await leerClaveLive('precio_codigo', CONFIG.precio_codigo || 3750);

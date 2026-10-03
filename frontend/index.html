@@ -8,7 +8,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta http-equiv="X-Content-Type-Options" content="nosniff">
 <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
-<title>Inversiones Eider techs Soluciones – Dinamica por $15.000.000 COP</title>
+<title>Inversiones Eider techs Soluciones – Dinámica</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎟️</text></svg>">
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
 
@@ -1318,7 +1318,7 @@ input.error { border-color: rgba(248,113,113,.7); box-shadow: 0 0 0 3px rgba(248
       
       <img
         id="imgPremio"
-        src="/imagenes/DINAMICA_15M.png"
+        src="/imagenes/premio.png"
         alt="Premio en efectivo"
         style="width:100%;height:auto;max-height:60vh;border-radius:18px;box-shadow:0 8px 32px rgba(201,147,10,.15),0 2px 8px rgba(0,0,0,.07);display:block;object-fit:contain;"
         onerror="this.parentElement.style.display='none'"
@@ -1327,9 +1327,9 @@ input.error { border-color: rgba(248,113,113,.7); box-shadow: 0 0 0 3px rgba(248
     </div>
 
     <h6 class="title" id="tituloDinamica">🎟️ Compra tus <span>Códigos</span></h6>
-    <h6><p class="subtitle" id="subtituloPremio">Participa por <span>$15.000.000 COP</span></p></h6>
+    <h6><p class="subtitle" id="subtituloPremio">Participa por <span id="premioFallback">—</span></p></h6>
     <div class="badge-wrap">
-      <span class="badge" id="badgeDorado">💎 código dorado · $500.000</span>
+      <span class="badge" id="badgeDorado">💎 código dorado · <span id="doradoFallback">—</span></span>
     </div>
   </div>
 
@@ -1359,7 +1359,7 @@ input.error { border-color: rgba(248,113,113,.7); box-shadow: 0 0 0 3px rgba(248
   </div>
 
   <div id="seccionDorados">
-    <div class="sec-label">🎫 Códigos dorados entregados ($500.000 COP)</div>
+    <div class="sec-label">🎫 Códigos dorados entregados</div>
     <div id="listaDorados"></div>
   </div>
 
@@ -1376,7 +1376,7 @@ input.error { border-color: rgba(248,113,113,.7); box-shadow: 0 0 0 3px rgba(248
     <div class="personalizada-titulo">¿Deseas más?</div>
     <div class="personalizada-row">
       <input type="number" class="input-cantidad" id="inputCantidadPersonalizada" value="17" min="4" max="500" step="1" inputmode="numeric" aria-label="Cantidad de códigos">
-      <button type="button" class="btn-personalizada" id="btnComprarPersonalizado">Comprar entradas</button>
+      <button type="button" class="btn-personalizada" id="btnComprarPersonalizado">Comprar códigos</button>
     </div>
     <div class="personalizada-error" id="errorCantidadPersonalizada"></div>
     <div class="personalizada-hint">Mínimo 4 · Máximo 500 códigos por compra</div>
@@ -1723,7 +1723,7 @@ async function verificarStock() {
       abrirModalEstado('agotado');
     }
 
-    const resDorados = await fetch(`${API_URL}/api/admin/codigos-dorados`);
+    const resDorados = await fetch(`${API_URL}/api/codigos-dorados-publicos`);
     if (!resDorados.ok) return;
     const dorados = await resDorados.json();
     if (Array.isArray(dorados) && dorados.length > 0) {
@@ -1849,15 +1849,16 @@ async function cargarConfig() {
 
   } catch(e) {
     console.error('Error cargando config:', e);
-    // Fallback
+    // Sin configuración del servidor no usamos valores de una dinámica anterior.
+    // Esto evita que una nueva dinámica requiera modificar el HTML.
     const grid = document.getElementById('cards-grid');
-    grid.innerHTML = `
-      <div class="card" data-cantidad="4"  data-precio="15000" onclick="seleccionarCardLegacy(this)"><div class="card-qty">4</div><div class="card-label">códigos</div><div class="card-price">$15.000</div></div>
-      <div class="card" data-cantidad="8"  data-precio="30000" onclick="seleccionarCardLegacy(this)"><div class="card-popular">⭐ Popular</div><div class="card-qty">8</div><div class="card-label">códigos</div><div class="card-price">$30.000</div></div>
-      <div class="card" data-cantidad="16" data-precio="60000" onclick="seleccionarCardLegacy(this)"><div class="card-qty">16</div><div class="card-label">códigos</div><div class="card-price">$60.000</div></div>
-    `;
-    PRECIOS = { 4: 15000, 8: 30000, 16: 60000 };
-    precioCodigo = 3750;
+    grid.innerHTML = '<div class="config-error" style="grid-column:1/-1;text-align:center;padding:24px;color:#b91c1c;background:#fef2f2;border:1px solid #fecaca;border-radius:12px">⚠️ No fue posible cargar la dinámica actual. Intenta recargar la página.</div>';
+    PRECIOS = {};
+    precioCodigo = 0;
+    cards.forEach(c => c.classList.add('disabled'));
+    form.style.display = 'none';
+    const btnTrf = document.getElementById('btnTransferencia');
+    if (btnTrf) { btnTrf.disabled = true; btnTrf.style.opacity = '0.5'; btnTrf.style.pointerEvents = 'none'; }
   }
 }
 
@@ -2280,6 +2281,14 @@ function abrirModalEstado(tipo) {
         </div>
       </div>
 
+      <div style="margin-top:14px;background:rgba(232,184,75,.06);border:1px solid rgba(232,184,75,.2);border-radius:10px;padding:13px">
+        <label style="font-size:11px;color:#F5D07A;display:block;margin-bottom:6px;font-weight:700;text-transform:uppercase;letter-spacing:.06em">📎 Soporte de pago *</label>
+        <input id="trfSoporteInput" type="file" accept="image/jpeg,image/png,application/pdf,.jpg,.jpeg,.png,.pdf"
+          style="width:100%;font-size:13px;color:#ECF0FF;box-sizing:border-box"
+          onchange="trfValidarSoporte()">
+        <div id="trfSoporteInfo" style="color:#94A3B8;font-size:11px;line-height:1.5;margin-top:6px">Adjunta una foto clara o PDF del comprobante. Máximo 5 MB.</div>
+      </div>
+
       <div id="trfFormMsg" style="margin-top:10px;min-height:14px"></div>
 
       <div class="habeas-data-box" style="margin:10px 0">
@@ -2444,6 +2453,29 @@ document.addEventListener('click', function(e) {
   if (modal && e.target === modal) cerrarModalTransferencia();
 });
 
+window.trfValidarSoporte = function() {
+  const input = document.getElementById('trfSoporteInput');
+  const info = document.getElementById('trfSoporteInfo');
+  const file = input?.files?.[0];
+  if (!info) return false;
+  if (!file) { info.textContent = 'Adjunta una foto clara o PDF del comprobante. Máximo 5 MB.'; info.style.color = '#94A3B8'; return false; }
+  const tipos = ['image/jpeg','image/png','application/pdf'];
+  if (!tipos.includes(file.type)) { info.textContent = '⚠️ Solo se aceptan JPG, PNG o PDF.'; info.style.color = '#f87171'; return false; }
+  if (file.size > 5 * 1024 * 1024) { info.textContent = '⚠️ El archivo supera el máximo de 5 MB.'; info.style.color = '#f87171'; return false; }
+  info.textContent = `✅ ${file.name} · ${(file.size / 1024 / 1024).toFixed(2)} MB`;
+  info.style.color = '#34D399';
+  return true;
+};
+
+function trfLeerArchivoBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(String(reader.result).split(',').pop());
+    reader.onerror = () => reject(new Error('No se pudo leer el comprobante.'));
+    reader.readAsDataURL(file);
+  });
+}
+
 window.enviarSolicitudTransferencia = async function() {
   const nombre   = document.getElementById('trfNombreInput')?.value.trim() || '';
   const correo   = document.getElementById('trfCorreoInput')?.value.trim() || '';
@@ -2451,6 +2483,8 @@ window.enviarSolicitudTransferencia = async function() {
   const telefono = document.getElementById('trfTelefonoInput')?.value.trim() || '';
   const direccion = document.getElementById('trfDireccionInput')?.value.trim() || '';
   const cantidad = parseInt(document.getElementById('trfCantidadSelect')?.value, 10);
+  const soporteInput = document.getElementById('trfSoporteInput');
+  const soporteFile = soporteInput?.files?.[0] || null;
   const msgEl    = document.getElementById('trfFormMsg');
 
   if (!msgEl) return;
@@ -2469,6 +2503,11 @@ window.enviarSolicitudTransferencia = async function() {
     return;
   }
 
+  if (!soporteFile || !trfValidarSoporte()) {
+    msgEl.innerHTML = '<div style="background:rgba(248,113,113,.1);color:#f87171;padding:9px 12px;border-radius:8px;font-size:12px;border:1px solid rgba(248,113,113,.2)">⚠️ Adjunta el comprobante de pago para que podamos validar la transferencia.</div>';
+    return;
+  }
+
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(correo)) {
     msgEl.innerHTML = '<div style="background:rgba(248,113,113,.1);color:#f87171;padding:9px 12px;border-radius:8px;font-size:12px;border:1px solid rgba(248,113,113,.2)">⚠️ Correo electrónico inválido</div>';
     return;
@@ -2483,16 +2522,13 @@ window.enviarSolicitudTransferencia = async function() {
   msgEl.innerHTML = '<div style="color:#94A3B8;font-size:12px;padding:6px 0">⏳ Registrando solicitud...</div>';
 
   try {
+    const soporteBase64 = await trfLeerArchivoBase64(soporteFile);
     const r = await fetch('/api/transferencia-registrar', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        nombre,
-        correo,
-        cedula,
-        telefono,
-        direccion,
-        cantidad: Number(cantidad)
+        nombre, correo, cedula, telefono, direccion, cantidad: Number(cantidad),
+        soporte: { filename: soporteFile.name, contentType: soporteFile.type, base64: soporteBase64 }
       })
     });
 
@@ -2526,6 +2562,9 @@ window.enviarSolicitudTransferencia = async function() {
         const el = document.getElementById(id);
         if (el) el.value = '';
       });
+    if (soporteInput) soporteInput.value = '';
+    const soporteInfo = document.getElementById('trfSoporteInfo');
+    if (soporteInfo) { soporteInfo.textContent = 'Adjunta una foto clara o PDF del comprobante. Máximo 5 MB.'; soporteInfo.style.color = '#94A3B8'; }
 
   } catch (e) {
     console.error('❌ Error registrando transferencia:', e);
