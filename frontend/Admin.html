@@ -699,11 +699,11 @@
           <div class="form-row">
             <div class="form-field">
               <label>Premio dorado (COP)</label>
-              <input type="number" id="p-dorado" placeholder="500000" value="500000">
+              <input type="number" id="p-dorado" placeholder="Ej: 500000" value="500000">
             </div>
             <div class="form-field">
               <label>Precio por código (COP)</label>
-              <input type="number" id="p-normal" placeholder="3750" value="3750">
+              <input type="number" id="p-normal" placeholder="Ej: 3750" value="3750">
             </div>
             <div class="form-field">
               <label>Expira el</label>
@@ -777,6 +777,7 @@
                 <option value="transferencia_pendiente" selected>Pendientes</option>
                 <option value="transferencia_aprobada">Aprobadas</option>
                 <option value="transferencia_rechazada">Rechazadas</option>
+                <option value="transferencia_expirada">Expiradas</option>
               </select>
             </div>
             <button class="btn" onclick="loadTransferencias()" style="align-self:flex-end">↺ Actualizar</button>
@@ -969,30 +970,30 @@
       <!-- DINÁMICA -->
       <div id="tab-dinamica" class="section">
         <div class="section-header">
-          <h2>⚙️ Configuración de la dinámica</h2>
-          <p>Nombre, precio por número, valor del código promocional, valor del premio e imagen. Se aplica de inmediato y queda guardado aunque el servidor se reinicie.</p>
+          <h2>⚙️ Dinámica activa</h2>
+          <p>Modifica la dinámica que está publicada actualmente. Para comenzar otra, usa <strong>Crear nueva dinámica</strong> en la sección Eventos. No necesitas editar el HTML.</p>
         </div>
 
         <div class="form-card">
           <div class="form-field" style="margin-bottom:14px">
             <label>Nombre de la dinámica</label>
-            <input type="text" id="din-nombre" placeholder="Ej: Dinámica $15.000.000 COP">
+            <input type="text" id="din-nombre" placeholder="Ej: Dinámica de septiembre">
           </div>
           <div class="form-field" style="margin-bottom:14px">
             <label>Valor por número (COP)</label>
-            <input type="number" id="din-precio" min="100" step="1" placeholder="3750">
+            <input type="number" id="din-precio" min="100" step="1" placeholder="Ej: 3750">
           </div>
           <div class="form-field" style="margin-bottom:14px">
             <label>Valor del código promocional / dorado (COP)</label>
-            <input type="number" id="din-precio-dorado" min="0" step="1" placeholder="500000">
+            <input type="number" id="din-precio-dorado" min="0" step="1" placeholder="Ej: 500000">
           </div>
           <div class="form-field" style="margin-bottom:14px">
             <label>Valor del premio (COP)</label>
-            <input type="number" id="din-premio" min="0" step="1" placeholder="15000000">
+            <input type="number" id="din-premio" min="0" step="1" placeholder="Valor definido en el panel">
           </div>
           <div class="form-field" style="margin-bottom:14px">
             <label>Imagen del premio</label>
-            <input type="text" id="din-imagen" placeholder="/imagenes/DINAMICA_15M.png">
+            <input type="text" id="din-imagen" placeholder="/imagenes/premio.png">
             <small style="color:var(--text3)">Puede ser una ruta dentro de /imagenes o una URL externa (https://...)</small>
             <div style="display:flex;align-items:center;gap:10px;margin-top:8px">
               <input type="file" id="din-imagen-file" accept="image/*" style="max-width:220px">
@@ -1094,8 +1095,8 @@
       <!-- EVENTOS -->
       <div id="tab-eventos" class="section">
         <div class="section-header">
-          <h2>Cerrar evento y empezar nuevo</h2>
-          <p>Guarda todo lo de esta dinámica en el historial y deja las tablas activas en cero</p>
+          <h2>🆕 Crear nueva dinámica</h2>
+          <p>Archiva la dinámica actual y crea la siguiente desde el panel. La página pública seguirá usando el mismo HTML y tomará automáticamente la nueva configuración.</p>
         </div>
 
         <div class="form-card" style="border:0.5px solid #fca5a5;background:#fef2f2">
@@ -1108,15 +1109,15 @@
           </p>
           <div class="form-field" style="margin-bottom:14px">
             <label>Nombre del evento a archivar (opcional)</label>
-            <input type="text" id="evt-nombre" placeholder="Ej: Rifa Mayo 2026">
+            <input type="text" id="evt-nombre" placeholder="Ej: Dinámica septiembre 2026">
           </div>
-          <button class="btn btn-danger" onclick="cerrarEvento()" id="btn-cerrar-evento">🔒 Cerrar evento y empezar nuevo</button>
+          <button class="btn btn-danger" onclick="cerrarEvento()" id="btn-cerrar-evento">🆕 Archivar actual y crear nueva dinámica</button>
           <div id="evt-msg"></div>
         </div>
 
         <div class="section-header" style="margin-top:28px">
-          <h2 style="font-size:15px">Configurar la nueva dinámica (opcional)</h2>
-          <p>Si la llenas, se aplica automáticamente al cerrar el evento actual. Si dejas "Cantidad de números" vacío, se conserva el pool actual tal cual.</p>
+          <h2 style="font-size:15px">Datos de la nueva dinámica</h2>
+          <p>Completa estos datos antes de confirmar. Se guardarán como la configuración activa cuando termine el proceso.</p>
         </div>
         <div class="form-card">
           <div class="form-field" style="margin-bottom:14px">
@@ -1130,20 +1131,20 @@
           </div>
           <div class="form-field" style="margin-bottom:14px">
             <label>Cantidad de números a vender</label>
-            <input type="text" inputmode="numeric" id="nva-total-numeros" placeholder="Ej: 1000 o 1.000">
+            <input type="text" inputmode="numeric" id="nva-total-numeros" placeholder="Ej: 10000 o 10.000">
             <small style="color:var(--text3)">⚠️ Esto regenera por completo el pool de números (0000...N-1). Solo hazlo aquí, justo al cerrar el evento. Puedes escribirlo con o sin puntos (1000 o 1.000).</small>
           </div>
           <div class="form-field" style="margin-bottom:14px">
             <label>Valor por número (COP)</label>
-            <input type="number" id="nva-precio" min="100" step="1" placeholder="3750">
+            <input type="number" id="nva-precio" min="100" step="1" placeholder="Ej: 3750">
           </div>
           <div class="form-field" style="margin-bottom:14px">
             <label>Valor del código promocional / dorado (COP)</label>
-            <input type="number" id="nva-precio-dorado" min="0" step="1" placeholder="500000">
+            <input type="number" id="nva-precio-dorado" min="0" step="1" placeholder="Ej: 500000">
           </div>
           <div class="form-field" style="margin-bottom:14px">
             <label>Valor del premio (COP)</label>
-            <input type="number" id="nva-premio" min="0" step="1" placeholder="15000000">
+            <input type="number" id="nva-premio" min="0" step="1" placeholder="Valor definido en el panel">
           </div>
           <div class="form-field" style="margin-bottom:14px">
             <label>Imagen del premio</label>
@@ -1764,13 +1765,19 @@
         if (t.estado==='transferencia_pendiente')  estadoBadge='<span class="badge badge-pend">⏳ Pendiente</span>';
         if (t.estado==='transferencia_aprobada')   estadoBadge='<span class="badge badge-ok">✅ Aprobada</span>';
         if (t.estado==='transferencia_rechazada')  estadoBadge='<span class="badge badge-err">✕ Rechazada</span>';
+        if (t.estado==='transferencia_expirada')   estadoBadge='<span class="badge badge-err">⌛ Expirada</span>';
         const codsHtml = t.codigos?.length
           ? t.codigos.map(c=>`<span class="code-mono ${c.dorado?'gold-code':''}" style="margin-right:6px;font-size:12px">${c.dorado?'⭐':''}${c.codigo}</span>`).join('')
           : '<span style="color:var(--text3);font-size:12px">—</span>';
+        const soporteHtml = t.soporte_url
+          ? `<div style="margin:8px 0;padding:8px 10px;background:var(--surface2);border-radius:8px;font-size:12px">📎 <strong>Comprobante:</strong> <a href="${t.soporte_url}" target="_blank" rel="noopener" style="color:var(--accent);font-weight:700">Ver soporte</a>${t.soporte_pago_nombre ? ` <span style="color:var(--text3)">· ${t.soporte_pago_nombre}</span>` : ''}</div>`
+          : `<div style="margin:8px 0;padding:8px 10px;background:#fff7ed;border:1px solid #fed7aa;border-radius:8px;font-size:12px;color:#9a3412">⚠️ Sin comprobante adjunto</div>`;
+        const reservaHtml = t.estado==='transferencia_pendiente' && t.reserva_expira_at
+          ? `<div style="font-size:11px;color:var(--text3);margin-top:4px">🔒 Códigos reservados hasta ${new Date(t.reserva_expira_at).toLocaleString('es-CO')}</div>` : '';
         const acciones = t.estado==='transferencia_pendiente' ? `
           <div style="display:flex;gap:6px;margin-top:6px">
             <button class="btn btn-primary" style="font-size:12px;padding:5px 10px"
-              onclick="abrirModalAprobar('${t.referencia}','${t.nombre}',${t.cantidad},${montoReal})">✅ Aprobar</button>
+              onclick="abrirModalAprobar('${t.referencia}','${t.nombre}',${t.cantidad},${montoReal})">✅ Aprobar y enviar códigos</button>
             <button class="btn btn-danger" style="font-size:12px;padding:5px 10px"
               onclick="abrirModalRechazar('${t.referencia}','${t.nombre}')">✕ Rechazar</button>
           </div>` : '';
@@ -1787,6 +1794,8 @@
             <strong style="color:var(--text3);text-transform:uppercase;font-size:10px;letter-spacing:.05em">Ref:</strong>
             <span class="code-mono" style="font-size:12px">${t.referencia}</span>
           </div>
+          ${soporteHtml}
+          ${reservaHtml}
           ${t.codigos?.length?`<div style="margin-bottom:6px">${codsHtml}</div>`:''}
           ${t.notas_admin?`<div style="font-size:12px;background:var(--surface2);border-radius:6px;padding:6px 10px;margin-top:6px;color:var(--text2)">📝 ${t.notas_admin}</div>`:''}
           ${acciones}
@@ -1801,7 +1810,7 @@
     document.getElementById('modal-title').textContent = '✅ Aprobar transferencia';
     document.getElementById('modal-info').innerHTML =
       `<strong>${nombre}</strong> · ${cantidad} códigos · <strong>$${monto.toLocaleString('es-CO')} COP</strong><br>
-       <span style="color:var(--text3);font-size:12px">Se generarán los códigos automáticamente y se enviarán al comprador.</span>`;
+       <span style="color:var(--text3);font-size:12px">Primero revisa el comprobante. Si el pago es válido, se convertirán las reservas en códigos vendidos y se enviarán al comprador. Si no hay stock reservado completo, el sistema no aprobará ni enviará códigos.</span>`;
     document.getElementById('modal-notas').value = '';
     document.getElementById('modal-msg').innerHTML = '';
     const btn = document.getElementById('modal-confirm-btn');
@@ -2150,6 +2159,11 @@
     if (document.getElementById('nva-premio').value)              nuevaDinamica.premio_total     = Number(document.getElementById('nva-premio').value);
     if (document.getElementById('nva-imagen').value.trim())       nuevaDinamica.premio_imagen    = document.getElementById('nva-imagen').value.trim();
 
+    if (!nuevaDinamica.nombre || !nuevaDinamica.cantidad_numeros || !nuevaDinamica.precio_codigo || !nuevaDinamica.premio_total) {
+      msg.innerHTML = '<div class="msg msg-err">❌ Para crear una nueva dinámica debes indicar nombre, cantidad de números, precio por número y valor del premio.</div>';
+      return;
+    }
+
     let avisoPool = '';
     if (nuevaDinamica.cantidad_numeros) {
       avisoPool = `\n\n⚠️ Además se REGENERARÁ el pool de números a ${nuevaDinamica.cantidad_numeros.toLocaleString('es-CO')} números nuevos (0000...N-1). Los números actuales dejarán de existir.`;
@@ -2348,7 +2362,7 @@
   }
 
   // ── Vista previa correo ganador ────────────────────────────────
-  function previsualizarCorreoGanador() {
+  async function previsualizarCorreoGanador() {
     const codigo = document.getElementById('gan-codigo').value.trim();
     const nombre = document.getElementById('gan-nombre').value.trim();
     if (!codigo || !nombre) {
@@ -2357,6 +2371,8 @@
     }
     const preview = document.getElementById('ganador-preview');
     const inner   = document.getElementById('ganador-preview-inner');
+    let premioFmt = '—';
+    try { const r = await fetch('/api/admin/config', { headers: headers() }); const cfg = await r.json(); if (cfg.premio_total) premioFmt = Number(cfg.premio_total).toLocaleString('es-CO'); } catch (_) {}
     preview.style.display = 'block';
     inner.innerHTML = `
       <div style="text-align:center;margin-bottom:20px">
@@ -2372,7 +2388,7 @@
       </div>
       <div style="background:rgba(212,168,32,.08);border:1px solid rgba(212,168,32,.25);border-radius:10px;padding:16px;text-align:center;margin-bottom:20px">
         <div style="font-size:11px;color:gold;text-transform:uppercase;letter-spacing:.1em;margin-bottom:4px">Premio</div>
-        <div style="font-size:28px;font-weight:900;color:#fff">$15.000.000 COP</div>
+        <div style="font-size:28px;font-weight:900;color:#fff">$${premioFmt} COP</div>
       </div>
       <p style="color:#9ca3af;font-size:12px;line-height:1.8;text-align:center;margin:0 0 20px">
         Para reclamar tu premio comunícate con nosotros por WhatsApp al<br>
