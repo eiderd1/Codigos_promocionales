@@ -206,14 +206,47 @@ router.get('/admin/transferencias', authAdmin, async (req, res) => {
 
     if (error) return res.status(500).json({ ok: false });
 
-    const transferenciasConSoporte = await Promise.all((compras || []).map(async c => {
-      let soporte_url = null;
-      if (c.soporte_pago_path) {
-        const { data: signed } = await supabase.storage.from('comprobantes').createSignedUrl(c.soporte_pago_path, 60 * 60);
+    const transferenciasConSoporte = await Promise.all(
+  (compras || []).map(async c => {
+    let soporte_url = null;
+    let soporte_error = null;
+
+    if (c.soporte_pago_path) {
+      const { data: signed, error: signedError } =
+        await supabase.storage
+          .from('comprobantes')
+          .createSignedUrl(c.soporte_pago_path, 60 * 60);
+
+      if (signedError) {
+        console.error(
+          '❌ Error generando URL del comprobante:',
+          c.referencia,
+          signedError
+        );
+
+        soporte_error = signedError.message;
+      } else {
         soporte_url = signed?.signedUrl || null;
+
+        if (!soporte_url) {
+          console.error(
+            '⚠️ No se generó URL firmada para:',
+            c.referencia,
+            c.soporte_pago_path
+          );
+
+          soporte_error = 'Supabase no devolvió una URL firmada.';
+        }
       }
-      return { ...c, soporte_url };
-    }));
+    }
+
+    return {
+      ...c,
+      soporte_url,
+      soporte_error
+    };
+  })
+);
 
     const refs = (compras || [])
       .filter(c => c.estado === 'transferencia_aprobada')
