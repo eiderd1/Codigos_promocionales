@@ -10,6 +10,7 @@ const express = require('express');
 const router  = express.Router();
 const supabase = require('../config/supabase');
 const { recordatorioTransferencias, correoMasivo, recordatorioPagosIncompletos } = require('../services/notificaciones');
+const { agregarCliente } = require('../services/sseNotif');
 
 // ── Auth middleware ──────────────────────────────────────────────────────────
 function authAdmin(req, res, next) {
@@ -19,6 +20,9 @@ function authAdmin(req, res, next) {
   if (!token || token !== SECRET) return res.status(401).json({ error: 'No autorizado' });
   next();
 }
+
+// GET /admin/notif-stream  → SSE en tiempo real (nueva-compra, transferencia-pendiente)
+router.get('/admin/notif-stream', authAdmin, (req, res) => agregarCliente(req, res));
 
 // ════════════════════════════════════════════════════════════════════════════
 // GET /admin/notif-stats

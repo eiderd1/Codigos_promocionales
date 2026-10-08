@@ -6,6 +6,7 @@ const { generarCodigos } = require('../services/codigos');
 const { enviarCorreo } = require('../services/correo');
 const { enviarWhatsApp } = require('../services/whatsapp');
 const { enviarNotifAdmin } = require('../services/notificaciones');
+const { emitir } = require('../services/sseNotif');
 const supabase = require('../config/supabase');
 
 function validarFirma(event) {
@@ -192,6 +193,8 @@ router.post('/webhook-wompi', async (req, res) => {
       .update({ direccion })
       .eq('referencia', referencia);
     if (errorDatosCodigos) console.error("⚠️ Error guardando dirección en códigos:", errorDatosCodigos);
+
+    emitir('nueva-compra', { nombre, cantidad, referencia });
 
     try {
       await enviarNotifAdmin({

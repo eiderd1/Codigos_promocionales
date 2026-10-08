@@ -9,6 +9,7 @@ const { liberarReservasTransferenciaExpiradas } = require('../services/codigos')
 const { enviarCorreo }   = require('../services/correo');
 const { enviarWhatsApp } = require('../services/whatsapp');
 const { enviarNotifAdmin } = require('../services/notificaciones');
+const { emitir } = require('../services/sseNotif');
 const { CONFIG } = require('../services/appState');
 const { leerClaveLive } = require('../services/configStore');
 
@@ -160,6 +161,8 @@ router.post('/transferencia-registrar', async (req, res) => {
     }
 
     console.log(`🏦 Transferencia registrada: ${referencia} | ${cantidadFinal} códigos | $${montoTotal.toLocaleString()}`);
+
+    emitir('transferencia-pendiente', { nombre, cantidad: cantidadFinal, referencia });
 
     // ── Notificar al admin de la nueva transferencia pendiente ───────────────
     try {
