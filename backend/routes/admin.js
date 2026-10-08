@@ -546,33 +546,10 @@ router.get('/admin/exportar-compradores', async (req, res) => {
 // TRANSFERENCIAS
 // ════════════════════════════════════════════
 
-router.get('/admin/transferencias', async (req, res) => {
-  try {
-    const { data: compras, error } = await supabase
-      .from('compras')
-      .select('*')
-      .in('estado', ['transferencia_pendiente', 'transferencia_aprobada', 'transferencia_rechazada'])
-      .order('fecha', { ascending: false });
-
-    if (error) return res.status(500).json({ ok: false });
-
-    const refs = (compras || []).map(x => x.referencia);
-    let codigosMap = {};
-    if (refs.length) {
-      const { data: codigos } = await supabase
-        .from('codigos').select('codigo, dorado, referencia').in('referencia', refs);
-      (codigos || []).forEach(c => {
-        if (!codigosMap[c.referencia]) codigosMap[c.referencia] = [];
-        codigosMap[c.referencia].push(c);
-      });
-    }
-
-    res.json({ ok: true, transferencias: (compras || []).map(c => ({ ...c, codigos: codigosMap[c.referencia] || [] })) });
-  } catch (e) {
-    console.error('💥 transferencias:', e);
-    res.status(500).json({ ok: false });
-  }
-});
+// NOTA: GET /admin/transferencias se eliminó de este archivo. Estaba duplicada con
+// routes/transferencias.js y, al registrarse primero en server.js, interceptaba la
+// petición: devolvía las filas sin soporte_url (URL firmada del comprobante), por
+// eso el panel mostraba siempre "Sin comprobante adjunto".
 
 // NOTA: las rutas /admin/transferencia-aprobar y /admin/transferencia-rechazar
 // se eliminaron de este archivo. Estaban duplicadas con routes/transferencias.js
