@@ -3,540 +3,226 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Estado del pago — EiderTech</title>
+<meta name="theme-color" content="#050A18">
+<title>Estado del pago – EiderTech Soluciones</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,700;9..144,800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-*, *::before, *::after { box-sizing: border-box; }
+:root {
+  --ink: #050A18; --navy: #0E1A3D; --navy-2: #14264F;
+  --gold: #E4BF6B; --gold-hi: #F6DE9E; --ivory: #F7F0DE;
+  --ruby: #F0566B; --ok: #3DDC97;
+  --text: #EEF1FA; --text-dim: #B4BED8; --muted: #8E9AB9;
+  --line: rgba(228,191,107,.18); --line-soft: rgba(255,255,255,.08);
+  --gold-grad: linear-gradient(135deg, #F6DE9E 0%, #E4BF6B 48%, #B98A2E 100%);
+  --font-display: 'Fraunces', Georgia, serif;
+  --font-body: 'Manrope', system-ui, -apple-system, 'Segoe UI', sans-serif;
+}
 
 body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
-  background: #0a0f1e;
-  color: white;
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
+  font-family: var(--font-body); background: var(--ink); color: var(--text);
+  min-height: 100dvh; display: flex; align-items: center; justify-content: center;
+  padding: 24px 16px; -webkit-font-smoothing: antialiased; line-height: 1.55;
 }
-
-/* ── Fondo animado ── */
 body::before {
-  content: '';
-  position: fixed;
-  inset: 0;
+  content: ''; position: fixed; inset: 0; pointer-events: none;
   background:
-    radial-gradient(ellipse 80% 50% at 20% 20%, rgba(245,197,24,.07) 0%, transparent 60%),
-    radial-gradient(ellipse 60% 40% at 80% 80%, rgba(249,115,22,.05) 0%, transparent 60%);
-  pointer-events: none;
-  z-index: 0;
+    radial-gradient(60% 45% at 20% 5%, rgba(228,191,107,.15) 0%, transparent 62%),
+    radial-gradient(55% 50% at 100% 40%, rgba(40,72,150,.35) 0%, transparent 65%);
 }
+:focus-visible { outline: 2px solid var(--gold-hi); outline-offset: 3px; }
 
-.wrap {
-  position: relative;
-  z-index: 1;
-  width: 100%;
-  max-width: 460px;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
+.wrap { position: relative; width: 100%; max-width: 460px; }
+
+/* Boleto de resultado */
+.ticket {
+  position: relative; text-align: center;
+  background: linear-gradient(170deg, var(--navy-2), var(--navy));
+  border: 1px solid var(--line); border-radius: 24px;
+  box-shadow: 0 30px 80px -20px rgba(0,0,0,.7);
 }
-
-/* ── Billete COP ── */
-.billete-card {
-  background: linear-gradient(135deg, #1a5c2e 0%, #2d7a42 40%, #1a5c2e 100%);
-  border-radius: 16px;
-  padding: 20px 24px;
-  border: 1.5px solid rgba(255,255,255,.12);
-  box-shadow: 0 8px 32px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,255,255,.08);
-  position: relative;
-  overflow: hidden;
-  display: none; /* se muestra solo en APPROVED */
+.ticket-top { padding: 36px 28px 26px; }
+.ticket-bottom { padding: 24px 28px 28px; border-top: 2px dashed rgba(228,191,107,.3); position: relative; }
+.ticket-bottom::before, .ticket-bottom::after {
+  content: ''; position: absolute; top: -9px; width: 16px; height: 16px; border-radius: 50%;
+  background: var(--ink); border: 1px solid var(--line);
 }
+.ticket-bottom::before { left: -9px; clip-path: inset(0 0 0 50%); }
+.ticket-bottom::after  { right: -9px; clip-path: inset(0 50% 0 0); }
 
-.billete-card.visible { display: block; }
-
-/* Guilloche background pattern */
-.billete-card::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background-image:
-    repeating-linear-gradient(0deg, transparent, transparent 4px, rgba(255,255,255,.03) 4px, rgba(255,255,255,.03) 5px),
-    repeating-linear-gradient(90deg, transparent, transparent 4px, rgba(255,255,255,.02) 4px, rgba(255,255,255,.02) 5px);
-  pointer-events: none;
+.badge {
+  width: 72px; height: 72px; margin: 0 auto 18px; border-radius: 22px; display: grid; place-items: center;
+  background: rgba(142,154,185,.15); color: var(--muted);
 }
+.badge svg { width: 34px; height: 34px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.badge.animate { animation: pop .55s cubic-bezier(.2,.9,.3,1.3) both; }
+@keyframes pop { from { transform: scale(.5); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+.badge.success { background: rgba(61,220,151,.14); color: var(--ok); box-shadow: 0 0 40px rgba(61,220,151,.25); }
+.badge.error   { background: rgba(240,86,107,.14); color: var(--ruby); }
+.badge.pending { background: rgba(228,191,107,.14); color: var(--gold); }
 
-.billete-card::after {
-  content: '';
-  position: absolute;
-  top: -30px; right: -30px;
-  width: 120px; height: 120px;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(255,220,50,.15) 0%, transparent 70%);
-  pointer-events: none;
-}
+h1 { font-family: var(--font-display); font-size: clamp(1.7rem, 6vw, 2.1rem); font-weight: 800; letter-spacing: -.02em; line-height: 1.15; margin-bottom: 8px; color: var(--ivory); }
+h1.success { color: var(--ivory); }
+.subtitulo { font-size: .98rem; color: var(--text-dim); }
 
-.billete-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 14px;
-}
-
-.billete-banco {
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: .12em;
-  text-transform: uppercase;
-  color: rgba(255,255,255,.5);
-}
-
-.billete-serie {
-  font-size: 10px;
-  font-family: 'Courier New', monospace;
-  color: rgba(255,255,255,.35);
-  letter-spacing: .06em;
-}
-
-.billete-valor {
-  text-align: center;
-  margin: 4px 0 16px;
-}
-
-.billete-simbolo {
-  font-size: 13px;
-  font-weight: 600;
-  color: rgba(255,220,50,.8);
-  letter-spacing: .05em;
-  display: block;
-  margin-bottom: 2px;
-}
-
-.billete-numero {
-  font-size: clamp(36px, 10vw, 52px);
-  font-weight: 900;
-  color: #fff;
-  line-height: 1;
-  text-shadow: 0 2px 8px rgba(0,0,0,.4);
-  letter-spacing: -.01em;
-}
-
-.billete-texto {
-  font-size: 11px;
-  color: rgba(255,255,255,.45);
-  letter-spacing: .08em;
-  text-transform: uppercase;
-  margin-top: 4px;
-}
-
-.billete-footer {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-top: 10px;
-  padding-top: 10px;
-  border-top: 1px solid rgba(255,255,255,.1);
-}
-
-.billete-firma {
-  font-size: 10px;
-  color: rgba(255,255,255,.35);
-}
-
-.billete-sello {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  border: 2px solid rgba(255,220,50,.3);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 16px;
-}
-
-/* Monedas decorativas */
-.monedas {
-  position: absolute;
-  right: 24px;
-  top: 50%;
-  transform: translateY(-50%);
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-  opacity: .25;
-}
-
-.moneda {
-  width: 22px;
-  height: 22px;
-  border-radius: 50%;
-  background: radial-gradient(circle at 35% 35%, #ffd700, #b8860b);
-  border: 1.5px solid rgba(255,220,50,.6);
-  box-shadow: 1px 1px 3px rgba(0,0,0,.4);
-}
-
-/* ── Tarjeta principal ── */
-.card {
-  background: #111827;
-  border: 1px solid rgba(255,255,255,.08);
-  border-radius: 20px;
-  padding: 36px 28px 32px;
-  box-shadow: 0 4px 24px rgba(0,0,0,.4);
-  text-align: center;
-}
-
-.icon {
-  font-size: 64px;
-  margin-bottom: 16px;
-  line-height: 1;
-  display: block;
-}
-
-/* Animación check */
-@keyframes pop {
-  0%   { transform: scale(.5); opacity: 0; }
-  70%  { transform: scale(1.2); }
-  100% { transform: scale(1); opacity: 1; }
-}
-
-.icon.animate { animation: pop .5s ease forwards; }
-
-h1 {
-  font-size: clamp(20px, 5vw, 26px);
-  font-weight: 700;
-  margin: 0 0 10px;
-  line-height: 1.2;
-}
-
-.subtitulo {
-  font-size: 14px;
-  color: #94a3b8;
-  line-height: 1.6;
-  margin: 0 0 20px;
-}
-
-/* ── Info box ── */
-.info-box {
-  background: rgba(255,255,255,.04);
-  border: 1px solid rgba(255,255,255,.07);
-  border-radius: 12px;
-  padding: 14px 16px;
-  margin-bottom: 20px;
-  text-align: left;
-  font-size: 13px;
-  color: #cbd5e1;
-  line-height: 1.7;
-  display: none;
-}
-
-.info-box.visible { display: block; }
-
-.info-box strong { color: #f1f5f9; }
-
-/* ── Colores de estado ── */
-.success { color: #22c55e; }
-.error   { color: #ef4444; }
-.pending { color: #facc15; }
-.unknown { color: #94a3b8; }
-
-/* ── Paso a paso (APPROVED) ── */
-.pasos {
-  display: none;
-  flex-direction: column;
-  gap: 10px;
-  margin-bottom: 20px;
-  text-align: left;
-}
-
-.pasos.visible { display: flex; }
-
-.paso {
-  display: flex;
-  align-items: flex-start;
-  gap: 12px;
-  background: rgba(34,197,94,.06);
-  border: 1px solid rgba(34,197,94,.15);
-  border-radius: 10px;
-  padding: 10px 14px;
-  font-size: 13px;
-  color: #cbd5e1;
-  line-height: 1.5;
-}
-
-.paso-num {
-  background: rgba(34,197,94,.2);
-  color: #22c55e;
-  width: 22px;
-  height: 22px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 11px;
-  font-weight: 700;
-  flex-shrink: 0;
-  margin-top: 1px;
-}
-
-/* ── Botones ── */
-.btns {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.btn {
-  display: block;
-  text-align: center;
-  padding: 13px 20px;
-  border-radius: 12px;
-  font-weight: 600;
-  font-size: 14px;
-  text-decoration: none;
-  cursor: pointer;
-  border: none;
-  transition: opacity .15s, transform .1s;
-}
-
-.btn:active { transform: scale(.98); }
-
-.btn-primary {
-  background: linear-gradient(135deg, #f5c518, #f97316);
-  color: #000;
-}
-
-.btn-secondary {
-  background: rgba(255,255,255,.06);
-  color: #94a3b8;
-  border: 1px solid rgba(255,255,255,.1);
-}
-
-.btn-whatsapp {
-  background: #25D366;
-  color: #fff;
-  display: none;
-}
-
-.btn-whatsapp.visible { display: block; }
-
-/* ── Ref display ── */
 .ref-box {
-  background: rgba(245,197,24,.07);
-  border: 1px solid rgba(245,197,24,.2);
-  border-radius: 10px;
-  padding: 10px 14px;
-  margin-bottom: 16px;
-  font-family: 'Courier New', monospace;
-  font-size: 13px;
-  color: #f5c518;
-  word-break: break-all;
-  text-align: center;
-  display: none;
+  display: none; margin-top: 18px; padding: 10px 14px; border-radius: 12px;
+  background: rgba(228,191,107,.08); border: 1px dashed rgba(228,191,107,.45);
+  font-size: .85rem; color: var(--gold-hi); word-break: break-all; font-variant-numeric: tabular-nums; letter-spacing: .04em;
 }
-
 .ref-box.visible { display: block; }
 
-/* ── Responsive ── */
-@media (max-width: 480px) {
-  body { padding: 12px; align-items: flex-start; padding-top: 20px; }
-  .wrap { gap: 12px; }
-  .card { padding: 24px 18px 22px; border-radius: 16px; }
-  .icon { font-size: 52px; margin-bottom: 12px; }
-  h1 { font-size: 1.2rem; }
-  .subtitulo { font-size: 13px; }
-  .billete-numero { font-size: clamp(28px, 8vw, 42px); }
-  .btn { padding: 12px 16px; font-size: 13px; border-radius: 10px; }
-  .paso { padding: 8px 12px; font-size: 12px; }
+.info-box {
+  display: none; text-align: left; margin-bottom: 18px; padding: 14px 16px; border-radius: 14px;
+  background: rgba(255,255,255,.04); border: 1px solid var(--line-soft);
+  font-size: .9rem; color: var(--text-dim); line-height: 1.7;
 }
-@media (max-width: 360px) {
-  .card { padding: 20px 14px; }
-  .billete-card { padding: 14px 16px; }
-  .monedas { display: none; }
-}
+.info-box.visible { display: block; }
+.info-box strong { color: var(--ivory); }
 
+.pasos { display: none; flex-direction: column; gap: 10px; margin-bottom: 20px; text-align: left; }
+.pasos.visible { display: flex; }
+.paso { display: flex; gap: 12px; align-items: flex-start; font-size: .9rem; color: var(--text-dim); line-height: 1.55; }
+.paso-num {
+  width: 24px; height: 24px; border-radius: 50%; flex-shrink: 0; margin-top: 1px; display: grid; place-items: center;
+  background: var(--gold-grad); color: #1A1204; font-size: .75rem; font-weight: 800;
+}
+.paso strong { color: var(--ivory); }
+
+.btns { display: flex; flex-direction: column; gap: 10px; }
+.btn {
+  display: block; text-align: center; padding: 15px 20px; border-radius: 14px; border: none; cursor: pointer;
+  font-family: var(--font-body); font-weight: 800; font-size: 1rem; text-decoration: none;
+  transition: transform .15s, filter .2s, background .2s;
+}
+.btn:active { transform: scale(.985); }
+.btn-primary { background: var(--gold-grad); color: #1A1204; box-shadow: 0 10px 30px -8px rgba(228,191,107,.5); }
+.btn-primary:hover { filter: brightness(1.07); }
+.btn-secondary { background: transparent; color: var(--ivory); border: 1px solid rgba(255,255,255,.22); }
+.btn-secondary:hover { border-color: var(--gold); background: rgba(255,255,255,.05); }
+.btn-whatsapp { background: #25D366; color: #07290F; display: none; }
+.btn-whatsapp.visible { display: block; }
+
+.brand-foot { margin-top: 20px; text-align: center; font-size: .8rem; color: var(--muted); }
+
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; } }
 </style>
 </head>
 <body>
 
 <div class="wrap">
+  <div class="ticket">
 
-  <!-- BILLETE (solo en pago aprobado) -->
-  <div class="billete-card" id="billete">
-    <div class="monedas">
-      <div class="moneda"></div>
-      <div class="moneda" style="width:18px;height:18px;margin-left:2px"></div>
-      <div class="moneda" style="width:14px;height:14px;margin-left:4px"></div>
-    </div>
-    <div class="billete-header">
-      <div>
-        <div class="billete-banco">Banco de la República</div>
-        <div class="billete-serie" id="billete-serie">COL-0000-0000</div>
+    <div class="ticket-top">
+      <div class="badge" id="icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" id="iconSvg"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
       </div>
-      <div style="text-align:right">
-        <div class="billete-banco">Colombia</div>
-        <div class="billete-serie">Lotería · 2024</div>
-      </div>
-    </div>
-    <div class="billete-valor">
-      <span class="billete-simbolo">$ COP</span>
-      <div class="billete-numero" id="billete-monto">— — —</div>
-      <div class="billete-texto">pesos colombianos</div>
-    </div>
-    <div class="billete-footer">
-      <div class="billete-firma">EiderTech Soluciones</div>
-      <div class="billete-sello">🔐</div>
-    </div>
-  </div>
-
-  <!-- TARJETA ESTADO -->
-  <div class="card">
-
-    <span class="icon" id="icon">⏳</span>
-    <h1 id="titulo">Verificando pago...</h1>
-    <p class="subtitulo" id="subtitulo">Estamos validando el estado de tu transacción.</p>
-
-    <!-- Referencia -->
-    <div class="ref-box" id="ref-box" id="ref-display"></div>
-
-    <!-- Info adicional -->
-    <div class="info-box" id="info-box"></div>
-
-    <!-- Pasos siguientes (solo APPROVED) -->
-    <div class="pasos" id="pasos">
-      <div class="paso">
-        <div class="paso-num">1</div>
-        <div>Revisa tu <strong>bandeja de entrada</strong> — te enviamos los códigos al correo registrado.</div>
-      </div>
-      <div class="paso">
-        <div class="paso-num">2</div>
-        <div>Si no aparece en 5 minutos, revisa la carpeta de <strong>spam o promociones</strong>.</div>
-      </div>
-      <div class="paso">
-        <div class="paso-num">3</div>
-        <div>Guarda tus códigos. El sorteo se realiza con la <strong>Lotería de Medellín</strong>.</div>
-      </div>
+      <h1 id="titulo">Verificando pago…</h1>
+      <p class="subtitulo" id="subtitulo">Estamos validando el estado de tu transacción.</p>
+      <div class="ref-box" id="ref-box"></div>
     </div>
 
-    <!-- Botones -->
-    <div class="btns">
-      <a href="https://wa.me/573053228703?text=Hola%2C+tengo+una+duda+con+mi+compra" class="btn btn-whatsapp" id="btn-wa" target="_blank">
-        💬 Contactar por WhatsApp
-      </a>
-      <a href="/" class="btn btn-primary">🎟️ Volver al inicio</a>
-      <a href="/" class="btn btn-secondary" id="btn-reintentar" style="display:none">↩️ Intentar de nuevo</a>
+    <div class="ticket-bottom">
+      <div class="info-box" id="info-box"></div>
+
+      <div class="pasos" id="pasos">
+        <div class="paso"><div class="paso-num">1</div><div>Revisa tu <strong>bandeja de entrada</strong>: te enviamos los códigos al correo registrado.</div></div>
+        <div class="paso"><div class="paso-num">2</div><div>Si no aparece en 5 minutos, mira en <strong>spam o promociones</strong>.</div></div>
+        <div class="paso"><div class="paso-num">3</div><div>Guarda tus códigos. El sorteo se realiza con la <strong>Lotería de Medellín</strong>.</div></div>
+      </div>
+
+      <div class="btns">
+        <a href="https://wa.me/573053228703?text=Hola%2C+tengo+una+duda+con+mi+compra" class="btn btn-whatsapp" id="btn-wa" target="_blank" rel="noopener">Escribirnos por WhatsApp</a>
+        <a href="/" class="btn btn-primary">Volver al inicio</a>
+        <a href="/" class="btn btn-secondary" id="btn-reintentar" style="display:none">Intentar de nuevo</a>
+      </div>
     </div>
 
   </div>
-
+  <p class="brand-foot">EiderTech Soluciones</p>
 </div>
 
 <script>
-
 const params   = new URLSearchParams(window.location.search);
 const status   = params.get('status') || params.get('transactionStatus') || '';
 const refParam = params.get('id') || params.get('reference') || params.get('ref') || '';
 
-// Mostrar referencia si existe
 if (refParam) {
   const refBox = document.getElementById('ref-box');
-  refBox.textContent = 'Ref: ' + refParam;
+  refBox.textContent = 'Referencia: ' + refParam;
   refBox.classList.add('visible');
-  // Generar serie del billete desde la ref
-  document.getElementById('billete-serie').textContent =
-    'COL-' + refParam.slice(-8).toUpperCase();
 }
 
 const icon      = document.getElementById('icon');
+const iconSvg   = document.getElementById('iconSvg');
 const titulo    = document.getElementById('titulo');
 const subtitulo = document.getElementById('subtitulo');
 const infoBox   = document.getElementById('info-box');
 const pasos     = document.getElementById('pasos');
-const billete   = document.getElementById('billete');
 const btnWa     = document.getElementById('btn-wa');
 const btnReintentar = document.getElementById('btn-reintentar');
 
-// Intentar leer monto desde config (para el billete)
-async function cargarMonto() {
-  try {
-    const r = await fetch('/api/config');
-    const d = await r.json();
-    // Calcular el monto desde la cantidad guardada en la URL si existe
-    const cantidad = parseInt(params.get('cantidad') || params.get('qty') || '0');
-    const precio   = d.precioCodigo || 3750;
-    if (cantidad > 0) {
-      const total = (cantidad * precio).toLocaleString('es-CO');
-      document.getElementById('billete-monto').textContent = '$' + total;
-    } else {
-      // Mostrar precio base del paquete más popular
-      const paquetePopular = (d.paquetes || []).find(p => p.popular) || d.paquetes?.[0];
-      if (paquetePopular) {
-        document.getElementById('billete-monto').textContent =
-          '$' + paquetePopular.precio.toLocaleString('es-CO');
-      }
-    }
-  } catch(e) {
-    document.getElementById('billete-monto').textContent = '$ COP';
-  }
+const ICONOS = {
+  ok:   '<path d="M5 12.5l5 5 9-10"/>',
+  err:  '<path d="M6 6l12 12M18 6L6 18"/>',
+  wait: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+  info: '<circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.5"/>'
+};
+function estado(tipo, clase) {
+  iconSvg.innerHTML = ICONOS[tipo];
+  if (clase) { icon.classList.add(clase, 'animate'); }
 }
 
 switch (status.toUpperCase()) {
 
   case 'APPROVED':
   case 'SUCCESS':
-    icon.textContent = '✅';
-    icon.classList.add('animate');
+    estado('ok', 'success');
     titulo.textContent = '¡Pago confirmado!';
-    titulo.classList.add('success');
-    subtitulo.textContent = 'Tu compra fue procesada exitosamente.';
-    infoBox.innerHTML = `📧 Tus códigos han sido enviados a tu correo electrónico.<br>
+    subtitulo.textContent = 'Tu compra fue procesada con éxito.';
+    infoBox.innerHTML = `Tus códigos fueron enviados a tu correo electrónico.<br>
       <strong>¿No ves el correo?</strong> Revisa spam o la carpeta de promociones.`;
     infoBox.classList.add('visible');
     pasos.classList.add('visible');
-    billete.classList.add('visible');
-    cargarMonto();
     break;
 
   case 'DECLINED':
   case 'ERROR':
   case 'FAILED':
   case 'REJECTED':
-    icon.textContent = '❌';
-    icon.classList.add('animate');
+    estado('err', 'error');
     titulo.textContent = 'Pago rechazado';
-    titulo.classList.add('error');
-    subtitulo.textContent = 'Tu pago no pudo ser procesado por la entidad bancaria.';
+    subtitulo.textContent = 'La entidad bancaria no pudo procesar tu pago.';
     infoBox.innerHTML = `Puedes intentarlo de nuevo con <strong>otro método de pago</strong> o una tarjeta diferente.<br>
-      Si el problema persiste, contáctanos por WhatsApp.`;
+      Si el problema continúa, escríbenos por WhatsApp.`;
     infoBox.classList.add('visible');
     btnWa.classList.add('visible');
     btnReintentar.style.display = 'block';
     break;
 
   case 'PENDING':
-    icon.textContent = '⏳';
-    icon.classList.add('animate');
+    estado('wait', 'pending');
     titulo.textContent = 'Pago en revisión';
-    titulo.classList.add('pending');
-    subtitulo.textContent = 'Tu pago está siendo validado por la entidad bancaria.';
+    subtitulo.textContent = 'Tu banco está validando el pago.';
     infoBox.innerHTML = `Este proceso puede tardar entre <strong>5 y 30 minutos</strong>.<br>
-      Recibirás un correo tan pronto el pago sea confirmado. Si necesitas ayuda, escríbenos.`;
+      Recibirás un correo cuando el pago sea confirmado. Si necesitas ayuda, escríbenos.`;
     infoBox.classList.add('visible');
     btnWa.classList.add('visible');
     break;
 
   default:
-    icon.textContent = 'ℹ️';
-    titulo.textContent = 'Estado desconocido';
-    titulo.classList.add('unknown');
-    subtitulo.textContent = 'No pudimos verificar el estado del pago.';
+    estado('info');
+    titulo.textContent = 'No pudimos verificar el pago';
+    subtitulo.textContent = 'No encontramos el estado de la transacción.';
     infoBox.innerHTML = `Si el dinero fue debitado de tu cuenta, espera unos minutos y revisa tu correo.<br>
-      También puedes contactarnos por WhatsApp con tu número de referencia.`;
+      También puedes escribirnos por WhatsApp con tu número de referencia.`;
     infoBox.classList.add('visible');
     btnWa.classList.add('visible');
     break;
 }
-
 </script>
 </body>
 </html>

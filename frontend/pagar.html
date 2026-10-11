@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#050A18">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta http-equiv="X-Content-Type-Options" content="nosniff">
+<meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
+<title>Pagar – EiderTech Soluciones</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎟️</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700;9..144,800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="premium.css">
+</head>
+
+<body>
+
+<!-- Iconos -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <symbol id="i-lock" viewBox="0 0 24 24"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></symbol>
+    <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6l8-3z"/><path d="M9 12l2 2 4-4"/></symbol>
+    <symbol id="i-dice" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="3"/><circle cx="9" cy="9" r=".9" fill="currentColor"/><circle cx="15" cy="9" r=".9" fill="currentColor"/><circle cx="9" cy="15" r=".9" fill="currentColor"/><circle cx="15" cy="15" r=".9" fill="currentColor"/></symbol>
+    <symbol id="i-ticket" viewBox="0 0 24 24"><path d="M4 6h16v4a2 2 0 0 0 0 4v4H4v-4a2 2 0 0 0 0-4z"/><path d="M14 6v12" stroke-dasharray="2 2"/></symbol>
+    <symbol id="i-gem" viewBox="0 0 24 24"><path d="M6 4h12l3 5-9 11L3 9z"/><path d="M3 9h18M9 4l-2 5 5 11 5-11-2-5"/></symbol>
+    <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></symbol>
+    <symbol id="i-mail" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></symbol>
+    <symbol id="i-bank" viewBox="0 0 24 24"><path d="M3 10l9-6 9 6M5 10v8M9 10v8M15 10v8M19 10v8M3 20h18"/></symbol>
+    <symbol id="i-chev" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></symbol>
+    <symbol id="i-pause" viewBox="0 0 24 24"><path d="M9 5v14M15 5v14"/></symbol>
+    <symbol id="i-party" viewBox="0 0 24 24"><path d="M4 20l4-12 8 8z"/><path d="M14 4l1 2M19 9l2 1M17 3v3"/></symbol>
+    <symbol id="i-calendar" viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M9 3v4M15 3v4"/></symbol>
+  </defs>
+</svg>
+
+<header class="topbar">
+  <div class="topbar-in">
+    <a class="brand" href="/" aria-label="EiderTech Soluciones">
+      <img src="/imagenes/Logo.png" alt="EiderTech Soluciones" onerror="this.parentElement.style.display='none'">
+    </a>
+    <nav class="topnav" aria-label="Principal">
+      <a href="/">Inicio</a>
+      <a href="mis-codigos.html">Mis códigos</a>
+      <a href="Admin.html" id="adminTrigger" title="Admin" aria-label="Administración"><svg class="icon"><use href="#i-lock"/></svg></a>
+    </nav>
+  </div>
+</header>
+
+<div id="loadingPago">
+  <div class="casino-inner">
+    <div class="loading-ring"></div>
+    <p class="casino-txt">Procesando tu pago seguro…</p>
+  </div>
+</div>
+
+<main class="shell">
+  <a class="back-link" href="/#comprar"><svg class="icon"><use href="#i-chev"/></svg>Cambiar cantidad</a>
+  <h1 class="page-title">Completa tu compra</h1>
+  <p class="page-lead">Revisa tu pedido, escribe tus datos y paga. Tus códigos llegan a tu correo.</p>
+
+  <div id="avisoStock"></div>
+
+  <div class="checkout">
+    <aside class="order" aria-label="Resumen de tu compra">
+      <div class="order-ticket">
+        <div class="ot-top">
+          <div class="ot-label">Tu compra</div>
+          <div class="ot-qty"><span id="otQty">—</span><small>códigos</small></div>
+          <div class="ot-prize">Participas por <b id="otPrize">—</b></div>
+        </div>
+        <div class="ot-stub">
+          <div class="resumen-row"><span>Tu selección</span><span id="resumenCodigos">—</span></div>
+          <div class="resumen-row"><span>Precio por código</span><span id="resumenPrecioUnitario">—</span></div>
+          <div class="resumen-total"><span>Total a pagar</span><span id="resumenTotal">—</span></div>
+        </div>
+      </div>
+      <div class="trust-row">
+        <span class="trust-item"><svg class="icon"><use href="#i-dice"/></svg>Códigos 100% aleatorios</span>
+        <span class="trust-item"><svg class="icon"><use href="#i-shield"/></svg>Pago protegido con Wompi</span>
+      </div>
+    </aside>
+
+    <section aria-label="Datos y pago">
+<h2 class="section-title">Tus datos</h2>
+        <p class="section-sub">Los usamos para tu factura electrónica y para enviarte los códigos.</p>
+
+        <div class="form-cols">
+          <div class="input-group full-col">
+            <label class="input-label" for="nombre">Nombre completo</label>
+            <input type="text" id="nombre" placeholder="Ej: Juan Pérez" autocomplete="name">
+            <div class="field-error" id="err-nombre">Ingresa tu nombre</div>
+          </div>
+          <div class="input-group">
+            <label class="input-label" for="cedula">Cédula</label>
+            <input type="text" id="cedula" placeholder="Ej: 1234567890" inputmode="numeric" autocomplete="off">
+            <div class="field-error" id="err-cedula">Ingresa tu cédula</div>
+          </div>
+          <div class="input-group">
+            <label class="input-label" for="telefono">Teléfono / WhatsApp</label>
+            <input type="tel" id="telefono" placeholder="Ej: 3001234567" inputmode="tel" autocomplete="tel">
+            <div class="field-error" id="err-telefono">Ingresa tu teléfono</div>
+          </div>
+          <div class="input-group full-col">
+            <label class="input-label" for="correo">Correo electrónico</label>
+            <input type="email" id="correo" placeholder="Ej: juan@correo.com" inputmode="email" autocomplete="email">
+            <div class="field-error" id="err-correo">Ingresa un correo válido</div>
+          </div>
+          <div class="input-group full-col">
+            <label class="input-label" for="direccion">Dirección <span class="opt">(opcional)</span></label>
+            <input type="text" id="direccion" placeholder="Ej: Cra 5 #10-20, Medellín" autocomplete="street-address">
+          </div>
+        </div>
+
+        <div class="info-box">
+          <svg class="icon"><use href="#i-dice"/></svg>
+          <div><strong>Los códigos son 100% aleatorios.</strong> El sistema los genera automáticamente al momento del pago. Ninguna persona los selecciona ni los manipula.</div>
+        </div>
+
+        <div class="habeas-data-box">
+          <label class="habeas-data-label">
+            <input type="checkbox" id="chkHabeasData">
+            <span>Autorizo el tratamiento de mis datos personales conforme a la
+              <span class="habeas-data-link" onclick="event.preventDefault(); toggleHabeasData();">Política de Tratamiento de Datos</span>
+              (Ley 1581 de 2012), únicamente para gestionar esta compra y la entrega de premios.</span>
+          </label>
+          <div class="habeas-data-body" id="habeasDataContent">
+            Los datos que ingresas (nombre, cédula, teléfono, correo, dirección) se usan exclusivamente para
+            procesar tu compra, generar tu factura, entregar tus códigos y contactarte si resultas ganador.
+            No se comparten con terceros distintos a nuestro procesador de pagos (Wompi) para efectos de la
+            transacción. Puedes solicitar la eliminación de tus datos escribiendo a
+            infoeidertechsoluciones@gmail.com una vez finalizada la dinámica.
+          </div>
+        </div>
+
+        <button class="btn btn-primary" id="btnPagar">
+          <span class="btn-label" style="display:inline-flex;align-items:center;gap:10px"><svg class="icon"><use href="#i-lock"/></svg><span id="btnPagarTxt">Pagar con Wompi</span></span>
+          <span class="btn-busy">Procesando…</span>
+        </button>
+        <p class="pay-note"><svg class="icon"><use href="#i-shield"/></svg><span>Pago cifrado con <b>Wompi</b> · Tarjeta, PSE, Nequi y más</span></p>
+
+        <button class="btn btn-transfer" id="btnTransferencia" onclick="abrirModalTransferencia()">
+          <svg class="icon"><use href="#i-bank"/></svg>Pagar por transferencia
+        </button>
+        <p class="transfer-note">Transfieres, subes tu comprobante y recibes tus códigos cuando confirmemos el pago.</p>
+
+        <p class="terms-note">
+          Al comprar aceptas los
+          <a href="/#terminos" target="_blank" rel="noopener">términos y condiciones</a>
+          y la política de privacidad.
+        </p>
+
+    </section>
+  </div>
+</main>
+
+<footer class="footer">
+  <div class="footer-in">
+    <span class="footer-brand"><img src="/imagenes/Logo.png" alt="EiderTech Soluciones" loading="lazy" onerror="this.parentElement.style.display='none'"></span>
+    <div class="footer-text">
+      <p>© 2026 EiderTech Soluciones. Todos los derechos reservados.</p>
+      <p><a href="mailto:infoeidertechsoluciones@gmail.com">infoeidertechsoluciones@gmail.com</a></p>
+      <p>Pagos procesados con Wompi · Cifrado SSL · Facturación electrónica disponible</p>
+    </div>
+  </div>
+</footer>
+
+<a href="https://wa.me/573053228703?text=Hola quiero comprar códigos" class="wa-float" target="_blank" rel="noopener" aria-label="Contactar por WhatsApp">
+  <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+</a>
+
+<script>
+var cantidadSeleccionada = 0;
+let procesandoPago = false;
+var precioCodigo = 0;
+var PRECIOS = {};
+
+document.addEventListener("DOMContentLoaded", () => {
+
+// ===============================
+// TRACE IGNITE (efecto de traza al hacer clic en botones .btn)
+// ===============================
+document.querySelectorAll(".btn").forEach((boton) => {
+  boton.addEventListener("click", () => {
+    boton.classList.remove("trace-ignite");
+    // forzar reflow para poder reiniciar la animación en clics rápidos
+    void boton.offsetWidth;
+    boton.classList.add("trace-ignite");
+  });
+  boton.addEventListener("animationend", (e) => {
+    if (e.target === boton) boton.classList.remove("trace-ignite");
+  });
+});
+
+const API_URL = window.location.origin;
+const btnPagar = document.getElementById("btnPagar");
+const casino = document.getElementById("loadingPago");
+
+// ── Cantidad que viene desde la página de inicio ──
+const cant = parseInt(new URLSearchParams(window.location.search).get('cantidad'), 10);
+if (!Number.isFinite(cant) || cant < 1 || cant > 500) { window.location.replace('/#comprar'); return; }
+cantidadSeleccionada = cant;
+
+function bloquear(msg) {
+  const a = document.getElementById('avisoStock');
+  a.style.display = 'block'; a.textContent = msg;
+  [btnPagar, document.getElementById('btnTransferencia')].forEach(b => {
+    if (b) { b.disabled = true; b.style.opacity = '.5'; b.style.pointerEvents = 'none'; }
+  });
+}
+
+(async function iniciar() {
+  try {
+    const r = await fetch(`${API_URL}/api/config`);
+    if (!r.ok) throw new Error();
+    const cfg = await r.json();
+    precioCodigo = Number(cfg.precioCodigo) || 0;
+    if (!precioCodigo) throw new Error();
+    const total = cant * precioCodigo;
+    const fmt = (n) => '$' + Number(n).toLocaleString('es-CO');
+    document.getElementById('otQty').textContent = cant;
+    document.getElementById('resumenCodigos').textContent = `${cant} códigos`;
+    document.getElementById('resumenPrecioUnitario').textContent = fmt(precioCodigo);
+    document.getElementById('resumenTotal').textContent = `${fmt(total)} COP`;
+    document.getElementById('otPrize').textContent = cfg.premioTotal ? `${fmt(cfg.premioTotal)} COP` : 'el premio';
+    document.getElementById('btnPagarTxt').textContent = `Pagar ${fmt(total)} con Wompi`;
+    if (cfg.ventas_activas === false) bloquear('Las ventas están pausadas temporalmente. Vuelve pronto.');
+  } catch (e) {
+    bloquear('No fue posible cargar la dinámica actual. Intenta recargar la página.');
+  }
+  try {
+    const p = await (await fetch(`${API_URL}/api/progreso`)).json();
+    if (p.total && Number(p.disponibles) <= 0) bloquear('Todos los códigos fueron vendidos.');
+  } catch (e) {}
+})();
+
+// ===============================
+// TOGGLE HABEAS DATA
+// ===============================
+window.toggleHabeasData = function () {
+  document.getElementById("habeasDataContent").classList.toggle("open");
+};
+
+
+// ===============================
+// VALIDACIONES
+// ===============================
+function esCorreoValido(v)   { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v); }
+function esTelefonoValido(v) { return /^[0-9]{10,13}$/.test(v); }
+function esCedulaValida(v)   { return /^[0-9]{5,15}$/.test(v); }
+
+function mostrarError(input, id) { input.classList.add("error"); document.getElementById(id).style.display = "block"; }
+function limpiarError(input, id) { input.classList.remove("error"); document.getElementById(id).style.display = "none"; }
+
+["nombre", "cedula", "telefono", "correo"].forEach(id => {
+  const input = document.getElementById(id);
+  if (id === "cedula" || id === "telefono") {
+    input.addEventListener("input", () => { input.value = input.value.replace(/\D/g, ""); });
+  }
+  input.addEventListener("input", () => {
+    const v = input.value.trim();
+    if (id === "correo"   && esCorreoValido(v))   limpiarError(input, "err-correo");
+    if (id === "telefono" && esTelefonoValido(v)) limpiarError(input, "err-telefono");
+    if (id === "cedula"   && esCedulaValida(v))   limpiarError(input, "err-cedula");
+    if (id === "nombre"   && v.length >= 2)        limpiarError(input, "err-nombre");
+  });
+});
+
+
+
+// ===============================
+// PAGAR
+// ===============================
+btnPagar.addEventListener("click", async () => {
+  if (procesandoPago) return;
+  if (!cantidadSeleccionada) { alert("Selecciona un paquete"); return; }
+
+  const nombre    = document.getElementById("nombre");
+  const cedula    = document.getElementById("cedula");
+  const telefono  = document.getElementById("telefono");
+  const correo    = document.getElementById("correo");
+  const direccion = document.getElementById("direccion");
+
+  let valido = true;
+  if (nombre.value.trim().length < 2)          { mostrarError(nombre,   "err-nombre");   valido = false; }
+  if (!esCedulaValida(cedula.value.trim()))     { mostrarError(cedula,   "err-cedula");   valido = false; }
+  if (!esTelefonoValido(telefono.value.trim())) { mostrarError(telefono, "err-telefono"); valido = false; }
+  if (!esCorreoValido(correo.value.trim()))     { mostrarError(correo,   "err-correo");   valido = false; }
+  if (!document.getElementById("chkHabeasData").checked) {
+    alert("Debes autorizar el tratamiento de tus datos personales para continuar.");
+    valido = false;
+  }
+  if (!valido) return;
+
+  procesandoPago = true;
+  btnPagar.disabled = true;
+  btnPagar.classList.add("loading");
+  casino.style.display = "flex";
+
+  try {
+    const response = await fetch(`${API_URL}/api/crear-transaccion`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        cliente: {
+          nombre: nombre.value.trim(), cedula: cedula.value.trim(),
+          telefono: telefono.value.trim(), correo: correo.value.trim(),
+          direccion: direccion.value.trim()
+        },
+        cantidad: cantidadSeleccionada
+      })
+    });
+
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.error || "No se pudo iniciar el pago");
+
+    if (data.ajustado) {
+      const aviso = document.getElementById("avisoStock");
+      aviso.style.display = "block";
+      aviso.innerHTML = `Solo quedan <strong>${data.cantidadFinal}</strong> códigos disponibles.<br><br>Pedido ajustado automáticamente.<br>Total: <strong>$${data.montoTotal.toLocaleString("es-CO")} COP</strong>`;
+      await new Promise(r => setTimeout(r, 2500));
+    }
+
+    const params = new URLSearchParams({
+      "public-key":          data.publicKey,
+      "currency":            "COP",
+      "amount-in-cents":     data.tx.amount_in_cents,
+      "reference":           data.tx.reference,
+      "signature:integrity": data.tx.signature.integrity,
+      "redirect-url":        `${API_URL}/gracias.html`
+    });
+    window.location.href = `https://checkout.wompi.co/p/?${params.toString()}`;
+
+  } catch (error) {
+    console.error(error);
+    alert(error.message || "Error procesando el pago");
+    casino.style.display = "none";
+    btnPagar.disabled = false;
+    btnPagar.classList.remove("loading");
+    procesandoPago = false;
+    
+  }
+});
+
+
+
+});
+</script>
+
+<!-- ══════════ MODAL TRANSFERENCIA BANCARIA ══════════ -->
+<div id="modalTransferencia" role="dialog" aria-modal="true" aria-labelledby="trfTitulo">
+  <div class="modal-inner">
+    <button class="modal-close" onclick="cerrarModalTransferencia()" aria-label="Cerrar">✕</button>
+
+    <div class="modal-header" id="trfTitulo">Datos para tu transferencia</div>
+
+    <div class="modal-body">
+      <!-- Tarjetas de banco (se renderizan desde JS) -->
+      <div id="trfListaBancos" style="display:flex;flex-direction:column;gap:10px;margin-bottom:16px"></div>
+
+      <div class="trf-monto">
+        <div class="t-lbl">Monto a transferir</div>
+        <div class="t-val" id="trfMontoDisplay">—</div>
+        <div class="t-sub" id="trfCodsDisplay"></div>
+      </div>
+
+      <div class="trf-field">
+        <label for="trfNombreInput">Nombre completo *</label>
+        <input id="trfNombreInput" class="trf-input" type="text" placeholder="Tu nombre completo" autocomplete="name">
+      </div>
+      <div class="trf-field">
+        <label for="trfCorreoInput">Correo electrónico *</label>
+        <input id="trfCorreoInput" class="trf-input" type="email" placeholder="tu@correo.com" inputmode="email" autocomplete="email">
+      </div>
+      <div class="trf-field">
+        <label for="trfCedulaInput">Cédula</label>
+        <input id="trfCedulaInput" class="trf-input" type="text" placeholder="1234567890" inputmode="numeric">
+      </div>
+      <div class="trf-field">
+        <label for="trfTelefonoInput">Teléfono / WhatsApp</label>
+        <input id="trfTelefonoInput" class="trf-input" type="tel" placeholder="3001234567" inputmode="tel" autocomplete="tel">
+      </div>
+      <div class="trf-field">
+        <label for="trfDireccionInput">Dirección (opcional)</label>
+        <input id="trfDireccionInput" class="trf-input" type="text" placeholder="Dirección" autocomplete="street-address">
+      </div>
+      <div class="trf-field">
+        <label for="trfCantidadSelect">Cantidad de códigos * (mín. 4, máx. 500)</label>
+        <input id="trfCantidadSelect" class="trf-input" type="number" min="4" max="500" step="1" value="4" inputmode="numeric"
+          oninput="trfActualizarMonto()" onchange="trfValidarRangoCantidad()" onblur="trfValidarRangoCantidad();">
+      </div>
+
+      <div class="trf-soporte">
+        <label for="trfSoporteInput">Soporte de pago *</label>
+        <input id="trfSoporteInput" type="file" accept="image/jpeg,image/png,application/pdf,.jpg,.jpeg,.png,.pdf" onchange="trfValidarSoporte()">
+        <div id="trfSoporteInfo" style="color:#94A3B8;font-size:12px;line-height:1.5;margin-top:6px">Adjunta una foto clara o PDF del comprobante. Máximo 5 MB.</div>
+      </div>
+
+      <div id="trfFormMsg" style="margin-top:10px;min-height:14px"></div>
+
+      <div class="habeas-data-box" style="margin:10px 0">
+        <label class="habeas-data-label">
+          <input type="checkbox" id="trfChkHabeasData">
+          <span>Autorizo el tratamiento de mis datos personales conforme a la
+            <span class="habeas-data-link" onclick="event.preventDefault(); toggleHabeasData();">Política de Tratamiento de Datos</span>
+            (Ley 1581 de 2012), únicamente para gestionar esta compra y la entrega de premios.</span>
+        </label>
+      </div>
+
+      <button class="trf-send" onclick="enviarSolicitudTransferencia()">Registrar mi solicitud de compra</button>
+
+      <p class="trf-foot">
+        Tienes <strong>24 horas</strong> para realizar la transferencia.<br>
+        Una vez confirmada recibirás tus códigos al correo.
+      </p>
+    </div>
+  </div>
+</div>
+
+<script>
+
+// ══════════════════════════════════════════════════════
+// DATOS BANCARIOS
+// ══════════════════════════════════════════════════════
+const TRF_BANCOS = [
+  { banco: 'Nequi',     tipo: 'Billetera digital', numero: '3218921686', titular: 'Eider Cobo' },
+  { banco: 'Llave',     tipo: 'Billetera digital', numero: '3128523589', titular: 'Eider Cobo' }
+];
+// El precio se toma de la config real cargada por cargarConfig() (variable
+// global "precioCodigo"), NO de un valor fijo — así el modal de transferencia
+// siempre refleja el precio configurado en el Admin.
+
+// ── Renderiza las tarjetas de banco en el modal ────────────────────────────
+function trfRenderLista() {
+  const lista = document.getElementById('trfListaBancos');
+  if (!lista) return;
+  lista.innerHTML = '';
+  const iconos = {};
+  TRF_BANCOS.forEach(cuenta => {
+    const icono = '';
+    const card = document.createElement('div');
+    // Colores forzados (no usar var(--card)/var(--muted) del tema claro del sitio):
+    // el modal de transferencia es oscuro por diseño, sin importar el tema general.
+    card.style.cssText = 'background:rgba(255,255,255,.04);border:1px solid rgba(228,191,107,.25);border-radius:14px;padding:14px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px';
+    card.innerHTML = `
+      <div style="flex:1;min-width:0">
+        <div style="font-size:11px;font-weight:700;color:#94A3B8;text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px">${icono} ${cuenta.tipo} ${cuenta.banco}</div>
+        <div style="font-family:var(--font-display, sans-serif);font-size:20px;font-weight:800;color:#FFFFFF;letter-spacing:.03em;margin-bottom:3px">${cuenta.numero}</div>
+        <div style="font-size:12px;color:#94A3B8">Titular: ${cuenta.titular}</div>
+      </div>
+      <button onclick="trfCopiarNumero('${cuenta.numero}', this)" style="
+        background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);color:#FFFFFF;
+        border-radius:10px;padding:9px 14px;font-size:12px;font-weight:700;
+        cursor:pointer;white-space:nowrap;flex-shrink:0;transition:all .2s;font-family:var(--font-display, sans-serif);letter-spacing:.02em;
+      ">Copiar</button>`;
+    lista.appendChild(card);
+  });
+}
+
+window.trfCopiarNumero = async function(numero, btn) {
+  try { await navigator.clipboard.writeText(numero); }
+  catch(e) {
+    const ta = document.createElement('textarea');
+    ta.value = numero; ta.style.cssText = 'position:fixed;opacity:0';
+    document.body.appendChild(ta); ta.select(); document.execCommand('copy');
+    document.body.removeChild(ta);
+  }
+  btn.textContent = 'Copiado';
+  btn.style.borderColor = 'rgba(52,211,153,.4)'; btn.style.color = '#34D399';
+  setTimeout(() => { btn.textContent = 'Copiar'; btn.style.borderColor = 'rgba(255,255,255,.15)'; btn.style.color = '#FFFFFF'; }, 2000);
+};
+
+window.trfActualizarMonto = function() {
+  const cantRaw = parseInt(document.getElementById('trfCantidadSelect')?.value, 10);
+  const cant    = Number.isFinite(cantRaw) && cantRaw > 0 ? cantRaw : 4;
+  const monto   = cant * precioCodigo;
+  const dm = document.getElementById('trfMontoDisplay');
+  const dc = document.getElementById('trfCodsDisplay');
+  if (dm) dm.textContent = '$' + monto.toLocaleString('es-CO') + ' COP';
+  if (dc) dc.textContent = cant + ' código' + (cant !== 1 ? 's' : '');
+};
+
+window.trfValidarRangoCantidad = function() {
+  const input = document.getElementById('trfCantidadSelect');
+  if (!input) return;
+  let v = parseInt(input.value, 10);
+  if (!Number.isFinite(v)) v = 4;
+  if (v < 4)   v = 4;
+  if (v > 500) v = 500;
+  input.value = v;
+  trfActualizarMonto();
+};
+trfActualizarMonto();
+
+window.abrirModalTransferencia = function() {
+  const modal = document.getElementById('modalTransferencia');
+  if (!modal) {
+    console.error('❌ No existe #modalTransferencia');
+    alert('No se pudo abrir el formulario de transferencia.');
+    return;
+  }
+
+  trfRenderLista();
+
+  const campos = {
+    nombre: 'trfNombreInput',
+    correo: 'trfCorreoInput',
+    cedula: 'trfCedulaInput',
+    telefono: 'trfTelefonoInput',
+    direccion: 'trfDireccionInput'
+  };
+
+  Object.entries(campos).forEach(([origen, destino]) => {
+    const origenEl = document.getElementById(origen);
+    const destinoEl = document.getElementById(destino);
+    if (origenEl && destinoEl) destinoEl.value = origenEl.value.trim();
+  });
+
+  const cardSeleccionada = document.querySelector('.card.selected');
+  const cant = cardSeleccionada?.dataset.cantidad ||
+               (Number(cantidadSeleccionada) > 0 ? Number(cantidadSeleccionada) : null);
+
+  const cantidadInput = document.getElementById('trfCantidadSelect');
+
+  if (cant && cantidadInput) {
+    cantidadInput.value = cant;
+  }
+
+  trfValidarRangoCantidad();
+
+  const msg = document.getElementById('trfFormMsg');
+  if (msg) msg.innerHTML = '';
+
+  modal.style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+
+  requestAnimationFrame(() => {
+    modal.scrollTop = 0;
+  });
+};
+
+window.cerrarModalTransferencia = function() {
+  const modal = document.getElementById('modalTransferencia');
+  if (modal) modal.style.display = 'none';
+  document.body.style.overflow = '';
+};
+
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') cerrarModalTransferencia();
+});
+
+document.addEventListener('click', function(e) {
+  const modal = document.getElementById('modalTransferencia');
+  if (modal && e.target === modal) cerrarModalTransferencia();
+});
+
+window.trfValidarSoporte = function() {
+  const input = document.getElementById('trfSoporteInput');
+  const info = document.getElementById('trfSoporteInfo');
+  const file = input?.files?.[0];
+  if (!info) return false;
+  if (!file) { info.textContent = 'Adjunta una foto clara o PDF del comprobante. Máximo 5 MB.'; info.style.color = '#94A3B8'; return false; }
+  const tipos = ['image/jpeg','image/png','application/pdf'];
+  if (!tipos.includes(file.type)) { info.textContent = '⚠️ Solo se aceptan JPG, PNG o PDF.'; info.style.color = '#f87171'; return false; }
+  if (file.size > 5 * 1024 * 1024) { info.textContent = '⚠️ El archivo supera el máximo de 5 MB.'; info.style.color = '#f87171'; return false; }
+  info.textContent = `✅ ${file.name} · ${(file.size / 1024 / 1024).toFixed(2)} MB`;
+  info.style.color = '#34D399';
+  return true;
+};
+
+function trfLeerArchivoBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(String(reader.result).split(',').pop());
+    reader.onerror = () => reject(new Error('No se pudo leer el comprobante.'));
+    reader.readAsDataURL(file);
+  });
+}
+
+window.enviarSolicitudTransferencia = async function() {
+  const nombre   = document.getElementById('trfNombreInput')?.value.trim() || '';
+  const correo   = document.getElementById('trfCorreoInput')?.value.trim() || '';
+  const cedula   = document.getElementById('trfCedulaInput')?.value.trim() || '';
+  const telefono = document.getElementById('trfTelefonoInput')?.value.trim() || '';
+  const direccion = document.getElementById('trfDireccionInput')?.value.trim() || '';
+  const cantidad = parseInt(document.getElementById('trfCantidadSelect')?.value, 10);
+  const soporteInput = document.getElementById('trfSoporteInput');
+  const soporteFile = soporteInput?.files?.[0] || null;
+  const msgEl    = document.getElementById('trfFormMsg');
+
+  if (!msgEl) return;
+
+  if (!nombre || !correo) {
+    msgEl.innerHTML = '<div style="background:rgba(248,113,113,.1);color:#f87171;padding:9px 12px;border-radius:8px;font-size:12px;border:1px solid rgba(248,113,113,.2)">⚠️ Nombre y correo son obligatorios</div>';
+    return;
+  }
+  if (!document.getElementById('trfChkHabeasData')?.checked) {
+    msgEl.innerHTML = '<div style="background:rgba(248,113,113,.1);color:#f87171;padding:9px 12px;border-radius:8px;font-size:12px;border:1px solid rgba(248,113,113,.2)">⚠️ Debes autorizar el tratamiento de datos personales para continuar</div>';
+    return;
+  }
+
+  if (!Number.isFinite(cantidad) || cantidad < 4 || cantidad > 500) {
+    msgEl.innerHTML = '<div style="background:rgba(248,113,113,.1);color:#f87171;padding:9px 12px;border-radius:8px;font-size:12px;border:1px solid rgba(248,113,113,.2)">⚠️ La cantidad debe estar entre 4 y 500 códigos</div>';
+    return;
+  }
+
+  if (!soporteFile || !trfValidarSoporte()) {
+    msgEl.innerHTML = '<div style="background:rgba(248,113,113,.1);color:#f87171;padding:9px 12px;border-radius:8px;font-size:12px;border:1px solid rgba(248,113,113,.2)">⚠️ Adjunta el comprobante de pago para que podamos validar la transferencia.</div>';
+    return;
+  }
+
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(correo)) {
+    msgEl.innerHTML = '<div style="background:rgba(248,113,113,.1);color:#f87171;padding:9px 12px;border-radius:8px;font-size:12px;border:1px solid rgba(248,113,113,.2)">⚠️ Correo electrónico inválido</div>';
+    return;
+  }
+
+  const boton = document.querySelector('#modalTransferencia button[onclick*="enviarSolicitudTransferencia"]');
+  if (boton) {
+    boton.disabled = true;
+    boton.style.opacity = '.65';
+  }
+
+  msgEl.innerHTML = '<div style="color:#94A3B8;font-size:12px;padding:6px 0">⏳ Registrando solicitud...</div>';
+
+  try {
+    const soporteBase64 = await trfLeerArchivoBase64(soporteFile);
+    const r = await fetch('/api/transferencia-registrar', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        nombre, correo, cedula, telefono, direccion, cantidad: Number(cantidad),
+        soporte: { filename: soporteFile.name, contentType: soporteFile.type, base64: soporteBase64 }
+      })
+    });
+
+    const raw = await r.text();
+    let d;
+
+    try {
+      d = JSON.parse(raw);
+    } catch {
+      throw new Error(`El servidor respondió con HTTP ${r.status} y no devolvió JSON.`);
+    }
+
+    if (!r.ok || !d.ok) {
+      throw new Error(d.error || d.mensaje || `No se pudo registrar la solicitud (HTTP ${r.status}).`);
+    }
+
+    msgEl.innerHTML = `
+      <div style="background:rgba(52,211,153,.08);border:1px solid rgba(52,211,153,.2);border-radius:10px;padding:14px;font-size:12px">
+        <div style="color:#34D399;font-family:var(--font-display);font-weight:800;font-size:14px;margin-bottom:6px">✅ ¡Solicitud registrada!</div>
+        <div style="color:#ECF0FF;line-height:1.7">${d.mensaje || 'Solicitud registrada correctamente.'}</div>
+        ${d.referencia ? `<div style="margin-top:8px;font-size:11px;color:#94A3B8">
+          Referencia: <span style="font-family:monospace;color:#E8A800">${d.referencia}</span>
+        </div>` : ''}
+        <div style="margin-top:10px;color:#94A3B8;font-size:11px;line-height:1.6">
+          Realiza la transferencia usando los datos mostrados arriba. Conserva la referencia para confirmar tu pago.
+        </div>
+      </div>`;
+
+    ['trfNombreInput','trfCorreoInput','trfCedulaInput','trfTelefonoInput','trfDireccionInput']
+      .forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.value = '';
+      });
+    if (soporteInput) soporteInput.value = '';
+    const soporteInfo = document.getElementById('trfSoporteInfo');
+    if (soporteInfo) { soporteInfo.textContent = 'Adjunta una foto clara o PDF del comprobante. Máximo 5 MB.'; soporteInfo.style.color = '#94A3B8'; }
+
+  } catch (e) {
+    console.error('❌ Error registrando transferencia:', e);
+    msgEl.innerHTML = `
+      <div style="background:rgba(248,113,113,.1);color:#f87171;padding:10px 12px;border-radius:8px;font-size:12px;border:1px solid rgba(248,113,113,.2)">
+        ⚠️ ${e.message || 'Error de conexión. Intenta de nuevo.'}
+      </div>`;
+  } finally {
+    if (boton) {
+      boton.disabled = false;
+      boton.style.opacity = '1';
+    }
+  }
+};
+document.addEventListener('DOMContentLoaded', function() {
+  const btnTransferencia = document.getElementById('btnTransferencia');
+
+  if (!btnTransferencia) {
+    console.error('❌ No se encontró #btnTransferencia');
+    return;
+  }
+
+  btnTransferencia.addEventListener('click', function(e) {
+    e.preventDefault();
+    e.stopPropagation();
+
+    try {
+      abrirModalTransferencia();
+    } catch (error) {
+      console.error('❌ Error al abrir transferencia:', error);
+      const modal = document.getElementById('modalTransferencia');
+      if (modal) {
+        modal.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+      } else {
+        alert('No se encontró el formulario de transferencia.');
+      }
+    }
+  });
+});
+
+</script>
+</body>
+</html>

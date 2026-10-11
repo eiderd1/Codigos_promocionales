@@ -3,429 +3,152 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Ganador — EiderTech Soluciones</title>
-<link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Playfair+Display:wght@700;900&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<meta name="theme-color" content="#050A18">
+<title>Ganador – EiderTech Soluciones</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,700;9..144,800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
+:root {
+  --ink: #050A18; --navy: #0E1A3D; --navy-2: #14264F;
+  --gold: #E4BF6B; --gold-hi: #F6DE9E; --ivory: #F7F0DE;
+  --text: #EEF1FA; --text-dim: #B4BED8; --muted: #8E9AB9;
+  --line: rgba(228,191,107,.2); --line-soft: rgba(255,255,255,.08);
+  --gold-grad: linear-gradient(135deg, #F6DE9E 0%, #E4BF6B 48%, #B98A2E 100%);
+  --font-display: 'Fraunces', Georgia, serif;
+  --font-body: 'Manrope', system-ui, -apple-system, 'Segoe UI', sans-serif;
+}
+
 body {
-  font-family: 'DM Sans', sans-serif;
-  background: #060d1a;
-  color: #fff;
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 24px 16px;
-  overflow-x: hidden;
+  font-family: var(--font-body); background: var(--ink); color: var(--text);
+  min-height: 100dvh; display: flex; align-items: center; justify-content: center;
+  padding: 28px 16px; overflow-x: hidden; -webkit-font-smoothing: antialiased; line-height: 1.55;
 }
-
-/* Fondo con gradiente dorado sutil */
 body::before {
-  content: '';
-  position: fixed;
-  inset: 0;
+  content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 0;
   background:
-    radial-gradient(ellipse 70% 50% at 50% -5%,  rgba(212,168,32,.13) 0%, transparent 65%),
-    radial-gradient(ellipse 40% 40% at 15% 80%,  rgba(212,168,32,.06) 0%, transparent 55%),
-    radial-gradient(ellipse 40% 40% at 85% 80%,  rgba(212,168,32,.06) 0%, transparent 55%);
-  pointer-events: none;
-  z-index: 0;
+    radial-gradient(60% 50% at 50% -5%, rgba(228,191,107,.2) 0%, transparent 65%),
+    radial-gradient(55% 50% at 100% 60%, rgba(40,72,150,.3) 0%, transparent 65%);
+}
+:focus-visible { outline: 2px solid var(--gold-hi); outline-offset: 3px; }
+#confetti-canvas { position: fixed; inset: 0; pointer-events: none; z-index: 50; }
+.wrap { position: relative; z-index: 1; width: 100%; max-width: 500px; }
+
+.gold-text {
+  background: var(--gold-grad); -webkit-background-clip: text; background-clip: text;
+  -webkit-text-fill-color: transparent; color: transparent;
 }
 
-#confetti-canvas {
-  position: fixed; inset: 0;
-  pointer-events: none; z-index: 50;
+/* ── Espera ── */
+#page-espera { text-align: center; padding: 20px 0; }
+.espera-icon {
+  width: 84px; height: 84px; margin: 0 auto 26px; border-radius: 26px; display: grid; place-items: center;
+  background: rgba(228,191,107,.1); border: 1px solid var(--line); color: var(--gold);
+  animation: glow-pulse 2.6s ease-in-out infinite;
 }
+.espera-icon svg { width: 38px; height: 38px; stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+@keyframes glow-pulse { 0%,100% { box-shadow: 0 0 20px rgba(228,191,107,.1); } 50% { box-shadow: 0 0 44px rgba(228,191,107,.35); } }
+.espera-titulo { font-family: var(--font-display); font-weight: 800; font-size: clamp(2rem, 8vw, 2.8rem); line-height: 1.1; letter-spacing: -.02em; margin-bottom: 14px; color: var(--ivory); }
+.espera-sub { font-size: 1rem; color: var(--text-dim); max-width: 380px; margin: 0 auto 30px; }
+.espera-sub strong { color: var(--ivory); }
 
-.wrap {
-  position: relative; z-index: 1;
-  width: 100%; max-width: 520px;
-  display: flex; flex-direction: column; gap: 0;
+.btn-comprar, .btn-wa {
+  display: inline-flex; align-items: center; justify-content: center; gap: 10px; text-decoration: none;
+  font-family: var(--font-body); font-weight: 800; font-size: 1.05rem; padding: 16px 32px; border-radius: 16px;
+  transition: transform .15s, filter .2s;
 }
+.btn-comprar { background: var(--gold-grad); color: #1A1204; box-shadow: 0 12px 34px -8px rgba(228,191,107,.55); }
+.btn-comprar:hover, .btn-wa:hover { transform: translateY(-2px); filter: brightness(1.06); }
 
-/* ════════════════════════════════
-   PÁGINA DE ESPERA
-════════════════════════════════ */
-#page-espera {
-  text-align: center;
-  padding: 20px 0;
-}
-
-.reloj-wrap {
-  position: relative;
-  width: 120px; height: 120px;
-  margin: 0 auto 28px;
-}
-.reloj-circulo {
-  width: 120px; height: 120px;
-  border-radius: 50%;
-  border: 2px solid rgba(212,168,32,.25);
-  background: rgba(212,168,32,.06);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 52px;
-  animation: glow-pulse 2.5s ease-in-out infinite;
-}
-@keyframes glow-pulse {
-  0%,100% { box-shadow: 0 0 20px rgba(212,168,32,.1); }
-  50%      { box-shadow: 0 0 40px rgba(212,168,32,.3); }
-}
-.reloj-ring {
-  position: absolute; inset: -6px;
-  border-radius: 50%;
-  border: 2px dashed rgba(212,168,32,.2);
-  animation: spin-slow 20s linear infinite;
-}
-@keyframes spin-slow { to { transform: rotate(360deg); } }
-
-.espera-titulo {
-  font-family: 'Great Vibes', cursive;
-  font-size: clamp(36px, 9vw, 54px);
-  color: #d4a820;
-  line-height: 1.1;
-  margin-bottom: 12px;
-  text-shadow: 0 0 30px rgba(212,168,32,.3);
-}
-.espera-sub {
-  font-size: 14px;
-  color: #6b7a99;
-  line-height: 1.8;
-  margin-bottom: 32px;
-  max-width: 340px;
-  margin-left: auto; margin-right: auto;
-}
-.espera-sub strong { color: #9aa5c0; }
-
-/* Línea decorativa */
-.linea-oro {
-  display: flex; align-items: center; gap: 12px;
-  margin: 0 auto 32px;
-  max-width: 300px;
-}
-.linea-oro::before, .linea-oro::after {
-  content: ''; flex: 1;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(212,168,32,.4), transparent);
-}
-.linea-oro span { color: #d4a820; font-size: 16px; }
-
-.btn-comprar {
-  display: inline-block;
-  background: linear-gradient(135deg, #d4a820, #b8920a);
-  color: #0a0f1e;
-  font-weight: 700;
-  font-size: 15px;
-  padding: 14px 36px;
-  border-radius: 50px;
-  text-decoration: none;
-  letter-spacing: .02em;
-  box-shadow: 0 4px 24px rgba(212,168,32,.3);
-  transition: transform .15s, box-shadow .15s;
-}
-.btn-comprar:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 32px rgba(212,168,32,.4);
-}
-
-/* ════════════════════════════════
-   PÁGINA GANADOR
-════════════════════════════════ */
+/* ── Ganador ── */
 #page-ganador { display: none; text-align: center; }
+.titulo-ganador { font-family: var(--font-display); font-weight: 800; font-size: clamp(2.4rem, 10vw, 3.6rem); line-height: 1.05; letter-spacing: -.025em; margin-bottom: 6px; }
+.subtitulo-ganador { font-size: 1.05rem; color: var(--text-dim); margin-bottom: 26px; }
 
-/* Estrellas decorativas */
-.estrellas {
-  font-size: 22px;
-  letter-spacing: 6px;
-  margin-bottom: 16px;
-  opacity: .8;
-  animation: parpadeo 2s ease-in-out infinite;
+.ticket {
+  position: relative; margin-bottom: 22px;
+  background: linear-gradient(170deg, var(--navy-2), var(--navy));
+  border: 1px solid var(--gold); border-radius: 26px;
+  box-shadow: 0 0 80px rgba(228,191,107,.22), 0 30px 70px -20px rgba(0,0,0,.7);
+  animation: settle .9s cubic-bezier(.2,.8,.2,1) both;
 }
-@keyframes parpadeo {
-  0%,100% { opacity: .6; } 50% { opacity: 1; }
+@keyframes settle { from { transform: translateY(20px) scale(.96); opacity: 0; } to { transform: none; opacity: 1; } }
+.ticket-top { padding: 30px 24px 26px; }
+.ticket-bottom { position: relative; padding: 22px 24px 26px; border-top: 2px dashed rgba(228,191,107,.35); }
+.ticket-bottom::before, .ticket-bottom::after {
+  content: ''; position: absolute; top: -10px; width: 18px; height: 18px; border-radius: 50%;
+  background: var(--ink); border: 1px solid var(--gold);
 }
+.ticket-bottom::before { left: -10px; clip-path: inset(0 0 0 50%); }
+.ticket-bottom::after  { right: -10px; clip-path: inset(0 50% 0 0); }
 
-/* Título principal */
-.titulo-ganador {
-  font-family: 'Great Vibes', cursive;
-  font-size: clamp(48px, 13vw, 78px);
-  color: #d4a820;
-  line-height: 1;
-  margin-bottom: 6px;
-  text-shadow:
-    0 0 40px rgba(212,168,32,.5),
-    0 2px 4px rgba(0,0,0,.4);
-  animation: title-glow 3s ease-in-out infinite;
-}
-@keyframes title-glow {
-  0%,100% { text-shadow: 0 0 30px rgba(212,168,32,.4), 0 2px 4px rgba(0,0,0,.4); }
-  50%      { text-shadow: 0 0 60px rgba(212,168,32,.7), 0 2px 4px rgba(0,0,0,.4); }
-}
+.nombre-ganador { font-family: var(--font-display); font-weight: 700; font-size: clamp(1.4rem, 5.5vw, 1.9rem); color: var(--ivory); margin-bottom: 18px; line-height: 1.2; }
+.codigo-label { font-size: .85rem; font-weight: 700; color: var(--muted); }
+.codigo-numero { font-family: var(--font-display); font-weight: 800; font-size: clamp(3.4rem, 15vw, 5rem); line-height: 1.05; letter-spacing: .08em; color: var(--gold-hi); text-shadow: 0 0 40px rgba(228,191,107,.5); font-variant-numeric: tabular-nums; }
 
-.subtitulo-ganador {
-  font-family: 'Great Vibes', cursive;
-  font-size: clamp(26px, 7vw, 40px);
-  color: rgba(255,255,255,.85);
-  margin-bottom: 28px;
-}
+.premio-label { font-size: .85rem; font-weight: 700; color: var(--muted); }
+.premio-monto { font-family: var(--font-display); font-weight: 800; font-size: clamp(1.8rem, 7vw, 2.4rem); letter-spacing: -.02em; }
+.premio-monto small { font-family: var(--font-body); font-size: .9rem; font-weight: 700; letter-spacing: .04em; -webkit-text-fill-color: var(--gold); color: var(--gold); margin-left: 6px; }
 
-/* Nombre */
-.nombre-ganador {
-  font-family: 'Playfair Display', serif;
-  font-size: clamp(24px, 6vw, 36px);
-  font-weight: 900;
-  color: #fff;
-  margin-bottom: 32px;
-  letter-spacing: .01em;
-}
-
-/* Badge de código — el protagonista */
-.codigo-wrap {
-  margin: 0 auto 32px;
-  position: relative;
-  display: inline-block;
-}
-
-.codigo-anillo-outer {
-  position: absolute; inset: -16px;
-  border-radius: 50%;
-  border: 1px solid rgba(212,168,32,.2);
-  animation: spin-slow 15s linear infinite reverse;
-}
-.codigo-anillo-inner {
-  position: absolute; inset: -8px;
-  border-radius: 50%;
-  border: 1px dashed rgba(212,168,32,.35);
-  animation: spin-slow 8s linear infinite;
-}
-
-.codigo-card {
-  width: 200px; height: 200px;
-  border-radius: 50%;
-  background: radial-gradient(circle at 40% 35%, #1a2a10, #0d1a08);
-  border: 3px solid #d4a820;
-  box-shadow:
-    0 0 0 1px rgba(212,168,32,.2),
-    0 0 40px rgba(212,168,32,.25),
-    inset 0 0 30px rgba(212,168,32,.08);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-  animation: codigo-bounce 1.8s ease-in-out infinite;
-}
-
-@keyframes codigo-bounce {
-  0%,100% { transform: translateY(0) scale(1);       box-shadow: 0 0 40px rgba(212,168,32,.25), inset 0 0 30px rgba(212,168,32,.08); }
-  25%      { transform: translateY(-8px) scale(1.02); box-shadow: 0 12px 50px rgba(212,168,32,.35), inset 0 0 30px rgba(212,168,32,.08); }
-  75%      { transform: translateY(3px) scale(.99);   box-shadow: 0 0 25px rgba(212,168,32,.2), inset 0 0 30px rgba(212,168,32,.08); }
-}
-
-.codigo-label {
-  font-size: 10px;
-  font-weight: 600;
-  letter-spacing: .15em;
-  text-transform: uppercase;
-  color: rgba(212,168,32,.7);
-  margin-bottom: 4px;
-}
-.codigo-numero {
-  font-family: 'Playfair Display', serif;
-  font-size: clamp(42px, 11vw, 60px);
-  font-weight: 900;
-  color: #fde68a;
-  line-height: 1;
-  text-shadow: 0 0 20px rgba(253,230,138,.5);
-  animation: num-pulse 1.8s ease-in-out infinite;
-}
-@keyframes num-pulse {
-  0%,100% { text-shadow: 0 0 20px rgba(253,230,138,.4); }
-  25%      { text-shadow: 0 0 40px rgba(253,230,138,.8), 0 0 80px rgba(212,168,32,.3); }
-}
-.codigo-sub {
-  font-size: 10px;
-  color: rgba(212,168,32,.5);
-  letter-spacing: .08em;
-  margin-top: 4px;
-}
-
-/* Premio */
-.premio-fila {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 12px;
-  margin-bottom: 32px;
-}
-.premio-linea {
-  flex: 1; max-width: 80px;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(212,168,32,.4));
-}
-.premio-linea.der {
-  background: linear-gradient(90deg, rgba(212,168,32,.4), transparent);
-}
-.premio-monto {
-  font-family: 'Playfair Display', serif;
-  font-size: clamp(22px, 5vw, 30px);
-  font-weight: 700;
-  color: #fff;
-}
-.premio-monto span { color: #d4a820; }
-
-/* Instrucciones */
-.instrucciones {
-  background: rgba(37,211,102,.06);
-  border: 1px solid rgba(37,211,102,.2);
-  border-radius: 16px;
-  padding: 20px 24px;
-  margin-bottom: 24px;
-  text-align: left;
-}
-.inst-titulo {
-  font-family: 'Great Vibes', cursive;
-  font-size: 26px;
-  color: #25D366;
-  margin-bottom: 10px;
-}
-.inst-paso {
-  display: flex;
-  align-items: flex-start;
-  gap: 10px;
-  font-size: 13px;
-  color: #9ca3af;
-  line-height: 1.6;
-  margin-bottom: 8px;
-}
+.instrucciones { text-align: left; margin-bottom: 20px; padding: 20px 22px; border-radius: 18px; background: rgba(255,255,255,.04); border: 1px solid var(--line-soft); }
+.inst-titulo { font-family: var(--font-display); font-weight: 700; font-size: 1.25rem; color: var(--ivory); margin-bottom: 12px; }
+.inst-paso { display: flex; gap: 12px; align-items: flex-start; font-size: .92rem; color: var(--text-dim); line-height: 1.6; margin-bottom: 10px; }
 .inst-paso:last-child { margin-bottom: 0; }
-.inst-num {
-  width: 20px; height: 20px;
-  border-radius: 50%;
-  background: rgba(37,211,102,.15);
-  border: 1px solid rgba(37,211,102,.3);
-  color: #25D366;
-  font-size: 10px;
-  font-weight: 700;
-  display: flex; align-items: center; justify-content: center;
-  flex-shrink: 0; margin-top: 2px;
-}
-.inst-paso strong { color: #e2e8f0; }
+.inst-num { width: 24px; height: 24px; border-radius: 50%; flex-shrink: 0; margin-top: 1px; display: grid; place-items: center; background: var(--gold-grad); color: #1A1204; font-size: .75rem; font-weight: 800; }
+.inst-paso strong { color: var(--ivory); }
 
-/* Botón WhatsApp */
-.btn-wa {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  background: #25D366;
-  color: #fff;
-  text-decoration: none;
-  font-weight: 700;
-  font-size: 16px;
-  padding: 16px 28px;
-  border-radius: 50px;
-  margin-bottom: 14px;
-  box-shadow: 0 4px 24px rgba(37,211,102,.3);
-  transition: transform .15s, box-shadow .15s;
-  animation: wa-pulse 3s ease-in-out infinite;
-}
-.btn-wa:hover { transform: translateY(-2px); box-shadow: 0 8px 32px rgba(37,211,102,.4); }
-@keyframes wa-pulse {
-  0%,100% { box-shadow: 0 4px 24px rgba(37,211,102,.25); }
-  50%      { box-shadow: 0 4px 36px rgba(37,211,102,.5); }
-}
-.btn-wa-icon { font-size: 22px; }
+.btn-wa { display: flex; width: 100%; background: #25D366; color: #07290F; box-shadow: 0 12px 34px -10px rgba(37,211,102,.55); margin-bottom: 12px; }
+.btn-wa svg { width: 22px; height: 22px; fill: currentColor; }
+.btn-volver { display: block; text-align: center; color: var(--muted); font-size: .9rem; font-weight: 600; text-decoration: none; padding: 10px; transition: color .15s; }
+.btn-volver:hover { color: var(--ivory); }
 
-.btn-volver {
-  display: block;
-  text-align: center;
-  color: #374151;
-  font-size: 13px;
-  text-decoration: none;
-  padding: 10px;
-  transition: color .15s;
-}
-.btn-volver:hover { color: #9ca3af; }
+.footer { text-align: center; font-size: .78rem; color: var(--muted); margin-top: 26px; padding-top: 16px; border-top: 1px solid var(--line-soft); }
 
-/* Footer */
-.footer {
-  text-align: center;
-  font-size: 11px;
-  color: #1f2937;
-  margin-top: 24px;
-  padding-top: 16px;
-  border-top: 1px solid rgba(255,255,255,.04);
-}
-
-/* ── Responsive ── */
-@media (max-width: 400px) {
-  body { padding: 16px 12px; }
-  .titulo-ganador { font-size: clamp(40px, 12vw, 60px); }
-  .codigo-card { width: 170px; height: 170px; }
-  .codigo-numero { font-size: clamp(36px, 10vw, 50px); }
-  .instrucciones { padding: 16px; }
-  .btn-wa { font-size: 14px; padding: 14px 20px; }
-  .espera-titulo { font-size: clamp(30px, 9vw, 46px); }
-}
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; } }
 </style>
 </head>
 <body>
 
-<canvas id="confetti-canvas"></canvas>
+<canvas id="confetti-canvas" aria-hidden="true"></canvas>
 
 <div class="wrap">
 
   <!-- ══ ESPERA ══ -->
   <div id="page-espera">
-    <div class="reloj-wrap">
-      <div class="reloj-ring"></div>
-      <div class="reloj-circulo">⏳</div>
-    </div>
-
-    <div class="espera-titulo">Pronto habrá un Ganador</div>
-
-    <div class="linea-oro"><span>✦</span></div>
-
+    <div class="espera-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div>
+    <h1 class="espera-titulo">Pronto habrá un ganador</h1>
     <p class="espera-sub">
-      El resultado se anuncia aquí en tiempo real una vez se realice el sorteo
-      con la <strong>Lotería de Medellín</strong>.<br><br>
-      ¿Aún no tienes tus códigos? ¡Aún hay tiempo!
+      El resultado se publica aquí cuando se realice el sorteo con la <strong>Lotería de Medellín</strong>.<br><br>
+      ¿Aún no tienes tus códigos? Todavía hay tiempo.
     </p>
-
-    <a href="/" class="btn-comprar">🎟️ Comprar mis códigos</a>
+    <a href="/" class="btn-comprar">Comprar mis códigos</a>
   </div>
 
   <!-- ══ GANADOR ══ -->
   <div id="page-ganador">
 
-    <div class="estrellas">✦ ✦ ✦</div>
+    <h1 class="titulo-ganador gold-text">¡Felicitaciones!</h1>
+    <p class="subtitulo-ganador">al ganador oficial de la dinámica</p>
 
-    <div class="titulo-ganador">¡Felicitaciones!</div>
-    <div class="subtitulo-ganador">al Ganador Oficial</div>
-
-    <div class="nombre-ganador" id="g-nombre">—</div>
-
-    <div class="codigo-wrap">
-      <div class="codigo-anillo-outer"></div>
-      <div class="codigo-anillo-inner"></div>
-      <div class="codigo-card">
-        <div class="codigo-label">Código N°</div>
+    <div class="ticket">
+      <div class="ticket-top">
+        <div class="nombre-ganador" id="g-nombre">—</div>
+        <div class="codigo-label">Código ganador</div>
         <div class="codigo-numero" id="g-codigo">—</div>
-        <div class="codigo-sub">GANADOR</div>
+      </div>
+      <div class="ticket-bottom">
+        <div class="premio-label">Premio</div>
+        <div class="premio-monto gold-text"><span id="g-premio">—</span><small>COP</small></div>
       </div>
     </div>
 
-    <div class="premio-fila">
-      <div class="premio-linea"></div>
-      <div class="premio-monto">Premio: <span id="g-premio">—</span> COP</div>
-      <div class="premio-linea der"></div>
-    </div>
-
     <div class="instrucciones">
-      <div class="inst-titulo">¿Cómo reclamar?</div>
+      <div class="inst-titulo">¿Cómo reclamar tu premio?</div>
       <div class="inst-paso">
         <div class="inst-num">1</div>
-        <div>Haz clic en el botón de abajo — se abrirá WhatsApp con el mensaje <strong>"Quiero reclamar mi premio"</strong> listo para enviar.</div>
+        <div>Toca el botón de abajo: se abrirá WhatsApp con el mensaje <strong>"Quiero reclamar mi premio"</strong> listo para enviar.</div>
       </div>
       <div class="inst-paso">
         <div class="inst-num">2</div>
@@ -437,16 +160,15 @@ body::before {
       </div>
     </div>
 
-    <a id="btn-wa" href="#" class="btn-wa" target="_blank">
-      <span class="btn-wa-icon">💬</span>
+    <a id="btn-wa" href="#" class="btn-wa" target="_blank" rel="noopener">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
       Quiero reclamar mi premio
     </a>
 
-    <a href="/" class="btn-volver">← Volver al inicio</a>
-
+    <a href="/" class="btn-volver">Volver al inicio</a>
   </div>
 
-  <div class="footer">EiderTech Soluciones &nbsp;·&nbsp; infoeidertechsoluciones@gmail.com</div>
+  <div class="footer">EiderTech Soluciones · infoeidertechsoluciones@gmail.com</div>
 </div>
 
 <script>
@@ -457,7 +179,7 @@ function lanzarConfetti() {
   canvas.width  = window.innerWidth;
   canvas.height = window.innerHeight;
 
-  const COLORES = ['#fde68a','#d4a820','#f5c518','#fff','#22c55e','#f97316','#a855f7'];
+  const COLORES = ['#F6DE9E','#E4BF6B','#B98A2E','#F7F0DE','#ffffff'];
   const piezas  = Array.from({ length: 180 }, () => ({
     x:     Math.random() * canvas.width,
     y:     -20 - Math.random() * canvas.height * .5,

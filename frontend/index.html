@@ -3,1586 +3,211 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#FFFFFF">
+<meta name="theme-color" content="#050A18">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta http-equiv="X-Content-Type-Options" content="nosniff">
 <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
-<title>Inversiones Eider techs Soluciones – Dinámica</title>
+<title>EiderTech Soluciones – Dinámica</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎟️</text></svg>">
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
-
-<style>
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-.codes-list, .code-chip {
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
-  -webkit-touch-callout: none;
-}
-
-:root {
-  --gold: #C9930A;
-  --gold-light: #E8A800;
-  --gold-dim: rgba(201,147,10,.12);
-  --orange: #D06020;
-  --bg: #FFFFFF;
-  --surface: #F7F5F0;
-  --card: #FFFFFF;
-  --card-hover: #FDF9F0;
-  --border: rgba(0,0,0,.09);
-  --border-gold: rgba(201,147,10,.35);
-  --muted: #7A7060;
-  --text: #1A150A;
-  --text-dim: #5C5040;
-  --radius: 16px;
-  --radius-sm: 10px;
-  --shadow-gold: 0 0 40px rgba(201,147,10,.12);
-  --font-display: 'Syne', sans-serif;
-  --font-body: 'DM Sans', sans-serif;
-}
-
-html { font-size: 16px; scroll-behavior: smooth; }
-
-body {
-  font-family: var(--font-body);
-  background: var(--bg);
-  color: var(--text);
-  min-height: 100dvh;
-  -webkit-font-smoothing: antialiased;
-  overflow-x: hidden;
-}
-
-/* ── Atmospheric background ── */
-body::before {
-  content: '';
-  position: fixed;
-  inset: 0;
-  background:
-    radial-gradient(ellipse 70% 50% at 50% -10%, rgba(201,147,10,.07) 0%, transparent 60%),
-    radial-gradient(ellipse 40% 40% at 90% 80%, rgba(208,96,32,.04) 0%, transparent 50%);
-  pointer-events: none;
-  z-index: 0;
-}
-
-/* ── Grain overlay ── */
-body::after {
-  content: '';
-  position: fixed;
-  inset: 0;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
-  pointer-events: none;
-  z-index: 0;
-  opacity: 0.4;
-}
-
-.page {
-  position: relative;
-  z-index: 1;
-  max-width: 520px;
-  width: 100%;
-  margin: 0 auto;
-  padding: clamp(16px, 5vw, 32px) clamp(14px, 5vw, 24px) 110px;
-}
-
-/* ── Header ── */
-.site-header {
-  text-align: center;
-  padding-top: 8px;
-  margin-bottom: 32px;
-}
-
-.logo-wrap {
-  margin-bottom: 20px;
-}
-.logo-wrap img { max-width: 150px; height: auto; }
-
-.title {
-  font-family: var(--font-display);
-  font-size: clamp(1.75rem, 6vw, 2.4rem);
-  font-weight: 800;
-  color: var(--text);
-  line-height: 1.15;
-  letter-spacing: -.02em;
-  margin-bottom: 6px;
-}
-.title span {
-  background: linear-gradient(135deg, var(--gold-light), var(--gold));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-.subtitle {
-  font-size: clamp(1rem, 3.5vw, 1.2rem);
-  font-weight: 400;
-  color: var(--text-dim);
-  margin-bottom: 16px;
-  letter-spacing: .01em;
-}
-.subtitle strong, .subtitle span { color: var(--gold); font-weight: 700; }
-
-/* ── Habeas Data ── */
-.habeas-data-box {
-  margin: 14px 0;
-  padding: 12px 14px;
-  background: var(--card-bg, #fdf9f0);
-  border: 1px solid var(--border-gold, rgba(201,147,10,.2));
-  border-radius: 12px;
-}
-.habeas-data-label {
-  display: flex;
-  align-items: flex-start;
-  gap: 9px;
-  font-size: .78rem;
-  line-height: 1.5;
-  color: var(--muted, #6b6455);
-  cursor: pointer;
-}
-.habeas-data-label input[type="checkbox"] {
-  margin-top: 2px;
-  width: 16px; height: 16px;
-  accent-color: var(--gold, #c9930a);
-  flex-shrink: 0;
-  cursor: pointer;
-}
-.habeas-data-link { color: var(--gold-light, #b8860b); font-weight: 700; text-decoration: underline; cursor: pointer; }
-.habeas-data-body {
-  display: none;
-  margin-top: 10px;
-  padding-top: 10px;
-  border-top: 1px dashed var(--border-gold, rgba(201,147,10,.2));
-  font-size: .74rem;
-  line-height: 1.6;
-  color: var(--muted, #8a8578);
-}
-.habeas-data-body.open { display: block; }
-
-.badge-wrap { display: flex; justify-content: center; margin-bottom: 0; }
-
-
-.badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  background: var(--gold-dim);
-  border: 1px solid var(--border-gold);
-  color: var(--gold-light);
-  font-size: 0.78rem;
-  font-weight: 600;
-  padding: 6px 14px;
-  border-radius: 999px;
-  letter-spacing: .04em;
-  text-transform: uppercase;
-}
-
-/* ── Dynamic banner ── */
-#banner-dinamico {
-  display: none;
-  border-radius: var(--radius-sm);
-  padding: 10px 14px;
-  margin-bottom: 14px;
-  font-size: .84rem;
-  font-weight: 500;
-  text-align: center;
-  line-height: 1.5;
-}
-
-#seccion-ganador { display: none; }
-
-/* ── Progress ── */
-.progress-wrap {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 18px 20px;
-  margin: 20px 0 16px;
-}
-.progress-labels {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 0.76rem;
-  font-weight: 500;
-  color: var(--muted);
-  margin-bottom: 10px;
-  letter-spacing: .03em;
-  text-transform: uppercase;
-}
-.progress-labels span:last-child { color: var(--gold); font-weight: 700; }
-.progress-track {
-  background: rgba(0,0,0,.06);
-  border-radius: 999px;
-  height: 14px;
-  overflow: hidden;
-  margin-bottom: 12px;
-}
-.progress-bar {
-  height: 100%;
-  width: 0%;
-  background: linear-gradient(90deg, var(--gold), var(--orange));
-  border-radius: 999px;
-  transition: width 1.4s cubic-bezier(.4,0,.2,1);
-  box-shadow: 0 0 12px rgba(201,147,10,.4);
-}
-.progress-meta {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 0.72rem;
-  color: var(--muted);
-  gap: 8px;
-  flex-wrap: wrap;
-}
-.progress-meta-item {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-}
-.progress-meta-item strong { color: var(--text); font-weight: 600; }
-/* ── Golden codes section ── */
-#seccionDorados {
-  display: none;
-  background: linear-gradient(135deg, rgba(232,184,75,.08), rgba(224,123,60,.05));
-  border: 1px solid var(--border-gold);
-  border-radius: var(--radius);
-  padding: 16px;
-  margin-bottom: 16px;
-  text-align: center;
-}
-#seccionDorados .sec-label {
-  font-size: 0.75rem;
-  color: var(--gold);
-  font-weight: 600;
-  letter-spacing: .05em;
-  text-transform: uppercase;
-  margin-bottom: 12px;
-}
-#listaDorados { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
-
-/* ── Success ── */
-#success {
-  display: none;
-  background: rgba(52,211,153,.08);
-  border: 1px solid rgba(52,211,153,.25);
-  border-radius: var(--radius);
-  padding: 16px 20px;
-  text-align: center;
-  color: #34D399;
-  font-weight: 600;
-  margin-bottom: 16px;
-  font-size: 1rem;
-  letter-spacing: .01em;
-}
-
-/* ── Section titles ── */
-.section-title {
-  font-family: var(--font-display);
-  font-size: 0.72rem;
-  font-weight: 700;
-  color: var(--muted);
-  text-transform: uppercase;
-  letter-spacing: .12em;
-  margin: 28px 0 12px;
-}
-
-/* ── Package cards ── */
-.cards-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 10px;
-  margin-bottom: 16px;
-}
-.card {
-  background: var(--card);
-  border: 1px solid var(--border);
-  padding: 20px 10px 16px;
-  border-radius: var(--radius);
-  cursor: pointer;
-  text-align: center;
-  transition: all .25s cubic-bezier(.4,0,.2,1);
-  position: relative;
-  overflow: hidden;
-  user-select: none;
-  -webkit-tap-highlight-color: transparent;
-}
-.card::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(circle at 50% 0%, rgba(232,184,75,.12) 0%, transparent 60%);
-  opacity: 0;
-  transition: opacity .25s;
-}
-.card:hover {
-  transform: translateY(-3px);
-  border-color: var(--border-gold);
-  background: var(--card-hover);
-  box-shadow: 0 12px 32px rgba(0,0,0,.4), 0 0 0 1px rgba(232,184,75,.15);
-}
-.card:hover::before { opacity: 1; }
-
-.card.selected {
-  background: linear-gradient(145deg, rgba(232,184,75,.15), rgba(224,123,60,.08));
-  border-color: var(--gold);
-  transform: scale(1.04);
-  box-shadow: 0 0 0 1px var(--gold), 0 12px 40px rgba(232,184,75,.2);
-}
-.card.selected::before { opacity: 1; }
-.card.selected::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(120deg, transparent 30%, rgba(255,255,255,.12) 50%, transparent 70%);
-  animation: shimmer .7s forwards;
-}
-@keyframes shimmer {
-  from { transform: translateX(-100%); }
-  to   { transform: translateX(100%); }
-}
-.card.disabled {
-  opacity: .25;
-  pointer-events: none;
-  filter: grayscale(80%);
-  transform: scale(.97);
-}
-
-.card-qty {
-  font-family: var(--font-display);
-  font-size: 1.8rem;
-  font-weight: 800;
-  line-height: 1;
-  color: var(--text);
-  letter-spacing: -.02em;
-}
-.card.selected .card-qty { color: var(--gold-light); }
-.card-label {
-  font-size: .68rem;
-  color: var(--muted);
-  letter-spacing: .08em;
-  text-transform: uppercase;
-  margin: 4px 0 8px;
-  font-weight: 500;
-}
-.card.selected .card-label { color: var(--gold); opacity: .8; }
-.card-price {
-  font-size: .95rem;
-  font-weight: 700;
-  color: var(--gold);
-  letter-spacing: .01em;
-}
-.card-popular {
-  position: absolute;
-  top: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  background: linear-gradient(135deg, var(--gold), var(--orange));
-  color: #000;
-  font-size: .55rem;
-  font-weight: 800;
-  padding: 3px 10px;
-  border-radius: 0 0 8px 8px;
-  letter-spacing: .08em;
-  white-space: nowrap;
-  text-transform: uppercase;
-}
-
-/* ── Custom quantity: ¿Deseas más? ── */
-#seccionPersonalizada {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 16px 18px;
-  margin: 4px 0 16px;
-  text-align: center;
-}
-#seccionPersonalizada .personalizada-titulo {
-  font-family: var(--font-display);
-  font-size: .85rem;
-  font-weight: 800;
-  color: var(--text);
-  text-transform: uppercase;
-  letter-spacing: .06em;
-  margin-bottom: 12px;
-}
-.personalizada-row {
-  display: flex;
-  gap: 10px;
-  align-items: stretch;
-}
-input[type="number"].input-cantidad {
-  width: 90px;
-  flex-shrink: 0;
-  padding: 13px 10px;
-  border-radius: var(--radius-sm);
-  border: 1px solid var(--border);
-  background: var(--card);
-  color: var(--text);
-  font-family: var(--font-display);
-  font-size: 1.05rem;
-  font-weight: 700;
-  text-align: center;
-  outline: none;
-  transition: border-color .2s;
-}
-input[type="number"].input-cantidad:focus { border-color: var(--gold); }
-.btn-personalizada {
-  flex: 1;
-  background: linear-gradient(135deg, var(--orange), #B8481A);
-  color: #fff;
-  border: none;
-  border-radius: var(--radius-sm);
-  font-family: var(--font-display);
-  font-size: .92rem;
-  font-weight: 700;
-  cursor: pointer;
-  transition: all .2s;
-  letter-spacing: .01em;
-}
-.btn-personalizada:hover { filter: brightness(1.08); transform: translateY(-1px); }
-.btn-personalizada:active { transform: scale(.98); }
-.personalizada-hint {
-  font-size: .68rem;
-  color: var(--muted);
-  margin-top: 8px;
-  letter-spacing: .02em;
-}
-.personalizada-error {
-  display: none;
-  font-size: .74rem;
-  color: #E8825A;
-  margin-top: 8px;
-}
-
-/* ── Stock notice ── */
-#avisoStock {
-  display: none;
-  background: rgba(251,191,36,.07);
-  border: 1px solid rgba(251,191,36,.3);
-  border-radius: var(--radius-sm);
-  color: #FBBF24;
-  font-size: .84rem;
-  padding: 12px 16px;
-  margin-bottom: 12px;
-  line-height: 1.5;
-  color: #F5C842;
-}
-
-/* ── Order summary ── */
-#resumenPedido {
-  display: none;
-  background: linear-gradient(135deg, rgba(232,184,75,.06), rgba(224,123,60,.03));
-  border: 1px solid var(--border-gold);
-  border-radius: var(--radius);
-  padding: 14px 18px;
-  margin-bottom: 14px;
-  animation: fadeUp .35s ease;
-}
-.resumen-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: .82rem;
-  color: var(--text-dim);
-  margin-bottom: 6px;
-}
-.resumen-row span:last-child { color: var(--text); font-weight: 500; }
-.resumen-total {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-family: var(--font-display);
-  font-size: 1rem;
-  font-weight: 700;
-  color: var(--gold);
-  border-top: 1px solid rgba(232,184,75,.15);
-  padding-top: 10px;
-  margin-top: 8px;
-  letter-spacing: -.01em;
-}
-
-/* ── Form ── */
-#form { display: none; animation: fadeUp .35s ease; }
-@keyframes fadeUp { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:none; } }
-
-.input-group { margin-bottom: 12px; }
-.input-label {
-  font-size: .72rem;
-  color: var(--muted);
-  margin-bottom: 6px;
-  display: block;
-  font-weight: 600;
-  letter-spacing: .06em;
-  text-transform: uppercase;
-}
-
-input[type="text"],
-input[type="email"],
-input[type="tel"] {
-  width: 100%;
-  padding: 13px 16px;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  color: var(--text);
-  font-family: var(--font-body);
-  font-size: .95rem;
-  outline: none;
-  transition: border-color .2s, box-shadow .2s, background .2s;
-  -webkit-appearance: none;
-  appearance: none;
-}
-input:focus {
-  border-color: var(--gold);
-  background: var(--card);
-  box-shadow: 0 0 0 3px rgba(232,184,75,.1);
-}
-input::placeholder { color: var(--muted); opacity: .6; }
-input.error { border-color: rgba(248,113,113,.7); box-shadow: 0 0 0 3px rgba(248,113,113,.1); }
-.field-error { font-size: .72rem; color: #f87171; margin-top: 4px; display: none; }
-
-/* ── Info cards ── */
-.info-box {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  padding: 12px 14px;
-  margin: 10px 0;
-  font-size: .8rem;
-  color: var(--text-dim);
-  line-height: 1.6;
-}
-.info-box.gold-tint {
-  background: rgba(232,184,75,.05);
-  border-color: rgba(232,184,75,.15);
-}
-.info-box strong { color: var(--text); }
-.info-box .highlight { color: var(--gold); }
-
-/* ── Wompi trust block ── */
-.trust-block {
-  background: rgba(124,58,237,.06);
-  border: 1px solid rgba(124,58,237,.2);
-  border-radius: var(--radius-sm);
-  padding: 14px;
-  text-align: center;
-  margin: 12px 0;
-}
-.trust-block .trust-label { font-size: .75rem; color: var(--muted); margin-bottom: 6px; }
-.trust-block .wompi-name {
-  font-family: var(--font-display);
-  font-size: 1.2rem;
-  font-weight: 800;
-  color: #9D6FFF;
-  letter-spacing: -.01em;
-  margin-bottom: 10px;
-}
-.trust-badges {
-  display: flex;
-  justify-content: center;
-  gap: 12px;
-  flex-wrap: wrap;
-}
-.trust-badge {
-  font-size: .7rem;
-  color: #6B7A99;
-  background: rgba(0,0,0,.04);
-  padding: 4px 10px;
-  border-radius: 999px;
-  border: 1px solid var(--border);
-}
-
-/* ── Buttons ── */
-.btn {
-  display: block;
-  width: 100%;
-  padding: 16px;
-  border: none;
-  border-radius: var(--radius);
-  font-family: var(--font-display);
-  font-size: 1rem;
-  font-weight: 700;
-  cursor: pointer;
-  transition: all .2s cubic-bezier(.4,0,.2,1);
-  -webkit-tap-highlight-color: transparent;
-  letter-spacing: .01em;
-  position: relative;
-  overflow: hidden;
-}
-.btn:active { transform: scale(.98); }
-
-/* ── Trace Ignite: traza de luz dorada que recorre el borde y enciende el botón ── */
-.btn::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  padding: 1.5px;
-  background: conic-gradient(from 0deg, transparent 0%, transparent 78%, var(--gold-light) 88%, #fff 92%, var(--gold-light) 96%, transparent 100%);
-  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-  -webkit-mask-composite: xor;
-  mask-composite: exclude;
-  opacity: 0;
-  pointer-events: none;
-}
-.btn.trace-ignite::after {
-  animation: traceIgniteSpin 900ms linear, traceIgniteFade 900ms ease-out;
-}
-@keyframes traceIgniteFade {
-  0%   { opacity: 0; }
-  8%   { opacity: 1; }
-  85%  { opacity: 1; }
-  100% { opacity: 0; }
-}
-@keyframes traceIgniteSpin {
-  to { transform: rotate(1turn); }
-}
-.btn-primary {
-  background: linear-gradient(135deg, var(--gold), var(--orange));
-  color: #0A0600;
-  margin-top: 16px;
-  box-shadow: 0 4px 24px rgba(232,184,75,.25);
-}
-.btn-primary::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(135deg, rgba(255,255,255,.15), transparent);
-  opacity: 0;
-  transition: opacity .2s;
-}
-.btn-primary:hover::before { opacity: 1; }
-.btn-primary:hover { box-shadow: 0 8px 32px rgba(232,184,75,.35); transform: translateY(-1px); }
-.btn-primary:disabled {
-  opacity: .4;
-  cursor: not-allowed;
-  transform: none;
-  box-shadow: none;
-  animation: none;
-}
-.btn-primary.loading { color: transparent; animation: none; }
-.btn-primary.loading::after {
-  content: "Procesando...";
-  color: #0A0600;
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-family: var(--font-display);
-  font-weight: 700;
-}
-
-.btn-transfer {
-  margin-top: 10px;
-  background: transparent;
-  border: 1px solid rgba(52,211,153,.35);
-  color: #34D399;
-  font-size: .9rem;
-}
-.btn-transfer:hover {
-  background: rgba(52,211,153,.06);
-  border-color: rgba(52,211,153,.6);
-  transform: translateY(-1px);
-}
-
-.transfer-note {
-  font-size: .72rem;
-  color: var(--muted);
-  text-align: center;
-  margin-top: 6px;
-  line-height: 1.5;
-}
-
-.terms-note {
-  font-size: .72rem;
-  color: #7A7060;
-  text-align: center;
-  margin-top: 10px;
-  line-height: 1.6;
-}
-.terms-note span {
-  color: var(--gold);
-  cursor: pointer;
-  text-decoration: underline;
-  text-decoration-color: rgba(232,184,75,.4);
-}
-
-/* ── Divider ── */
-.divider {
-  border: none;
-  border-top: 1px solid rgba(0,0,0,.07);
-  margin: 32px 0;
-}
-
-/* ── Code lookup ── */
-.consult-row { display: flex; gap: 8px; }
-.consult-row input { flex: 1; }
-.btn-consult {
-  padding: 13px 18px;
-  border: 1px solid var(--border-gold);
-  border-radius: var(--radius-sm);
-  background: var(--gold-dim);
-  color: var(--gold-light);
-  font-family: var(--font-display);
-  font-weight: 700;
-  cursor: pointer;
-  white-space: nowrap;
-  font-size: .88rem;
-  -webkit-tap-highlight-color: transparent;
-  transition: all .2s;
-  letter-spacing: .02em;
-}
-.btn-consult:hover { background: rgba(232,184,75,.25); }
-.btn-consult:active { opacity: .8; }
-
-.codes-list { margin-top: 14px; display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
-.code-chip {
-  display: inline-flex;
-  align-items: center;
-  padding: 8px 16px;
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  font-size: .88rem;
-  letter-spacing: .1em;
-  font-weight: 600;
-  color: var(--text);
-  opacity: 0;
-  transform: scale(.85);
-  animation: popIn .35s forwards;
-  font-family: 'DM Mono', monospace, var(--font-body);
-}
-@keyframes popIn { to { opacity:1; transform:scale(1); } }
-.code-chip.dorado {
-  background: linear-gradient(135deg, rgba(232,184,75,.2), rgba(224,123,60,.15));
-  color: var(--gold-light);
-  border: 1px solid var(--gold);
-  font-weight: 700;
-  animation: popIn .35s forwards, glow 1.5s infinite alternate;
-}
-@keyframes glow {
-  from { box-shadow: 0 0 8px rgba(232,184,75,.3); }
-  to   { box-shadow: 0 0 20px rgba(232,184,75,.6); }
-}
-
-.btn-reenviar {
-  margin-top: 12px;
-  width: 100%;
-  padding: 12px;
-  border: 1px solid var(--border-gold);
-  border-radius: var(--radius-sm);
-  background: transparent;
-  color: var(--gold);
-  font-family: var(--font-display);
-  font-weight: 600;
-  font-size: .88rem;
-  cursor: pointer;
-  transition: background .2s;
-  letter-spacing: .02em;
-}
-.btn-reenviar:hover { background: var(--gold-dim); }
-.msg-reenvio { margin-top: 8px; font-size: .82rem; color: var(--gold); text-align: center; min-height: 20px; }
-
-.btn-terminos {
-  width: 100%;
-  background: transparent;
-  border: 1px solid var(--border);
-  color: var(--muted);
-  font-size: .82rem;
-  padding: 12px;
-  border-radius: var(--radius);
-  cursor: pointer;
-  transition: border-color .2s, color .2s;
-  margin-top: 24px;
-  font-family: var(--font-body);
-  letter-spacing: .02em;
-}
-.btn-terminos:hover { border-color: var(--border-gold); color: var(--gold); }
-.terminos-body { display: none; margin-top: 10px; }
-.terminos-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  padding: 16px;
-  margin-bottom: 8px;
-  font-size: .84rem;
-  line-height: 1.7;
-  color: var(--text-dim);
-  text-align: left;
-}
-.terminos-card strong { color: var(--text); }
-.terminos-card h4 {
-  color: var(--gold);
-  margin-bottom: 8px;
-  font-size: .82rem;
-  font-family: var(--font-display);
-  font-weight: 700;
-  letter-spacing: .06em;
-  text-transform: uppercase;
-}
-.terminos-card ul { padding-left: 18px; margin-top: 6px; }
-
-/* ── Social links ── */
-.redes {
-  display: flex;
-  justify-content: center;
-  gap: 12px;
-  margin-top: 28px;
-  flex-wrap: wrap;
-}
-.red-btn {
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-decoration: none;
-  transition: all .2s;
-}
-.red-btn:hover {
-  transform: scale(1.15) translateY(-2px);
-  border-color: var(--border-gold);
-  background: var(--gold-dim);
-}
-.red-btn svg { width: 20px; height: 20px; fill: white; display: block; }
-
-/* ── WhatsApp float ── */
-.wa-float {
-  position: fixed;
-  bottom: 22px;
-  right: 18px;
-  width: 56px;
-  height: 56px;
-  background: #25D366;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 4px 20px rgba(37,211,102,.4);
-  z-index: 9999;
-  text-decoration: none;
-  animation: waPulse 3s infinite;
-}
-.wa-float svg { width: 26px; height: 26px; fill: white; }
-@keyframes waPulse {
-  0%,100% { box-shadow: 0 4px 20px rgba(37,211,102,.4); }
-  50%      { box-shadow: 0 4px 30px rgba(37,211,102,.65); transform: scale(1.05); }
-}
-
-/* ── Loading screen ── */
-#loadingPago {
-  position: fixed;
-  inset: 0;
-  background: rgba(255,253,248,.92);
-  display: none;
-  align-items: center;
-  justify-content: center;
-  z-index: 10000;
-  backdrop-filter: blur(8px);
-}
-.casino-inner { text-align: center; }
-.loading-ring {
-  width: 64px;
-  height: 64px;
-  border: 3px solid rgba(201,147,10,.15);
-  border-top: 3px solid var(--gold);
-  border-radius: 50%;
-  margin: auto;
-  animation: spin 1s linear infinite;
-}
-@keyframes spin { to { transform: rotate(360deg); } }
-.casino-txt {
-  margin-top: 18px;
-  color: var(--gold);
-  font-family: var(--font-display);
-  font-weight: 600;
-  font-size: 1rem;
-  letter-spacing: .02em;
-}
-
-/* ── Footer ── */
-.footer {
-  position: relative;
-  z-index: 1;
-  max-width: 520px;
-  width: 100%;
-  margin: 0 auto;
-  padding: 24px clamp(14px, 5vw, 28px) 48px;
-  text-align: center;
-  border-top: 1px solid rgba(0,0,0,.07);
-}
-.footer-logo { max-width: 80px; height: auto; opacity: .5; margin-bottom: 14px; }
-.footer-wompi {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 999px;
-  padding: 8px 18px;
-  margin: 12px auto;
-  font-size: .78rem;
-  color: var(--muted);
-}
-.wompi-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  font-weight: 700;
-  color: #9D6FFF;
-  font-size: .82rem;
-}
-.footer-text { font-size: .74rem; color: #9A8E7A; line-height: 1.8; }
-
-/* ── Admin trigger ── */
-#adminTrigger {
-  position: fixed;
-  top: 14px;
-  right: 14px;
-  width: 38px;
-  height: 38px;
-  background: rgba(0,0,0,.04);
-  border: 1px solid rgba(0,0,0,.10);
-  border-radius: 10px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 5px;
-  cursor: pointer;
-  z-index: 8000;
-  backdrop-filter: blur(6px);
-  text-decoration: none;
-  transition: background .2s;
-}
-#adminTrigger:hover { background: rgba(0,0,0,.08); }
-
-/* ── Modal transferencia ── */
-#modalTransferencia {
-  display: none;
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,.8);
-  z-index: 9800;
-  align-items: center;
-  justify-content: center;
-  padding: 16px;
-  backdrop-filter: blur(8px);
-}
-.modal-inner {
-  background: #0A1020;
-  border: 1px solid rgba(255,255,255,.08);
-  border-radius: 20px;
-  padding: 0;
-  max-width: 430px;
-  width: 100%;
-  max-height: 92dvh;
-  overflow-y: auto;
-  color: #ECF0FF;
-  position: relative;
-  box-shadow: 0 24px 80px rgba(0,0,0,.6);
-}
-.modal-header {
-  background: linear-gradient(135deg, #166534, #15803D);
-  padding: 18px 20px 16px;
-  border-radius: 20px 20px 0 0;
-  text-align: center;
-  font-family: var(--font-display);
-  font-size: 1rem;
-  font-weight: 700;
-  color: white;
-  letter-spacing: .01em;
-}
-.modal-body { padding: 20px; }
-.modal-close {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  background: rgba(255,255,255,.1);
-  border: none;
-  color: rgba(255,255,255,.7);
-  font-size: 16px;
-  width: 40px;
-  height: 40px;
-  border-radius: 10px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: background .2s;
-}
-.modal-close:hover { background: rgba(255,255,255,.2); }
-
-/* ── Modal estado (agotado / pausado) ── */
-#modalEstado {
-  display: none;
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,.82);
-  z-index: 9900;
-  align-items: center;
-  justify-content: center;
-  padding: 16px;
-  backdrop-filter: blur(8px);
-}
-.modal-estado-inner {
-  max-width: 380px;
-  text-align: center;
-  padding: 40px 28px 28px;
-  background: linear-gradient(160deg, #0A1020 0%, #131B2E 100%);
-  border: 1px solid rgba(232,184,75,.25);
-  box-shadow: 0 24px 80px rgba(0,0,0,.6), 0 0 60px rgba(232,184,75,.08);
-}
-.modal-estado-icono {
-  font-size: 52px;
-  line-height: 1;
-  margin-bottom: 14px;
-}
-.modal-estado-titulo {
-  font-family: var(--font-display);
-  font-size: 1.4rem;
-  font-weight: 800;
-  color: #F5D07A;
-  margin-bottom: 10px;
-  letter-spacing: .01em;
-}
-.modal-estado-texto {
-  font-size: .92rem;
-  color: rgba(236,240,255,.75);
-  line-height: 1.5;
-  margin-bottom: 24px;
-}
-.modal-estado-btn {
-  background: linear-gradient(135deg, #E8B84B, #C9930A);
-  color: #14100A;
-  border: none;
-  border-radius: 12px;
-  padding: 12px 32px;
-  font-family: var(--font-display);
-  font-weight: 700;
-  font-size: .95rem;
-  cursor: pointer;
-  letter-spacing: .02em;
-  transition: transform .15s, box-shadow .15s;
-}
-.modal-estado-btn:hover { transform: translateY(-1px); box-shadow: 0 8px 24px rgba(232,184,75,.3); }
-
-
-/* ══════════════════════════════════════════════
-   RESPONSIVE SYSTEM
-   xs  < 480px   → celular pequeño
-   sm  480–767px → celular grande
-   md  768–1023px → tablet
-   lg  1024–1279px → laptop
-   xl  1280px+  → escritorio
-   ══════════════════════════════════════════════ */
-
-/* ── Base (mobile-first, aplica a todos) ── */
-.page {
-  max-width: 520px;
-  width: 100%;
-  padding-left: clamp(14px, 5vw, 24px);
-  padding-right: clamp(14px, 5vw, 24px);
-  padding-bottom: 110px;
-}
-
-/* ── XS: celulares muy pequeños (< 380px) ── */
-@media (max-width: 379px) {
-  :root { --radius: 12px; --radius-sm: 8px; }
-  .title { font-size: 1.5rem; letter-spacing: -.015em; }
-  .subtitle { font-size: .9rem; }
-  .cards-grid { grid-template-columns: 1fr; gap: 8px; }
-  .card { padding: 14px 12px; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
-  .card-qty { font-size: 1.6rem; }
-  .card-label { margin: 0; font-size: .62rem; }
-  .card-price { font-size: .88rem; }
-  .btn { padding: 14px; font-size: .95rem; }
-  .trust-badges { gap: 6px; }
-  .trust-badge { font-size: .66rem; padding: 3px 8px; }
-  input[type="text"], input[type="email"], input[type="tel"] { font-size: 1rem; padding: 12px 13px; }
-  .progress-wrap { padding: 13px 14px; }
-  .site-header { margin-bottom: 22px; }
-}
-
-/* ── SM: celulares normales (380–599px) ── */
-@media (min-width: 380px) and (max-width: 599px) {
-  .title { font-size: clamp(1.65rem, 6vw, 2rem); }
-  .cards-grid { grid-template-columns: repeat(3, 1fr); gap: 9px; }
-  .card { padding: 18px 10px 14px; }
-}
-
-/* ── MD: Tablets (600–1023px) ── */
-@media (min-width: 600px) {
-  html { font-size: 16px; }
-  body { padding-top: 24px; }
-
-  .page {
-    max-width: 600px;
-    padding-top: 40px;
-    padding-left: clamp(24px, 5vw, 40px);
-    padding-right: clamp(24px, 5vw, 40px);
-    padding-bottom: 100px;
-  }
-
-  .footer { max-width: 600px; padding-left: 40px; padding-right: 40px; }
-
-  .title { font-size: 2.2rem; letter-spacing: -.025em; }
-  .subtitle { font-size: 1.15rem; }
-  .badge { font-size: .8rem; padding: 7px 16px; }
-
-  .cards-grid { grid-template-columns: repeat(3, 1fr); gap: 14px; }
-  .card { padding: 24px 14px 20px; }
-  .card-qty { font-size: 2rem; }
-  .card-label { font-size: .7rem; }
-  .card-price { font-size: 1rem; }
-
-  .progress-wrap { padding: 18px 22px; }
-  .progress-track { height: 16px; }
-
-  input[type="text"], input[type="email"], input[type="tel"] { padding: 14px 16px; font-size: 1rem; }
-  .btn { padding: 17px; font-size: 1.05rem; }
-
-  .section-title { font-size: .74rem; letter-spacing: .13em; }
-  .trust-badges { gap: 14px; }
-  .trust-badge { font-size: .72rem; padding: 5px 12px; }
-
-  .resumen-row { font-size: .86rem; }
-  .resumen-total { font-size: 1.05rem; }
-
-  #adminTrigger { top: 18px; right: 18px; width: 42px; height: 42px; }
-
-  .wa-float { width: 62px; height: 62px; bottom: 26px; right: 22px; }
-  .wa-float svg { width: 30px; height: 30px; }
-}
-
-/* ── Tablet landscape / laptop pequeño (768–1023px) ── */
-@media (min-width: 768px) and (max-width: 1023px) {
-  .page { max-width: 680px; }
-  .footer { max-width: 680px; }
-
-  .title { font-size: 2.4rem; }
-  .cards-grid { gap: 16px; }
-  .card { padding: 28px 16px 22px; }
-  .card-qty { font-size: 2.2rem; }
-  .card-price { font-size: 1.05rem; }
-
-  /* Formulario en 2 columnas en tablet */
-  .form-cols {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 0 16px;
-  }
-  .form-cols .input-group:last-child:nth-child(odd) {
-    grid-column: 1 / -1;
-  }
-}
-
-/* ── LG: Laptop / escritorio (1024–1279px) ── */
-@media (min-width: 1024px) {
-  html { font-size: 16.5px; }
-  body { padding-top: 32px; }
-
-  .page {
-    max-width: 700px;
-    padding-top: 56px;
-    padding-left: 48px;
-    padding-right: 48px;
-    padding-bottom: 120px;
-  }
-  .footer { max-width: 700px; padding: 28px 48px 60px; }
-
-  .title { font-size: 2.6rem; letter-spacing: -.03em; }
-  .subtitle { font-size: 1.2rem; }
-  .badge { font-size: .82rem; padding: 8px 18px; }
-
-  .site-header { margin-bottom: 40px; }
-  .logo-wrap img { max-width: 170px; }
-
-  .cards-grid { gap: 18px; margin-bottom: 20px; }
-  .card { padding: 30px 18px 24px; border-radius: 18px; }
-  .card-qty { font-size: 2.4rem; }
-  .card-label { font-size: .72rem; margin: 5px 0 10px; }
-  .card-price { font-size: 1.08rem; }
-  .card:hover { transform: translateY(-5px); }
-  .card.selected { transform: scale(1.06); }
-
-  .progress-wrap { padding: 20px 24px; border-radius: 18px; }
-  .progress-track { height: 18px; }
-
-  input[type="text"], input[type="email"], input[type="tel"] {
-    padding: 15px 18px;
-    font-size: 1rem;
-    border-radius: 12px;
-  }
-
-  .btn { padding: 18px; font-size: 1.08rem; border-radius: 18px; }
-  .btn-consult { padding: 15px 22px; }
-
-  .section-title { font-size: .76rem; letter-spacing: .14em; margin: 32px 0 14px; }
-
-  .trust-badges { gap: 16px; }
-  .trust-badge { font-size: .74rem; padding: 5px 14px; }
-
-  #resumenPedido { padding: 16px 22px; }
-  .resumen-row { font-size: .88rem; margin-bottom: 8px; }
-  .resumen-total { font-size: 1.1rem; padding-top: 12px; }
-
-  /* Form en 2 columnas en desktop */
-  .form-cols {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 0 18px;
-  }
-  .form-cols .full-col { grid-column: 1 / -1; }
-
-  .info-box { font-size: .82rem; padding: 14px 16px; }
-
-  .terminos-card { padding: 18px; font-size: .86rem; }
-
-  .redes { gap: 16px; margin-top: 36px; }
-  .red-btn { width: 48px; height: 48px; }
-  .red-btn svg { width: 22px; height: 22px; }
-
-  #adminTrigger { top: 20px; right: 20px; }
-  .wa-float { width: 64px; height: 64px; }
-}
-
-/* ── XL: Escritorios grandes (1280px+) ── */
-@media (min-width: 1280px) {
-  html { font-size: 17px; }
-
-  .page { max-width: 760px; }
-  .footer { max-width: 760px; }
-
-  .title { font-size: 2.8rem; }
-  .cards-grid { gap: 20px; }
-  .card { padding: 32px 20px 26px; }
-  .card-qty { font-size: 2.6rem; }
-}
-
-/* ── Safe areas (notch, home bar) ── */
-@supports (padding-bottom: env(safe-area-inset-bottom)) {
-  body { padding-bottom: env(safe-area-inset-bottom); }
-  .wa-float { bottom: calc(20px + env(safe-area-inset-bottom)); }
-}
-
-/* ── Móvil pequeño (<380px) ── */
-@media (max-width: 380px) {
-  .page { padding-left: 12px; padding-right: 12px; }
-  .title { font-size: 1.55rem; }
-  .cards-grid { gap: 7px; }
-  .card { padding: 14px 6px 12px; }
-  .card-qty { font-size: 1.5rem; }
-  .card-price { font-size: .82rem; }
-  .modal-inner { border-radius: 14px; }
-}
-
-/* ── Entrance animations ── */
-@keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
-.page { animation: fadeIn .5s ease; }
-</style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700;9..144,800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="premium.css">
 </head>
 
 <body>
 
-<a href="Admin.html" id="adminTrigger" title="Admin">
-  <span style="display:block;width:16px;height:1.5px;background:rgba(0,0,0,.35);border-radius:2px;"></span>
-  <span style="display:block;width:16px;height:1.5px;background:rgba(0,0,0,.35);border-radius:2px;"></span>
-  <span style="display:block;width:16px;height:1.5px;background:rgba(0,0,0,.35);border-radius:2px;"></span>
-</a>
+<!-- Iconos -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <symbol id="i-lock" viewBox="0 0 24 24"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></symbol>
+    <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6l8-3z"/><path d="M9 12l2 2 4-4"/></symbol>
+    <symbol id="i-dice" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="3"/><circle cx="9" cy="9" r=".9" fill="currentColor"/><circle cx="15" cy="9" r=".9" fill="currentColor"/><circle cx="9" cy="15" r=".9" fill="currentColor"/><circle cx="15" cy="15" r=".9" fill="currentColor"/></symbol>
+    <symbol id="i-ticket" viewBox="0 0 24 24"><path d="M4 6h16v4a2 2 0 0 0 0 4v4H4v-4a2 2 0 0 0 0-4z"/><path d="M14 6v12" stroke-dasharray="2 2"/></symbol>
+    <symbol id="i-gem" viewBox="0 0 24 24"><path d="M6 4h12l3 5-9 11L3 9z"/><path d="M3 9h18M9 4l-2 5 5 11 5-11-2-5"/></symbol>
+    <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></symbol>
+    <symbol id="i-mail" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></symbol>
+    <symbol id="i-bank" viewBox="0 0 24 24"><path d="M3 10l9-6 9 6M5 10v8M9 10v8M15 10v8M19 10v8M3 20h18"/></symbol>
+    <symbol id="i-chev" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></symbol>
+    <symbol id="i-pause" viewBox="0 0 24 24"><path d="M9 5v14M15 5v14"/></symbol>
+    <symbol id="i-party" viewBox="0 0 24 24"><path d="M4 20l4-12 8 8z"/><path d="M14 4l1 2M19 9l2 1M17 3v3"/></symbol>
+    <symbol id="i-calendar" viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M9 3v4M15 3v4"/></symbol>
+  </defs>
+</svg>
 
-<div id="loadingPago">
-  <div class="casino-inner">
-    <div class="loading-ring"></div>
-    <p class="casino-txt">Procesando tu pago seguro...</p>
+<header class="topbar">
+  <div class="topbar-in">
+    <a class="brand" href="/" aria-label="EiderTech Soluciones">
+      <img src="/imagenes/Logo.png" alt="EiderTech Soluciones" onerror="this.parentElement.style.display='none'">
+    </a>
+    <nav class="topnav" aria-label="Principal">
+      <a href="mis-codigos.html">Mis códigos</a>
+      <a href="#comprar" class="nav-cta">Comprar códigos</a>
+      <a href="Admin.html" id="adminTrigger" title="Admin" aria-label="Administración"><svg class="icon"><use href="#i-lock"/></svg></a>
+    </nav>
   </div>
-</div>
+</header>
 
-<div class="page">
+<main class="shell">
 
-  <div class="site-header">
-    <div class="logo-wrap">
-      <img src="" alt="EiderTech Soluciones"
-           onerror="this.style.display='none'">
-    </div>
-
-    <!-- Imagen de la Dinamica -->
-    <div style="margin:0 auto 20px;max-width:320px;position:relative">
-      
-      <img
-        id="imgPremio"
-        src="/imagenes/premio.png"
-        alt="Premio en efectivo"
-        style="width:100%;height:auto;max-height:60vh;border-radius:18px;box-shadow:0 8px 32px rgba(201,147,10,.15),0 2px 8px rgba(0,0,0,.07);display:block;object-fit:contain;"
-        onerror="this.parentElement.style.display='none'"
-      >
-    
-    </div>
-
-    <h6 class="title" id="tituloDinamica">🎟️ Compra tus <span>Códigos</span></h6>
-    <h6><p class="subtitle" id="subtituloPremio">Participa por <span id="premioFallback">—</span></p></h6>
-    <div class="badge-wrap">
-      <span class="badge" id="badgeDorado">💎 código dorado · <span id="doradoFallback">—</span></span>
-    </div>
-  </div>
-
-  <!-- BANNER DINÁMICO -->
+  <!-- BANNER DINÁMICO + GANADOR -->
   <div id="banner-dinamico"></div>
-
-  <!-- GANADOR -->
   <div id="seccion-ganador"></div>
 
-  <!-- PROGRESS -->
-  <div class="progress-wrap">
-    <div class="progress-labels">
-      <span>Códigos vendidos</span>
-      <span id="txtProgreso">Cargando...</span>
-    </div>
-    <div class="progress-track">
-      <div id="barraProgreso" class="progress-bar"></div>
-    </div>
-    <div class="progress-meta">
-      <div class="progress-meta-item">
-        📅 Inicio: <strong id="txtFechaInicio">—</strong>
+  <div class="layout">
+
+    <!-- ═════════ IZQUIERDA: el premio ═════════ -->
+<section class="stage" aria-label="Premio">
+      <h1 class="headline" id="tituloDinamica">Compra tus códigos y participa por</h1>
+      <p class="prize" id="subtituloPremio"><span class="prize-cur">$</span><span class="prize-num" id="premioFallback">—</span><span class="prize-cop">COP</span></p>
+
+      <figure class="cheque" id="chequeWrap" hidden>
+        <img id="imgPremio" alt="Premio de la dinámica" decoding="async">
+      </figure>
+
+      <div class="gold-callout" id="badgeDorado">
+        <span class="gc-icon"><svg class="icon"><use href="#i-gem"/></svg></span>
+        <div>
+          <strong>Código dorado</strong>
+          <span class="gc-txt">Si te cae uno, ganas <b id="doradoFallback">—</b></span>
+        </div>
       </div>
-      <div class="progress-meta-item">
-        🏁 Sorteo: <strong id="txtFechaSorteo">Al llegar al 100% </strong>
+
+      <div class="trust-row">
+        <span class="trust-item"><svg class="icon"><use href="#i-dice"/></svg>Códigos 100% aleatorios</span>
+        <span class="trust-item"><svg class="icon"><use href="#i-shield"/></svg>Pago protegido con Wompi</span>
+        <span class="trust-item"><svg class="icon"><use href="#i-ticket"/></svg>Se juega con la Lotería de Medellín</span>
       </div>
-    </div>
-  </div>
+    </section>
 
-  <div id="seccionDorados">
-    <div class="sec-label">🎫 Códigos dorados entregados</div>
-    <div id="listaDorados"></div>
-  </div>
+    <!-- ═════════ DERECHA: compra ═════════ -->
+    <section class="buy" id="comprar" aria-label="Comprar códigos">
 
-  <div id="success">✅ ¡Pago confirmado! Revisa tu correo.</div>
-  <div id="avisoStock"></div>
-
-  <p class="section-title">Selecciona tu paquete</p>
-
-  <div class="cards-grid" id="cards-grid">
-    <div style="text-align:center;padding:20px;color:var(--muted);font-size:.9rem;grid-column:1/-1">Cargando paquetes...</div>
-  </div>
-
-  <div id="seccionPersonalizada">
-    <div class="personalizada-titulo">¿Deseas más?</div>
-    <div class="personalizada-row">
-      <input type="number" class="input-cantidad" id="inputCantidadPersonalizada" value="17" min="4" max="500" step="1" inputmode="numeric" aria-label="Cantidad de códigos">
-      <button type="button" class="btn-personalizada" id="btnComprarPersonalizado">Comprar códigos</button>
-    </div>
-    <div class="personalizada-error" id="errorCantidadPersonalizada"></div>
-    <div class="personalizada-hint">Mínimo 4 · Máximo 500 códigos por compra</div>
-  </div>
-
-  <div id="resumenPedido">
-    <div class="resumen-row">
-      <span>Paquete seleccionado</span>
-      <span id="resumenCodigos">—</span>
-    </div>
-    <div class="resumen-row">
-      <span>Precio por código</span>
-      <span id="resumenPrecioUnitario">—</span>
-    </div>
-    <div class="resumen-total">
-      <span>Total a pagar</span>
-      <span id="resumenTotal">—</span>
-    </div>
-  </div>
-
-  <div id="form">
-
-    <p class="section-title" style="margin-top:0;">Datos para facturación</p>
-
-    <div class="info-box" style="margin-bottom:14px">
-      Estos datos se usan para generar tu factura electrónica y enviarte los códigos al correo.
-    </div>
-
-    <div class="form-cols">
-      <div class="input-group full-col">
-        <label class="input-label" for="nombre">Nombre completo</label>
-        <input type="text" id="nombre" placeholder="Ej: Juan Pérez" autocomplete="name">
-        <div class="field-error" id="err-nombre">Ingresa tu nombre</div>
+      <div class="progress-wrap">
+        <div class="progress-top">
+          <div class="progress-pct"><span id="txtProgreso">0%</span><small>de los códigos vendidos</small></div>
+        </div>
+        <div class="progress-track" role="progressbar" aria-label="Códigos vendidos" aria-valuemin="0" aria-valuemax="100" id="pbTrack">
+          <div id="barraProgreso" class="progress-bar"></div>
+        </div>
+        <div class="progress-meta">
+          <span>Inicio: <strong id="txtFechaInicio">—</strong></span>
+          <span>Sorteo: <strong id="txtFechaSorteo">al llegar al 100%</strong></span>
+        </div>
       </div>
-      <div class="input-group">
-        <label class="input-label" for="cedula">Cédula</label>
-        <input type="text" id="cedula" placeholder="Ej: 1234567890" inputmode="numeric" autocomplete="off">
-        <div class="field-error" id="err-cedula">Ingresa tu cédula</div>
+
+      <div id="seccionDorados">
+        <div class="sec-label">Códigos dorados ya entregados</div>
+        <div id="listaDorados"></div>
       </div>
-      <div class="input-group">
-        <label class="input-label" for="telefono">Teléfono / WhatsApp</label>
-        <input type="tel" id="telefono" placeholder="Ej: 3001234567" inputmode="tel" autocomplete="tel">
-        <div class="field-error" id="err-telefono">Ingresa tu teléfono</div>
+
+      <div id="success">Pago confirmado. Revisa tu correo para ver tus códigos.</div>
+      <div id="avisoStock"></div>
+
+      <h2 class="section-title">Elige tus códigos</h2>
+      <p class="section-sub">Más códigos, más oportunidades. Se asignan al azar y llegan a tu correo.</p>
+
+      <div class="cards-grid" id="cards-grid">
+        <div style="text-align:center;padding:20px;color:var(--muted);font-size:.9rem;grid-column:1/-1">Cargando paquetes…</div>
       </div>
-      <div class="input-group full-col">
-        <label class="input-label" for="correo">Correo electrónico</label>
-        <input type="email" id="correo" placeholder="Ej: juan@correo.com" inputmode="email" autocomplete="email">
-        <div class="field-error" id="err-correo">Ingresa un correo válido</div>
+
+      <div id="seccionPersonalizada">
+        <div class="personalizada-titulo">¿Deseas más?</div>
+        <div class="personalizada-row">
+          <input type="number" class="input-cantidad" id="inputCantidadPersonalizada" value="17" min="4" max="500" step="1" inputmode="numeric" aria-label="Cantidad de códigos">
+          <button type="button" class="btn-personalizada" id="btnComprarPersonalizado">Elegir esta cantidad</button>
+        </div>
+        <div class="personalizada-error" id="errorCantidadPersonalizada"></div>
+        <div class="personalizada-hint">Entre 4 y 500 códigos por compra</div>
       </div>
-      <div class="input-group full-col">
-        <label class="input-label" for="direccion">Dirección <span style="font-weight:400;opacity:.6">(opcional)</span></label>
-        <input type="text" id="direccion" placeholder="Ej: Cra 5 #10-20, Medellín" autocomplete="street-address">
+
+      <div id="resumenPedido">
+        <div class="resumen-row"><span>Tu selección</span><span id="resumenCodigos">—</span></div>
+        <div class="resumen-row"><span>Precio por código</span><span id="resumenPrecioUnitario">—</span></div>
+        <div class="resumen-total"><span>Total a pagar</span><span id="resumenTotal">—</span></div>
+        <a class="btn btn-primary" id="btnContinuar" href="pagar.html"><svg class="icon"><use href="#i-lock"/></svg><span id="btnContinuarTxt">Continuar al pago</span></a>
+        <p class="pay-note"><svg class="icon"><use href="#i-shield"/></svg><span>Pagas en el siguiente paso con <b>Wompi</b> o por transferencia</span></p>
       </div>
-    </div>
 
-    <div class="info-box gold-tint">
-      🎟️ <strong>Los códigos son 100% aleatorios.</strong>
-      Son generados automáticamente por el sistema al momento del pago. Ninguna persona los selecciona ni los manipula.
-    </div>
+      <div id="terminos" style="scroll-margin-top:90px"></div>
+<button class="btn-terminos" id="btnTerminos" aria-expanded="false" aria-controls="terminosContent" onclick="toggleTerminos()">
+        <span id="btnTerminosTxt">Términos y condiciones</span><svg class="icon"><use href="#i-chev"/></svg>
+      </button>
 
-    <div class="trust-block">
-      <div class="trust-label">🔒 Tus pagos son seguros con</div>
-      <div class="wompi-name">⚡ Wompi</div>
-      <div class="trust-badges">
-        <span class="trust-badge">🔐 Cifrado SSL</span>
-        <span class="trust-badge">✅ Pagos verificados</span>
-        <span class="trust-badge">🏦 Bancolombia</span>
+      <div class="terminos-body" id="terminosContent">
+        <div class="terminos-card">
+          <h4>Método de juego</h4>
+          Se usa como referencia de validación el resultado de la <strong>Lotería de Medellín</strong>. Se toman los <strong>3 últimos números del premio mayor</strong> más el <strong>primer número de la serie</strong>. El código que coincida con esta combinación será el ganador.
+          <p style="margin-top:8px;font-size:.82rem;color:var(--muted);">Ejemplo: Premio mayor <strong>1234</strong> · Serie <strong>234</strong> → código ganador: <strong style="color:var(--gold-hi)">2342</strong></p>
+        </div>
+        <div class="terminos-card">
+          <h4>Aleatoriedad garantizada</h4>
+          Los códigos son asignados de forma <strong>completamente aleatoria</strong> por el servidor al momento del pago. <strong>Ninguna persona interviene</strong> en la selección. El proceso es automático e inmodificable.
+        </div>
+        <div class="terminos-card">
+          <h4>Pago del premio</h4>
+          Por <strong>transferencia bancaria</strong> en un plazo de <strong>1 a 5 días hábiles</strong> tras verificar el código ganador.
+          <div class="bank-tags"><span>Nequi</span><span>Bancolombia</span><span>Davivienda</span><span>BBVA</span></div>
+        </div>
+        <div class="terminos-card">
+          <h4>Fecha de validación</h4>
+          El premio se realiza cuando se vendan el <strong>100% de los códigos</strong> disponibles, usando el resultado de la <strong>Lotería de Medellín</strong> del día del cierre.
+        </div>
+        <div class="terminos-card">
+          <h4>Transparencia y validación</h4>
+          Los resultados publicados son verificables públicamente mediante el resultado oficial de Medellín. Todos los códigos son generados automáticamente por el sistema, evitando manipulación manual o selección humana. EiderTech Soluciones podrá verificar la identidad del ganador antes de realizar cualquier pago.
+        </div>
+        <div class="terminos-card">
+          <h4>Reembolsos</h4>
+          Una vez confirmado el pago y asignados los códigos, no se realizan devoluciones ni cancelaciones. En caso de cancelación del evento por razones técnicas o administrativas, el dinero será reintegrado al cliente mediante el mismo método de pago utilizado.
+        </div>
+        <div class="terminos-card">
+          <h4>Prevención de fraude</h4>
+          La plataforma podrá cancelar compras sospechosas, duplicadas o con información inconsistente. Los pagos fraudulentos serán reportados a las autoridades competentes.
+        </div>
+        <div class="terminos-card">
+          <h4>Protección de datos</h4>
+          Los datos personales suministrados serán utilizados únicamente para validación de compras, contacto con clientes, envío de códigos y cumplimiento de obligaciones legales. EiderTech Soluciones no comercializa información personal.
+        </div>
+        <div class="terminos-card">
+          <h4>Condiciones generales</h4>
+          <ul>
+            <li>Cada código es único e irrepetible.</li>
+            <li>La compra de códigos no garantiza premio.</li>
+            <li>El participante acepta que el resultado depende exclusivamente del sorteo oficial.</li>
+            <li>Conserva tu correo de confirmación como comprobante.</li>
+            <li>El resultado oficial es el publicado en <strong>loteriademedellin.com.co</strong>.</li>
+            <li>EiderTech Soluciones se reserva el derecho de cancelar el sorteo y devolver el dinero si no se venden todos los códigos.</li>
+          </ul>
+          <p style="margin-top:10px;font-size:.8rem;color:var(--muted);">Al comprar aceptas estos términos. Contacto: infoeidertechsoluciones@gmail.com</p>
+        </div>
       </div>
-    </div>
 
-    <div class="habeas-data-box">
-      <label class="habeas-data-label">
-        <input type="checkbox" id="chkHabeasData">
-        <span>Autorizo el tratamiento de mis datos personales conforme a la
-          <span class="habeas-data-link" onclick="event.preventDefault(); toggleHabeasData();">Política de Tratamiento de Datos</span>
-          (Ley 1581 de 2012), únicamente para gestionar esta compra y la entrega de premios.</span>
-      </label>
-      <div class="habeas-data-body" id="habeasDataContent">
-        Los datos que ingresas (nombre, cédula, teléfono, correo, dirección) se usan exclusivamente para
-        procesar tu compra, generar tu factura, entregar tus códigos y contactarte si resultas ganador.
-        No se comparten con terceros distintos a nuestro procesador de pagos (Wompi) para efectos de la
-        transacción. Puedes solicitar la eliminación de tus datos escribiendo a
-        infoeidertechsoluciones@gmail.com una vez finalizada la dinámica.
+      <div class="redes">
+        <a href="https://www.facebook.com/eider.cobo.1/" target="_blank" rel="noopener" class="red-btn" title="Facebook" aria-label="Facebook">
+          <svg viewBox="0 0 24 24"><path fill="#1877F2" d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+        </a>
+        <a href="https://www.instagram.com/eider1dy" target="_blank" rel="noopener" class="red-btn" title="Instagram" aria-label="Instagram">
+          <svg viewBox="0 0 24 24"><path fill="#E4405F" d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+        </a>
+        <a href="mailto:infoeidertechsoluciones@gmail.com" class="red-btn" title="Correo" aria-label="Correo">
+          <svg viewBox="0 0 24 24"><path fill="#E4BF6B" d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+        </a>
       </div>
-    </div>
 
-    <button class="btn btn-primary" id="btnPagar">
-      💳 Ir a pagar con Wompi
-    </button>
-
-    <button class="btn btn-transfer" id="btnTransferencia" onclick="abrirModalTransferencia()">
-      🏦 Pagar por transferencia bancaria
-    </button>
-    <p class="transfer-note">Transfiere al banco y recibe tus códigos una vez confirmemos el pago</p>
-
-    <p class="terms-note">
-      Al comprar aceptas los
-      <span onclick="toggleTerminos(); setTimeout(()=>document.getElementById('terminosContent').scrollIntoView({behavior:'smooth'}),100)">
-        términos y condiciones
-      </span>
-      y la política de privacidad.
-    </p>
-
+    </section>
   </div>
-
-  <hr class="divider">
-
-  <p class="section-title">Consultar mis códigos</p>
-  <div class="consult-row">
-    <input type="text" id="buscar" placeholder="Correo o Cédula">
-    <button class="btn-consult" onclick="consultar()">Buscar</button>
-  </div>
-
-  <div
-    id="resultado"
-    class="codes-list"
-    style="-webkit-user-select:none;user-select:none;-moz-user-select:none;-ms-user-select:none;pointer-events:none;"
-  ></div>
-
-  <div id="btnReenviarDiv" style="display:none; margin-top:10px;">
-    <button class="btn-reenviar" onclick="reenviarCorreo()">📧 Reenviar códigos al correo</button>
-  </div>
-  <div class="msg-reenvio" id="msgReenvio"></div>
-
-  <button class="btn-terminos" onclick="toggleTerminos()">
-    📋 Ver Términos y Condiciones ▼
-  </button>
-
-  <div class="terminos-body" id="terminosContent">
-    <div class="terminos-card">
-      <h4>🏆 Método de juego</h4>
-      resultado solo como referencia de validación con la <strong>de Medellín</strong>. Se toman los <strong>3 últimos números del premio mayor</strong> más el <strong>primer número de la serie</strong>. El código que coincida con esta combinación será el ganador.
-      <p style="margin-top:8px;font-size:.78rem;color:var(--muted);">Ejemplo: Premio mayor <strong style="color:var(--text)">1234</strong> · Serie <strong style="color:var(--text)">234</strong> → código ganador: <strong style="color:var(--gold)">2342</strong></p>
-    </div>
-    <div class="terminos-card">
-      <h4>🎰 Aleatoriedad garantizada</h4>
-      Los códigos son asignados de forma <strong>completamente aleatoria</strong> por el servidor al momento del pago. <strong>Ninguna persona interviene</strong> en la selección. El proceso es automático e inmodificable.
-    </div>
-    <div class="terminos-card">
-      <h4>💰 Pago del premio</h4>
-      Por <strong>transferencia bancaria</strong> en un plazo de <strong>1 a 5 días hábiles</strong> tras verificar el código ganador.
-      <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;">
-        <span style="background:var(--bg);color:var(--gold);padding:4px 10px;border-radius:6px;border:1px solid var(--border-gold);font-size:.78rem;">Nequi</span>
-        <span style="background:var(--bg);color:var(--gold);padding:4px 10px;border-radius:6px;border:1px solid var(--border-gold);font-size:.78rem;">Bancolombia</span>
-        <span style="background:var(--bg);color:var(--gold);padding:4px 10px;border-radius:6px;border:1px solid var(--border-gold);font-size:.78rem;">Davivienda</span>
-        <span style="background:var(--bg);color:var(--gold);padding:4px 10px;border-radius:6px;border:1px solid var(--border-gold);font-size:.78rem;">BBVA</span>
-      </div>
-    </div>
-    <div class="terminos-card">
-      <h4>🎟️ Fecha de validación</h4>
-      El premio se realiza cuando se vendan el <strong>100% de los códigos</strong> disponibles, usando el resultado de la <strong>Lotería de Medellín</strong> del día del cierre.
-    </div>
-    <div class="terminos-card">
-      <h4>⚖️ Transparencia y validación</h4>
-      Los resultados publicados son verificables públicamente mediante el resultado oficial de Medellín. Todos los códigos son generados automáticamente por el sistema, evitando manipulación manual o selección humana. EiderTech Soluciones podrá verificar la identidad del ganador antes de realizar cualquier pago.
-    </div>
-    <div class="terminos-card">
-      <h4>💳 Reembolsos</h4>
-      Una vez confirmado el pago y asignados los códigos, no se realizan devoluciones ni cancelaciones. En caso de cancelación del evento por razones técnicas o administrativas, el dinero será reintegrado al cliente mediante el mismo método de pago utilizado.
-    </div>
-    <div class="terminos-card">
-      <h4>🛡️ Prevención de fraude</h4>
-      La plataforma podrá cancelar compras sospechosas, duplicadas o con información inconsistente. Los pagos fraudulentos serán reportados a las autoridades competentes.
-    </div>
-    <div class="terminos-card">
-      <h4>🔐 Protección de datos</h4>
-      Los datos personales suministrados serán utilizados únicamente para validación de compras, contacto con clientes, envío de códigos y cumplimiento de obligaciones legales. EiderTech Soluciones no comercializa información personal.
-    </div>
-    <div class="terminos-card">
-      <h4>📌 Condiciones generales</h4>
-      <ul>
-        <li>Cada código es único e irrepetible.</li>
-        <li>La compra de códigos no garantiza premio.</li>
-        <li>El participante acepta que el resultado depende exclusivamente del sorteo oficial.</li>
-        <li>Conserva tu correo de confirmación como comprobante.</li>
-        <li>El resultado oficial es el publicado en <strong>loteriademedellin.com.co</strong>.</li>
-        <li>EiderTech Soluciones se reserva el derecho de cancelar el sorteo y devolver el dinero si no se venden todos los códigos.</li>
-      </ul>
-      <p style="margin-top:10px;font-size:.76rem;color:var(--muted);">Al comprar aceptas estos términos. · 📧 infoeidertechsoluciones@gmail.com</p>
-    </div>
-  </div>
-
-  <div class="redes">
-    <a href="https://www.facebook.com/eider.cobo.1/" target="_blank" rel="noopener" class="red-btn" title="Facebook">
-      <svg viewBox="0 0 24 24"><path fill="#1877F2" d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
-    </a>
-    <a href="https://www.instagram.com/eider1dy" target="_blank" rel="noopener" class="red-btn" title="Instagram">
-      <svg viewBox="0 0 24 24"><path fill="#E4405F" d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
-    </a>
-    <a href="mailto:infoeidertechsoluciones@gmail.com" class="red-btn" title="Email">
-      <svg viewBox="0 0 24 24"><path fill="#FF6B35" d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
-    </a>
-  </div>
-
-</div>
+</main>
 
 <footer class="footer">
-  <img src="/imagenes/Logo.png" alt="EiderTech Soluciones" class="footer-logo" loading="lazy"
-       onerror="this.style.display='none'">
-  <div class="footer-wompi">
-    🔒 Pagos seguros con <span class="wompi-badge">⚡ Wompi</span>
-  </div>
-  <div class="footer-text">
-    <p>© 2026 EiderTech Soluciones. Todos los derechos reservados.</p>
-    <p style="margin-top:4px;">📧 infoeidertechsoluciones@gmail.com</p>
-    <p style="margin-top:4px;">Pagos procesados de forma segura · Cifrado SSL · Respaldado por Bancolombia · Facturación electrónica disponible</p>
+  <div class="footer-in">
+    <span class="footer-brand"><img src="/imagenes/Logo.png" alt="EiderTech Soluciones" loading="lazy" onerror="this.parentElement.style.display='none'"></span>
+    <div class="footer-text">
+      <p>© 2026 EiderTech Soluciones. Todos los derechos reservados.</p>
+      <p><a href="mailto:infoeidertechsoluciones@gmail.com">infoeidertechsoluciones@gmail.com</a></p>
+      <p>Pagos procesados con Wompi · Cifrado SSL · Facturación electrónica disponible</p>
+    </div>
   </div>
 </footer>
 
@@ -1591,16 +216,7 @@ input.error { border-color: rgba(248,113,113,.7); box-shadow: 0 0 0 3px rgba(248
 </a>
 
 <script>
-// Variables globales (fuera del DOMContentLoaded) para que también
-// sean accesibles desde el script del modal de transferencia bancaria
-// "var" (no "let"): esta también se usa desde el segundo bloque <script>
-// (el modal de transferencia, al abrirlo con la cantidad ya seleccionada).
 var cantidadSeleccionada = 0;
-let datoActual = "";
-let procesandoPago = false;
-// precioCodigo y PRECIOS también deben ser verdaderamente globales: se leen
-// desde el modal de transferencia (segundo bloque <script>, más abajo), que
-// no comparte closures con lo que está dentro de DOMContentLoaded.
 var precioCodigo = 3750;
 var PRECIOS = {};
 
@@ -1622,58 +238,20 @@ document.querySelectorAll(".btn").forEach((boton) => {
 });
 
 const API_URL = window.location.origin;
-
 const cards = document.querySelectorAll(".card");
-const form = document.getElementById("form");
-const btnPagar = document.getElementById("btnPagar");
-const casino = document.getElementById("loadingPago");
-
 
 // ===============================
 // TOGGLE TERMINOS
 // ===============================
-window.toggleTerminos = function () {
+window.toggleTerminos = function (forzarAbrir) {
   const body = document.getElementById("terminosContent");
-  const btn = document.querySelector(".btn-terminos");
+  const btn = document.getElementById("btnTerminos");
   const abierto = body.style.display === "block";
-  body.style.display = abierto ? "none" : "block";
-  btn.innerHTML = abierto ? "📋 Ver Términos y Condiciones ▼" : "📋 Ocultar Términos y Condiciones ▲";
-  btn.style.color = abierto ? "" : "var(--gold)";
-  btn.style.borderColor = abierto ? "" : "var(--gold)";
+  const abrir = forzarAbrir === true ? true : !abierto;
+  body.style.display = abrir ? "block" : "none";
+  btn.setAttribute("aria-expanded", abrir ? "true" : "false");
+  document.getElementById("btnTerminosTxt").textContent = abrir ? "Ocultar términos y condiciones" : "Términos y condiciones";
 };
-
-// ===============================
-// TOGGLE HABEAS DATA
-// ===============================
-window.toggleHabeasData = function () {
-  document.getElementById("habeasDataContent").classList.toggle("open");
-};
-
-
-// ===============================
-// VALIDACIONES
-// ===============================
-function esCorreoValido(v)   { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v); }
-function esTelefonoValido(v) { return /^[0-9]{10,13}$/.test(v); }
-function esCedulaValida(v)   { return /^[0-9]{5,15}$/.test(v); }
-
-function mostrarError(input, id) { input.classList.add("error"); document.getElementById(id).style.display = "block"; }
-function limpiarError(input, id) { input.classList.remove("error"); document.getElementById(id).style.display = "none"; }
-
-["nombre", "cedula", "telefono", "correo"].forEach(id => {
-  const input = document.getElementById(id);
-  if (id === "cedula" || id === "telefono") {
-    input.addEventListener("input", () => { input.value = input.value.replace(/\D/g, ""); });
-  }
-  input.addEventListener("input", () => {
-    const v = input.value.trim();
-    if (id === "correo"   && esCorreoValido(v))   limpiarError(input, "err-correo");
-    if (id === "telefono" && esTelefonoValido(v)) limpiarError(input, "err-telefono");
-    if (id === "cedula"   && esCedulaValida(v))   limpiarError(input, "err-cedula");
-    if (id === "nombre"   && v.length >= 2)        limpiarError(input, "err-nombre");
-  });
-});
-
 
 // ===============================
 // PROMO ACTIVA
@@ -1688,11 +266,11 @@ async function verificarPromo() {
       if (!badge) {
         badge = document.createElement('div');
         badge.id = 'badge-promo';
-        badge.style.cssText = `background:rgba(232,184,75,.1);border:1px solid rgba(232,184,75,.3);border-radius:10px;padding:10px 14px;margin-bottom:14px;font-size:.82rem;color:#F5D07A;text-align:center;line-height:1.5;font-family:var(--font-body);`;
+        badge.style.cssText = `background:rgba(240,86,107,.1);border:1px solid rgba(240,86,107,.45);border-radius:14px;padding:12px 16px;margin-bottom:16px;font-size:.88rem;color:#FFE3E7;text-align:center;line-height:1.5;font-family:var(--font-body);`;
         document.querySelector('.cards-grid').parentNode.insertBefore(badge, document.querySelector('.cards-grid'));
       }
       const hora = new Date(promo.expira_en).toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit' });
-      badge.innerHTML = `🔥 <strong>Promoción activa</strong> hasta las ${hora} · Si te cae el código dorado ganas $${promo.precio_dorado.toLocaleString('es-CO')}`;
+      badge.innerHTML = `<strong>Promoción activa:</strong> si te cae el código dorado ganas $${promo.precio_dorado.toLocaleString('es-CO')} (hasta las ${hora})`;
     } else {
       if (badge) badge.remove();
     }
@@ -1705,21 +283,47 @@ setInterval(verificarPromo, 30000);
 // ===============================
 // VERIFICAR STOCK
 // ===============================
+// Porcentaje y barra se mueven juntos (igual que el premio al cargar)
+let progresoPrevio = 0;
+function animarProgreso(objetivo) {
+  const bar = document.getElementById('barraProgreso');
+  const txt = document.getElementById('txtProgreso');
+  const final = (n) => n.toFixed(2).replace(/\.?0+$/, '') + '%';
+  bar.style.width = objetivo + '%';
+  const desde = progresoPrevio;
+  progresoPrevio = objetivo;
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches || desde === objetivo) {
+    txt.textContent = final(objetivo); bar.classList.add('sheen'); return;
+  }
+  bar.classList.remove('sheen');
+  const dur = 1600, t0 = performance.now();
+  (function paso(t) {
+    const k = Math.min(1, (t - t0) / dur);
+    const e = 1 - Math.pow(1 - k, 4);
+    if (k < 1) {
+      txt.textContent = (desde + (objetivo - desde) * e).toFixed(1) + '%';
+      requestAnimationFrame(paso);
+    } else {
+      txt.textContent = final(objetivo);
+      bar.classList.add('sheen');
+    }
+  })(t0);
+}
+
 async function verificarStock() {
   try {
     const res = await fetch(`${API_URL}/api/progreso`);
     if (!res.ok) throw new Error();
     const data = await res.json();
     const porcentaje = Math.min(Number(data.porcentaje || 0), 100);
-    document.getElementById("barraProgreso").style.width = porcentaje + "%";
-    document.getElementById("txtProgreso").textContent = porcentaje.toFixed(2) + "%";
+    animarProgreso(porcentaje);
+    document.getElementById("pbTrack").setAttribute("aria-valuenow", porcentaje.toFixed(0));
 
     if (Number(data.disponibles || 0) <= 0) {
       cards.forEach(c => c.classList.add("disabled"));
-      form.style.display = "none";
       document.getElementById("resumenPedido").style.display = "none";
       document.getElementById("avisoStock").style.display = "block";
-      document.getElementById("avisoStock").innerHTML = "🚫 Todos los códigos fueron vendidos.";
+      document.getElementById("avisoStock").innerHTML = "Todos los códigos fueron vendidos.";
       abrirModalEstado('agotado');
     }
 
@@ -1732,14 +336,15 @@ async function verificarStock() {
       lista.innerHTML = "";
       dorados.forEach(item => {
         const span = document.createElement("span");
-        span.innerHTML = `✨ ${item.codigo}`;
-        span.style.cssText = `background:linear-gradient(135deg,rgba(232,184,75,.2),rgba(224,123,60,.15));color:var(--gold-light, #F5D07A);padding:6px 14px;border-radius:8px;font-weight:700;font-size:.85rem;border:1px solid rgba(232,184,75,.4);box-shadow:0 0 12px rgba(232,184,75,.25);`;
+        span.textContent = item.codigo;
+        span.style.cssText = `background:var(--gold-grad);color:#1A1204;padding:7px 16px;border-radius:10px;font-weight:800;font-size:.95rem;letter-spacing:.12em;box-shadow:0 0 18px rgba(228,191,107,.35);`;
         lista.appendChild(span);
       });
     }
   } catch(e) { console.error("Error verificando stock:", e); }
 }
 verificarStock();
+setInterval(verificarStock, 45000);
 
 
 // ===============================
@@ -1759,13 +364,10 @@ async function cargarConfig() {
     // Ventas pausadas por el admin: bloquear ambos botones de compra
     if (cfg.ventas_activas === false) {
       cards.forEach(c => c.classList.add("disabled"));
-      form.style.display = "none";
-      const btnTrf = document.getElementById("btnTransferencia");
-      if (btnTrf) { btnTrf.disabled = true; btnTrf.style.opacity = '0.5'; btnTrf.style.pointerEvents = 'none'; }
       document.getElementById("resumenPedido").style.display = "none";
       const aviso = document.getElementById("avisoStock");
       aviso.style.display = "block";
-      aviso.innerHTML = "⏸ Las ventas están pausadas temporalmente. Vuelve pronto.";
+      aviso.innerHTML = "Las ventas están pausadas temporalmente. Vuelve pronto.";
       abrirModalEstado('pausado');
     }
 
@@ -1777,9 +379,8 @@ async function cargarConfig() {
 
     // Premio total
     if (cfg.premioTotal) {
-      const premioFmt = Number(cfg.premioTotal).toLocaleString('es-CO');
-      document.getElementById('subtituloPremio').innerHTML =
-        `Participa por <span>$${premioFmt} COP</span>`;
+      const el = document.getElementById('premioFallback');
+      animarNumero(el, Number(cfg.premioTotal));
     }
 
     // Fecha de inicio de la dinámica
@@ -1795,19 +396,21 @@ async function cargarConfig() {
 
     // Imagen del premio (si el admin cargó una URL propia)
     if (cfg.premioImagen) {
-      document.getElementById('imgPremio').src = cfg.premioImagen;
+      const img = document.getElementById('imgPremio');
+      img.onload  = () => { document.getElementById('chequeWrap').hidden = false; };
+      img.onerror = () => { document.getElementById('chequeWrap').hidden = true; };
+      img.src = cfg.premioImagen;
     }
 
     // Valor del código promocional / dorado
     if (cfg.precioDorado) {
-      document.getElementById('badgeDorado').textContent =
-        `💎 código dorado · $${Number(cfg.precioDorado).toLocaleString('es-CO')}`;
+      animarNumero(document.getElementById('doradoFallback'), Number(cfg.precioDorado), '$');
     }
 
     // Banner
     if (cfg.banner?.activo && cfg.banner?.texto) {
       const colores = {
-        gold:  { bg: 'rgba(232,184,75,.12)', border: 'rgba(232,184,75,.35)',  color: '#F5D07A' },
+        gold:  { bg: 'rgba(228,191,107,.12)', border: 'rgba(228,191,107,.4)',  color: '#F6DE9E' },
         blue:  { bg: 'rgba(59,130,246,.12)', border: 'rgba(59,130,246,.35)',  color: '#93c5fd' },
         green: { bg: 'rgba(52,211,153,.12)', border: 'rgba(52,211,153,.35)',  color: '#6ee7b7' },
         red:   { bg: 'rgba(239,68,68,.12)',  border: 'rgba(239,68,68,.35)',   color: '#fca5a5' }
@@ -1838,11 +441,19 @@ async function cargarConfig() {
       card.dataset.cantidad = p.cantidad;
       card.dataset.precio   = p.precio;
       card.innerHTML = `
-        ${p.popular ? '<div class="card-popular">⭐ Popular</div>' : ''}
-        <div class="card-qty">${p.cantidad}</div>
-        <div class="card-label">códigos</div>
-        <div class="card-price">$${p.precio.toLocaleString('es-CO')}</div>
+        ${p.popular ? '<div class="card-popular">Más elegido</div>' : ''}
+        <div class="card-body">
+          <div class="card-qty">${p.cantidad}</div>
+          <div class="card-label">códigos</div>
+        </div>
+        <div class="card-stub">
+          <div class="card-price">$${p.precio.toLocaleString('es-CO')}</div>
+          <div class="card-unit">$${Number(cfg.precioCodigo || 0).toLocaleString('es-CO')} c/u</div>
+        </div>
       `;
+      card.setAttribute('role', 'button');
+      card.tabIndex = 0;
+      card.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); card.click(); } });
       card.addEventListener('click', () => seleccionarCard(card, cfg.paquetes));
       grid.appendChild(card);
     });
@@ -1852,21 +463,40 @@ async function cargarConfig() {
     // Sin configuración del servidor no usamos valores de una dinámica anterior.
     // Esto evita que una nueva dinámica requiera modificar el HTML.
     const grid = document.getElementById('cards-grid');
-    grid.innerHTML = '<div class="config-error" style="grid-column:1/-1;text-align:center;padding:24px;color:#b91c1c;background:#fef2f2;border:1px solid #fecaca;border-radius:12px">⚠️ No fue posible cargar la dinámica actual. Intenta recargar la página.</div>';
+    grid.innerHTML = '<div class="config-error">No fue posible cargar la dinámica actual. Intenta recargar la página.</div>';
     PRECIOS = {};
     precioCodigo = 0;
     cards.forEach(c => c.classList.add('disabled'));
-    form.style.display = 'none';
-    const btnTrf = document.getElementById('btnTransferencia');
-    if (btnTrf) { btnTrf.disabled = true; btnTrf.style.opacity = '0.5'; btnTrf.style.pointerEvents = 'none'; }
   }
+}
+
+// Cuenta animada del premio (se ejecuta una vez al cargar la configuración)
+function animarNumero(el, objetivo, prefijo = '') {
+  if (!el || !Number.isFinite(objetivo)) return;
+  const fmt = (n) => prefijo + Math.round(n).toLocaleString('es-CO');
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) { el.textContent = fmt(objetivo); return; }
+  const dur = 1400, t0 = performance.now();
+  (function paso(t) {
+    const k = Math.min(1, (t - t0) / dur);
+    el.textContent = fmt(objetivo * (1 - Math.pow(1 - k, 3)));
+    if (k < 1) requestAnimationFrame(paso);
+  })(t0);
+}
+
+// El botón de pago muestra el total para reforzar la decisión
+function actualizarBotonPagar(total) {
+  const t = document.getElementById('btnContinuarTxt');
+  const a = document.getElementById('btnContinuar');
+  if (t) t.textContent = total ? `Continuar · $${total.toLocaleString('es-CO')}` : 'Continuar al pago';
+  if (a && cantidadSeleccionada) a.href = `pagar.html?cantidad=${cantidadSeleccionada}`;
 }
 
 function seleccionarCard(card, paquetes) {
   if (card.classList.contains('disabled')) return;
-  document.querySelectorAll('.card').forEach(c => { c.classList.remove('selected','disabled'); });
+  // "dim" atenúa los demás paquetes pero siguen siendo clicables para cambiar de opción
+  document.querySelectorAll('.card').forEach(c => { c.classList.remove('selected','dim'); });
   card.classList.add('selected');
-  document.querySelectorAll('.card').forEach(c => { if (c !== card) c.classList.add('disabled'); });
+  document.querySelectorAll('.card').forEach(c => { if (c !== card) c.classList.add('dim'); });
 
   cantidadSeleccionada = Number(card.dataset.cantidad);
   const precio         = Number(card.dataset.precio);
@@ -1874,8 +504,8 @@ function seleccionarCard(card, paquetes) {
   document.getElementById('resumenCodigos').textContent       = `${cantidadSeleccionada} códigos`;
   document.getElementById('resumenPrecioUnitario').textContent = `$${precioCodigo.toLocaleString('es-CO')}`;
   document.getElementById('resumenTotal').textContent          = `$${precio.toLocaleString('es-CO')} COP`;
+  actualizarBotonPagar(precio);
   document.getElementById('resumenPedido').style.display       = 'block';
-  form.style.display = 'block';
   document.getElementById('avisoStock').style.display = 'none';
   document.getElementById('resumenPedido').scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
@@ -1911,16 +541,16 @@ function seleccionarCantidadPersonalizada() {
   }
 
   // Deselecciona cualquier paquete fijo (4/8/16) para dejar claro que se usa la cantidad personalizada
-  document.querySelectorAll('.card').forEach(c => c.classList.remove('selected', 'disabled'));
+  document.querySelectorAll('.card').forEach(c => c.classList.remove('selected', 'dim'));
 
   cantidadSeleccionada = cantidad;
   const total = cantidad * precioCodigo;
+  actualizarBotonPagar(total);
 
   document.getElementById('resumenCodigos').textContent        = `${cantidadSeleccionada} códigos`;
   document.getElementById('resumenPrecioUnitario').textContent = `$${precioCodigo.toLocaleString('es-CO')}`;
   document.getElementById('resumenTotal').textContent          = `$${total.toLocaleString('es-CO')} COP`;
   document.getElementById('resumenPedido').style.display       = 'block';
-  form.style.display = 'block';
   document.getElementById('avisoStock').style.display = 'none';
   document.getElementById('resumenPedido').scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
@@ -1942,23 +572,15 @@ function mostrarGanador(codigo, nombre) {
   const sec = document.getElementById('seccion-ganador');
   sec.style.display = 'block';
   sec.innerHTML = `
-    <div id="ganador-box" style="
-      background: linear-gradient(135deg, var(--surface), var(--card));
-      border: 1px solid var(--gold);
-      border-radius: 20px;
-      padding: 28px 20px;
-      text-align: center;
-      margin-bottom: 20px;
-      position: relative;
-      overflow: hidden;
-      box-shadow: 0 0 60px rgba(232,184,75,.2);
-    ">
-      <div style="font-size:44px;margin-bottom:10px">🏆</div>
-      <div style="font-size:.68rem;letter-spacing:4px;text-transform:uppercase;color:var(--muted);margin-bottom:6px;font-family:var(--font-display)">¡Tenemos Ganador!</div>
-      <div style="font-family:var(--font-display);font-size:2.4rem;font-weight:800;color:var(--gold);letter-spacing:6px;margin:10px 0;text-shadow:0 0 30px rgba(232,184,75,.5)">${codigo}</div>
-      <div style="font-size:1rem;color:var(--text);font-weight:600;margin-bottom:6px">${nombre}</div>
-      <div style="font-size:.76rem;color:var(--muted)">🎉 Felicitaciones al ganador del sorteo</div>
+    <div id="ganador-box" class="winner">
+      <div class="w-label">¡Tenemos ganador!</div>
+      <div class="w-code"></div>
+      <div class="w-name"></div>
+      <div class="w-note">Felicitaciones al ganador del sorteo</div>
     </div>`;
+  // textContent evita inyectar HTML con datos del servidor
+  sec.querySelector('.w-code').textContent = codigo;
+  sec.querySelector('.w-name').textContent = nombre;
 
   lanzarConfeti();
 }
@@ -2018,169 +640,18 @@ cargarConfig();
 
  
 // ===============================
-// PAGAR
-// ===============================
-btnPagar.addEventListener("click", async () => {
-  if (procesandoPago) return;
-  if (!cantidadSeleccionada) { alert("Selecciona un paquete"); return; }
-
-  const nombre    = document.getElementById("nombre");
-  const cedula    = document.getElementById("cedula");
-  const telefono  = document.getElementById("telefono");
-  const correo    = document.getElementById("correo");
-  const direccion = document.getElementById("direccion");
-
-  let valido = true;
-  if (nombre.value.trim().length < 2)          { mostrarError(nombre,   "err-nombre");   valido = false; }
-  if (!esCedulaValida(cedula.value.trim()))     { mostrarError(cedula,   "err-cedula");   valido = false; }
-  if (!esTelefonoValido(telefono.value.trim())) { mostrarError(telefono, "err-telefono"); valido = false; }
-  if (!esCorreoValido(correo.value.trim()))     { mostrarError(correo,   "err-correo");   valido = false; }
-  if (!document.getElementById("chkHabeasData").checked) {
-    alert("Debes autorizar el tratamiento de tus datos personales para continuar.");
-    valido = false;
-  }
-  if (!valido) return;
-
-  procesandoPago = true;
-  btnPagar.disabled = true;
-  btnPagar.classList.add("loading");
-  casino.style.display = "flex";
-
-  try {
-    const response = await fetch(`${API_URL}/api/crear-transaccion`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        cliente: {
-          nombre: nombre.value.trim(), cedula: cedula.value.trim(),
-          telefono: telefono.value.trim(), correo: correo.value.trim(),
-          direccion: direccion.value.trim()
-        },
-        cantidad: cantidadSeleccionada
-      })
-    });
-
-    const data = await response.json();
-    if (!response.ok) throw new Error(data.error || "No se pudo iniciar el pago");
-
-    if (data.ajustado) {
-      const aviso = document.getElementById("avisoStock");
-      aviso.style.display = "block";
-      aviso.innerHTML = `⚠️ Solo quedan <strong>${data.cantidadFinal}</strong> códigos disponibles.<br><br>Pedido ajustado automáticamente.<br>Total: <strong>$${data.montoTotal.toLocaleString("es-CO")} COP</strong>`;
-      await new Promise(r => setTimeout(r, 2500));
-    }
-
-    const params = new URLSearchParams({
-      "public-key":          data.publicKey,
-      "currency":            "COP",
-      "amount-in-cents":     data.tx.amount_in_cents,
-      "reference":           data.tx.reference,
-      "signature:integrity": data.tx.signature.integrity,
-      "redirect-url":        `${API_URL}/gracias.html`
-    });
-    window.location.href = `https://checkout.wompi.co/p/?${params.toString()}`;
-
-  } catch (error) {
-    console.error(error);
-    alert(error.message || "Error procesando el pago");
-    casino.style.display = "none";
-    btnPagar.disabled = false;
-    btnPagar.classList.remove("loading");
-    procesandoPago = false;
-    verificarStock();
-  }
-});
-
-
-// ===============================
-// CONSULTAR CODIGOS
-// ===============================
-window.consultar = async function () {
-  const valor = document.getElementById("buscar").value.trim();
-  if (!valor) { alert("Ingresa correo o cédula"); return; }
-  datoActual = valor;
-  const resultado = document.getElementById("resultado");
-  resultado.innerHTML = `<span style="color:var(--muted)">🔍 Buscando...</span>`;
-  document.getElementById("btnReenviarDiv").style.display = "none";
-  document.getElementById("msgReenvio").textContent = "";
-
-  try {
-    const response = await fetch(`${API_URL}/api/mis-codigos`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ dato: valor })
-    });
-    const data = await response.json();
-    resultado.innerHTML = "";
-
-    if (!data.codigos || data.codigos.length === 0) {
-      resultado.innerHTML = `<span style="color:var(--muted)">❌ No se encontraron códigos</span>`;
-      return;
-    }
-    data.codigos.forEach((codigo, index) => {
-      const chip = document.createElement("div");
-      chip.className = "code-chip" + (codigo.dorado ? " dorado" : "");
-      chip.innerHTML = codigo.dorado ? `✨ ${codigo.codigo} ✨` : codigo.codigo;
-      chip.style.animationDelay = `${index * 70}ms`;
-      resultado.appendChild(chip);
-    });
-    document.getElementById("btnReenviarDiv").style.display = "block";
-  } catch (error) {
-    resultado.innerHTML = `<span style="color:#f87171">❌ Error consultando códigos</span>`;
-  }
-};
-
-
-// ===============================
-// REENVIAR CORREO
-// ===============================
-window.reenviarCorreo = async function () {
-  if (!datoActual) return;
-  const msg = document.getElementById("msgReenvio");
-  msg.textContent = "📨 Enviando correo...";
-  try {
-    const response = await fetch(`${API_URL}/api/reenviar-correo`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ dato: datoActual })
-    });
-    const data = await response.json();
-    msg.textContent = data.mensaje || "✅ Correo reenviado correctamente";
-  } catch {
-    msg.textContent = "❌ Error reenviando correo";
-  }
-};
-
-
-// ===============================
 // SUCCESS WOMPI
 // ===============================
 const url = new URL(window.location.href);
 if (url.searchParams.get("status") === "success") {
   document.getElementById("success").style.display = "block";
-  casino.style.display = "none";
-  btnPagar.disabled = false;
-  btnPagar.classList.remove("loading");
-  procesandoPago = false;
   window.scrollTo({ top: 0, behavior: "smooth" });
   url.searchParams.delete("status");
   window.history.replaceState({}, document.title, url.pathname);
 }
+if (window.location.hash === '#terminos') toggleTerminos(true);
 
 
-// ===============================
-// BLOQUEAR COPIA DE CODIGOS
-// ===============================
-document.addEventListener('copy', function(e) {
-  const sel = window.getSelection();
-  if (!sel || !sel.anchorNode) return;
-  const resultado = document.getElementById('resultado');
-  if (resultado && resultado.contains(sel.anchorNode.parentElement)) {
-    e.preventDefault();
-    e.clipboardData && e.clipboardData.setData('text/plain', '');
-  }
-});
-document.getElementById('resultado').addEventListener('contextmenu', e => e.preventDefault());
 // ── Modal de estado (agotado / pausado) ─────────────────────────────────────
 let modalEstadoYaMostrado = false;
 window.cerrarModalEstado = function() {
@@ -2193,11 +664,11 @@ function abrirModalEstado(tipo) {
   const titulo = document.getElementById('modalEstadoTitulo');
   const texto  = document.getElementById('modalEstadoTexto');
   if (tipo === 'pausado') {
-    icono.textContent  = '⏸️';
+    icono.innerHTML = '<svg class="icon"><use href="#i-pause"/></svg>';
     titulo.textContent = 'Ventas pausadas';
     texto.textContent  = 'En este momento no estamos recibiendo nuevas compras. Vuelve a intentarlo más tarde.';
   } else {
-    icono.textContent  = '🎉';
+    icono.innerHTML = '<svg class="icon"><use href="#i-party"/></svg>';
     titulo.textContent = '¡Códigos agotados!';
     texto.textContent  = 'Todos los códigos de esta dinámica ya fueron vendidos. Muy pronto anunciaremos al ganador.';
   }
@@ -2208,10 +679,10 @@ function abrirModalEstado(tipo) {
 </script>
 
 <!-- ══════════ MODAL ESTADO (agotado / pausado) ══════════ -->
-<div id="modalEstado">
+<div id="modalEstado" role="dialog" aria-modal="true" aria-labelledby="modalEstadoTitulo">
   <div class="modal-inner modal-estado-inner">
-    <button class="modal-close" onclick="cerrarModalEstado()">✕</button>
-    <div class="modal-estado-icono" id="modalEstadoIcono">🎉</div>
+    <button class="modal-close" onclick="cerrarModalEstado()" aria-label="Cerrar">✕</button>
+    <div class="modal-estado-icono" id="modalEstadoIcono"><svg class="icon"><use href="#i-party"/></svg></div>
     <div class="modal-estado-titulo" id="modalEstadoTitulo">¡Códigos agotados!</div>
     <div class="modal-estado-texto" id="modalEstadoTexto">
       Todos los códigos de esta dinámica ya fueron vendidos. Muy pronto anunciaremos al ganador.
@@ -2220,393 +691,6 @@ function abrirModalEstado(tipo) {
   </div>
 </div>
 
-<!-- ══════════ MODAL TRANSFERENCIA BANCARIA ══════════ -->
-<div id="modalTransferencia">
-  <div class="modal-inner">
-    <button class="modal-close" onclick="cerrarModalTransferencia()">✕</button>
-
-    <div class="modal-header">
-      🏦 Datos para tu transferencia
-    </div>
-
-    <div class="modal-body">
-      <!-- Tarjetas de banco (se renderizan desde JS) -->
-      <div id="trfListaBancos" style="display:flex;flex-direction:column;gap:10px;margin-bottom:16px"></div>
-
-      <!-- Monto a transferir -->
-      <div style="background:rgba(52,211,153,.06);border:1px solid rgba(52,211,153,.2);border-radius:10px;padding:14px;text-align:center;margin-bottom:18px">
-        <div style="color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px">Monto a transferir</div>
-        <div style="color:#34D399;font-family:var(--font-display);font-size:26px;font-weight:800" id="trfMontoDisplay">—</div>
-        <div style="color:var(--muted);font-size:11px;margin-top:2px" id="trfCodsDisplay"></div>
-      </div>
-
-      <!-- Formulario -->
-      <div style="display:flex;flex-direction:column;gap:10px">
-        <div>
-          <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px;font-weight:600;text-transform:uppercase;letter-spacing:.06em">Nombre completo *</label>
-          <input id="trfNombreInput" type="text" placeholder="Tu nombre completo"
-            style="width:100%;padding:11px 13px;border-radius:10px;border:1px solid var(--border);background:var(--card);color:rgb(9, 9, 9);font-size:16px;outline:none;box-sizing:border-box;font-family:var(--font-body);"
-            onfocus="this.style.borderColor='rgba(52,211,153,.5)'" onblur="this.style.borderColor='var(--border)'">
-        </div>
-        <div>
-          <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px;font-weight:600;text-transform:uppercase;letter-spacing:.06em">Correo electrónico *</label>
-          <input id="trfCorreoInput" type="email" placeholder="tu@correo.com" inputmode="email"
-            style="width:100%;padding:11px 13px;border-radius:10px;border:1px solid var(--border);background:var(--card);color:rgb(7, 7, 7);font-size:16px;outline:none;box-sizing:border-box;font-family:var(--font-body);"
-            onfocus="this.style.borderColor='rgba(52,211,153,.5)'" onblur="this.style.borderColor='var(--border)'">
-        </div>
-        <div>
-          <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px;font-weight:600;text-transform:uppercase;letter-spacing:.06em">Cédula</label>
-          <input id="trfCedulaInput" type="text" placeholder="1234567890" inputmode="numeric"
-            style="width:100%;padding:11px 13px;border-radius:10px;border:1px solid var(--border);background:var(--card);color:rgb(0, 0, 0);font-size:16px;outline:none;box-sizing:border-box;font-family:var(--font-body);"
-            onfocus="this.style.borderColor='rgba(52,211,153,.5)'" onblur="this.style.borderColor='var(--border)'">
-        </div>
-        <div>
-          <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px;font-weight:600;text-transform:uppercase;letter-spacing:.06em">Teléfono / WhatsApp</label>
-          <input id="trfTelefonoInput" type="tel" placeholder="3001234567" inputmode="tel"
-            style="width:100%;padding:11px 13px;border-radius:10px;border:1px solid var(--border);background:var(--card);color:rgb(8, 8, 8);font-size:16px;outline:none;box-sizing:border-box;font-family:var(--font-body);"
-            onfocus="this.style.borderColor='rgba(52,211,153,.5)'" onblur="this.style.borderColor='var(--border)'">
-        </div>
-        <div>
-          <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px;font-weight:600;text-transform:uppercase;letter-spacing:.06em">Dirección</label>
-          <input id="trfDireccionInput" type="text" placeholder="Dirección (opcional)"
-            style="width:100%;padding:11px 13px;border-radius:10px;border:1px solid var(--border);background:var(--card);color:#070707;font-size:16px;outline:none;box-sizing:border-box;font-family:var(--font-body);"
-            onfocus="this.style.borderColor='rgba(52,211,153,.5)'" onblur="this.style.borderColor='var(--border)'">
-        </div>
-        <div>
-          <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px;font-weight:600;text-transform:uppercase;letter-spacing:.06em">Cantidad de códigos * (mín 4, máx 500)</label>
-          <input id="trfCantidadSelect" type="number" min="4" max="500" step="1" value="4" inputmode="numeric"
-            oninput="trfActualizarMonto()" onchange="trfValidarRangoCantidad()"
-            style="width:100%;padding:11px 13px;border-radius:10px;border:1px solid var(--border);background:var(--card);color:rgb(7, 7, 7);font-size:16px;outline:none;box-sizing:border-box;font-family:var(--font-body);"
-            onfocus="this.style.borderColor='rgba(52,211,153,.5)'" onblur="this.style.borderColor='var(--border)'; trfValidarRangoCantidad();">
-        </div>
-      </div>
-
-      <div style="margin-top:14px;background:rgba(232,184,75,.06);border:1px solid rgba(232,184,75,.2);border-radius:10px;padding:13px">
-        <label style="font-size:11px;color:#F5D07A;display:block;margin-bottom:6px;font-weight:700;text-transform:uppercase;letter-spacing:.06em">📎 Soporte de pago *</label>
-        <input id="trfSoporteInput" type="file" accept="image/jpeg,image/png,application/pdf,.jpg,.jpeg,.png,.pdf"
-          style="width:100%;font-size:13px;color:#ECF0FF;box-sizing:border-box"
-          onchange="trfValidarSoporte()">
-        <div id="trfSoporteInfo" style="color:#94A3B8;font-size:11px;line-height:1.5;margin-top:6px">Adjunta una foto clara o PDF del comprobante. Máximo 5 MB.</div>
-      </div>
-
-      <div id="trfFormMsg" style="margin-top:10px;min-height:14px"></div>
-
-      <div class="habeas-data-box" style="margin:10px 0">
-        <label class="habeas-data-label">
-          <input type="checkbox" id="trfChkHabeasData">
-          <span>Autorizo el tratamiento de mis datos personales conforme a la
-            <span class="habeas-data-link" onclick="event.preventDefault(); toggleHabeasData();">Política de Tratamiento de Datos</span>
-            (Ley 1581 de 2012), únicamente para gestionar esta compra y la entrega de premios.</span>
-        </label>
-      </div>
-
-      <button onclick="enviarSolicitudTransferencia()" style="
-        margin-top:16px;width:100%;
-        background:linear-gradient(135deg,#166534,#22c55e);
-        color:rgb(7, 7, 7);border:none;padding:14px;border-radius:12px;
-        font-family:var(--font-display);font-size:15px;font-weight:700;cursor:pointer;transition:opacity .15s;letter-spacing:.01em;
-      " onmouseover="this.style.opacity='.9'" onmouseout="this.style.opacity='1'">
-        📨 Registrar mi solicitud de Compra
-      </button>
-
-      <p style="color:var(--muted);font-size:11px;text-align:center;margin-top:10px;line-height:1.7">
-        Tienes <strong style="color:var(--gold)">24 horas</strong> para realizar la transferencia.<br>
-        Una vez confirmada recibirás tus códigos al correo.
-      </p>
-    </div>
-  </div>
-</div>
-
-<script>
-// ══════════════════════════════════════════════════════
-// DATOS BANCARIOS
-// ══════════════════════════════════════════════════════
-const TRF_BANCOS = [
-  { banco: 'Nequi',     tipo: 'Billetera digital', numero: '3218921686', titular: 'Eider Cobo' },
-  { banco: 'Llave',     tipo: 'Billetera digital', numero: '3128523589', titular: 'Eider Cobo' }
-];
-// El precio se toma de la config real cargada por cargarConfig() (variable
-// global "precioCodigo"), NO de un valor fijo — así el modal de transferencia
-// siempre refleja el precio configurado en el Admin.
-
-// ── Renderiza las tarjetas de banco en el modal ────────────────────────────
-function trfRenderLista() {
-  const lista = document.getElementById('trfListaBancos');
-  if (!lista) return;
-  lista.innerHTML = '';
-  const iconos = { 'Nequi': '💜', 'Llave': '🔑', 'Bancolombia': '🏦', 'Daviplata': '🔶' };
-  TRF_BANCOS.forEach(cuenta => {
-    const icono = iconos[cuenta.banco] || '🏦';
-    const card = document.createElement('div');
-    // Colores forzados (no usar var(--card)/var(--muted) del tema claro del sitio):
-    // el modal de transferencia es oscuro por diseño, sin importar el tema general.
-    card.style.cssText = 'background:#0F1928;border:1px solid rgba(255,255,255,.07);border-radius:12px;padding:14px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px';
-    card.innerHTML = `
-      <div style="flex:1;min-width:0">
-        <div style="font-size:11px;font-weight:700;color:#94A3B8;text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px">${icono} ${cuenta.tipo} ${cuenta.banco}</div>
-        <div style="font-family:var(--font-display, sans-serif);font-size:20px;font-weight:800;color:#FFFFFF;letter-spacing:.03em;margin-bottom:3px">${cuenta.numero}</div>
-        <div style="font-size:12px;color:#94A3B8">Titular: ${cuenta.titular}</div>
-      </div>
-      <button onclick="trfCopiarNumero('${cuenta.numero}', this)" style="
-        background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);color:#FFFFFF;
-        border-radius:10px;padding:9px 14px;font-size:12px;font-weight:700;
-        cursor:pointer;white-space:nowrap;flex-shrink:0;transition:all .2s;font-family:var(--font-display, sans-serif);letter-spacing:.02em;
-      ">Copiar</button>`;
-    lista.appendChild(card);
-  });
-}
-
-window.trfCopiarNumero = async function(numero, btn) {
-  try { await navigator.clipboard.writeText(numero); }
-  catch(e) {
-    const ta = document.createElement('textarea');
-    ta.value = numero; ta.style.cssText = 'position:fixed;opacity:0';
-    document.body.appendChild(ta); ta.select(); document.execCommand('copy');
-    document.body.removeChild(ta);
-  }
-  btn.textContent = '✅ Copiado';
-  btn.style.borderColor = 'rgba(52,211,153,.4)'; btn.style.color = '#34D399';
-  setTimeout(() => { btn.textContent = 'Copiar'; btn.style.borderColor = 'rgba(255,255,255,.1)'; btn.style.color = 'white'; }, 2000);
-};
-
-window.trfActualizarMonto = function() {
-  const cantRaw = parseInt(document.getElementById('trfCantidadSelect')?.value, 10);
-  const cant    = Number.isFinite(cantRaw) && cantRaw > 0 ? cantRaw : 4;
-  const monto   = cant * precioCodigo;
-  const dm = document.getElementById('trfMontoDisplay');
-  const dc = document.getElementById('trfCodsDisplay');
-  if (dm) dm.textContent = '$' + monto.toLocaleString('es-CO') + ' COP';
-  if (dc) dc.textContent = cant + ' código' + (cant !== 1 ? 's' : '');
-};
-
-window.trfValidarRangoCantidad = function() {
-  const input = document.getElementById('trfCantidadSelect');
-  if (!input) return;
-  let v = parseInt(input.value, 10);
-  if (!Number.isFinite(v)) v = 4;
-  if (v < 4)   v = 4;
-  if (v > 500) v = 500;
-  input.value = v;
-  trfActualizarMonto();
-};
-trfActualizarMonto();
-
-window.abrirModalTransferencia = function() {
-  const modal = document.getElementById('modalTransferencia');
-  if (!modal) {
-    console.error('❌ No existe #modalTransferencia');
-    alert('No se pudo abrir el formulario de transferencia.');
-    return;
-  }
-
-  trfRenderLista();
-
-  const campos = {
-    nombre: 'trfNombreInput',
-    correo: 'trfCorreoInput',
-    cedula: 'trfCedulaInput',
-    telefono: 'trfTelefonoInput',
-    direccion: 'trfDireccionInput'
-  };
-
-  Object.entries(campos).forEach(([origen, destino]) => {
-    const origenEl = document.getElementById(origen);
-    const destinoEl = document.getElementById(destino);
-    if (origenEl && destinoEl) destinoEl.value = origenEl.value.trim();
-  });
-
-  const cardSeleccionada = document.querySelector('.card.selected');
-  const cant = cardSeleccionada?.dataset.cantidad ||
-               (Number(cantidadSeleccionada) > 0 ? Number(cantidadSeleccionada) : null);
-
-  const cantidadInput = document.getElementById('trfCantidadSelect');
-
-  if (cant && cantidadInput) {
-    cantidadInput.value = cant;
-  }
-
-  trfValidarRangoCantidad();
-
-  const msg = document.getElementById('trfFormMsg');
-  if (msg) msg.innerHTML = '';
-
-  modal.style.display = 'flex';
-  document.body.style.overflow = 'hidden';
-
-  requestAnimationFrame(() => {
-    modal.scrollTop = 0;
-  });
-};
-
-window.cerrarModalTransferencia = function() {
-  const modal = document.getElementById('modalTransferencia');
-  if (modal) modal.style.display = 'none';
-  document.body.style.overflow = '';
-};
-
-document.addEventListener('keydown', function(e) {
-  if (e.key === 'Escape') cerrarModalTransferencia();
-});
-
-document.addEventListener('click', function(e) {
-  const modal = document.getElementById('modalTransferencia');
-  if (modal && e.target === modal) cerrarModalTransferencia();
-});
-
-window.trfValidarSoporte = function() {
-  const input = document.getElementById('trfSoporteInput');
-  const info = document.getElementById('trfSoporteInfo');
-  const file = input?.files?.[0];
-  if (!info) return false;
-  if (!file) { info.textContent = 'Adjunta una foto clara o PDF del comprobante. Máximo 5 MB.'; info.style.color = '#94A3B8'; return false; }
-  const tipos = ['image/jpeg','image/png','application/pdf'];
-  if (!tipos.includes(file.type)) { info.textContent = '⚠️ Solo se aceptan JPG, PNG o PDF.'; info.style.color = '#f87171'; return false; }
-  if (file.size > 5 * 1024 * 1024) { info.textContent = '⚠️ El archivo supera el máximo de 5 MB.'; info.style.color = '#f87171'; return false; }
-  info.textContent = `✅ ${file.name} · ${(file.size / 1024 / 1024).toFixed(2)} MB`;
-  info.style.color = '#34D399';
-  return true;
-};
-
-function trfLeerArchivoBase64(file) {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => resolve(String(reader.result).split(',').pop());
-    reader.onerror = () => reject(new Error('No se pudo leer el comprobante.'));
-    reader.readAsDataURL(file);
-  });
-}
-
-window.enviarSolicitudTransferencia = async function() {
-  const nombre   = document.getElementById('trfNombreInput')?.value.trim() || '';
-  const correo   = document.getElementById('trfCorreoInput')?.value.trim() || '';
-  const cedula   = document.getElementById('trfCedulaInput')?.value.trim() || '';
-  const telefono = document.getElementById('trfTelefonoInput')?.value.trim() || '';
-  const direccion = document.getElementById('trfDireccionInput')?.value.trim() || '';
-  const cantidad = parseInt(document.getElementById('trfCantidadSelect')?.value, 10);
-  const soporteInput = document.getElementById('trfSoporteInput');
-  const soporteFile = soporteInput?.files?.[0] || null;
-  const msgEl    = document.getElementById('trfFormMsg');
-
-  if (!msgEl) return;
-
-  if (!nombre || !correo) {
-    msgEl.innerHTML = '<div style="background:rgba(248,113,113,.1);color:#f87171;padding:9px 12px;border-radius:8px;font-size:12px;border:1px solid rgba(248,113,113,.2)">⚠️ Nombre y correo son obligatorios</div>';
-    return;
-  }
-  if (!document.getElementById('trfChkHabeasData')?.checked) {
-    msgEl.innerHTML = '<div style="background:rgba(248,113,113,.1);color:#f87171;padding:9px 12px;border-radius:8px;font-size:12px;border:1px solid rgba(248,113,113,.2)">⚠️ Debes autorizar el tratamiento de datos personales para continuar</div>';
-    return;
-  }
-
-  if (!Number.isFinite(cantidad) || cantidad < 4 || cantidad > 500) {
-    msgEl.innerHTML = '<div style="background:rgba(248,113,113,.1);color:#f87171;padding:9px 12px;border-radius:8px;font-size:12px;border:1px solid rgba(248,113,113,.2)">⚠️ La cantidad debe estar entre 4 y 500 códigos</div>';
-    return;
-  }
-
-  if (!soporteFile || !trfValidarSoporte()) {
-    msgEl.innerHTML = '<div style="background:rgba(248,113,113,.1);color:#f87171;padding:9px 12px;border-radius:8px;font-size:12px;border:1px solid rgba(248,113,113,.2)">⚠️ Adjunta el comprobante de pago para que podamos validar la transferencia.</div>';
-    return;
-  }
-
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(correo)) {
-    msgEl.innerHTML = '<div style="background:rgba(248,113,113,.1);color:#f87171;padding:9px 12px;border-radius:8px;font-size:12px;border:1px solid rgba(248,113,113,.2)">⚠️ Correo electrónico inválido</div>';
-    return;
-  }
-
-  const boton = document.querySelector('#modalTransferencia button[onclick*="enviarSolicitudTransferencia"]');
-  if (boton) {
-    boton.disabled = true;
-    boton.style.opacity = '.65';
-  }
-
-  msgEl.innerHTML = '<div style="color:#94A3B8;font-size:12px;padding:6px 0">⏳ Registrando solicitud...</div>';
-
-  try {
-    const soporteBase64 = await trfLeerArchivoBase64(soporteFile);
-    const r = await fetch('/api/transferencia-registrar', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        nombre, correo, cedula, telefono, direccion, cantidad: Number(cantidad),
-        soporte: { filename: soporteFile.name, contentType: soporteFile.type, base64: soporteBase64 }
-      })
-    });
-
-    const raw = await r.text();
-    let d;
-
-    try {
-      d = JSON.parse(raw);
-    } catch {
-      throw new Error(`El servidor respondió con HTTP ${r.status} y no devolvió JSON.`);
-    }
-
-    if (!r.ok || !d.ok) {
-      throw new Error(d.error || d.mensaje || `No se pudo registrar la solicitud (HTTP ${r.status}).`);
-    }
-
-    msgEl.innerHTML = `
-      <div style="background:rgba(52,211,153,.08);border:1px solid rgba(52,211,153,.2);border-radius:10px;padding:14px;font-size:12px">
-        <div style="color:#34D399;font-family:var(--font-display);font-weight:800;font-size:14px;margin-bottom:6px">✅ ¡Solicitud registrada!</div>
-        <div style="color:#ECF0FF;line-height:1.7">${d.mensaje || 'Solicitud registrada correctamente.'}</div>
-        ${d.referencia ? `<div style="margin-top:8px;font-size:11px;color:#94A3B8">
-          Referencia: <span style="font-family:monospace;color:#E8A800">${d.referencia}</span>
-        </div>` : ''}
-        <div style="margin-top:10px;color:#94A3B8;font-size:11px;line-height:1.6">
-          Realiza la transferencia usando los datos mostrados arriba. Conserva la referencia para confirmar tu pago.
-        </div>
-      </div>`;
-
-    ['trfNombreInput','trfCorreoInput','trfCedulaInput','trfTelefonoInput','trfDireccionInput']
-      .forEach(id => {
-        const el = document.getElementById(id);
-        if (el) el.value = '';
-      });
-    if (soporteInput) soporteInput.value = '';
-    const soporteInfo = document.getElementById('trfSoporteInfo');
-    if (soporteInfo) { soporteInfo.textContent = 'Adjunta una foto clara o PDF del comprobante. Máximo 5 MB.'; soporteInfo.style.color = '#94A3B8'; }
-
-  } catch (e) {
-    console.error('❌ Error registrando transferencia:', e);
-    msgEl.innerHTML = `
-      <div style="background:rgba(248,113,113,.1);color:#f87171;padding:10px 12px;border-radius:8px;font-size:12px;border:1px solid rgba(248,113,113,.2)">
-        ⚠️ ${e.message || 'Error de conexión. Intenta de nuevo.'}
-      </div>`;
-  } finally {
-    if (boton) {
-      boton.disabled = false;
-      boton.style.opacity = '1';
-    }
-  }
-};
-document.addEventListener('DOMContentLoaded', function() {
-  const btnTransferencia = document.getElementById('btnTransferencia');
-
-  if (!btnTransferencia) {
-    console.error('❌ No se encontró #btnTransferencia');
-    return;
-  }
-
-  btnTransferencia.addEventListener('click', function(e) {
-    e.preventDefault();
-    e.stopPropagation();
-
-    try {
-      abrirModalTransferencia();
-    } catch (error) {
-      console.error('❌ Error al abrir transferencia:', error);
-      const modal = document.getElementById('modalTransferencia');
-      if (modal) {
-        modal.style.display = 'flex';
-        document.body.style.overflow = 'hidden';
-      } else {
-        alert('No se encontró el formulario de transferencia.');
-      }
-    }
-  });
-});
-
-</script>
 
 </body>
 </html>

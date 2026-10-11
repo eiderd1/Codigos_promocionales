@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#050A18">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta http-equiv="X-Content-Type-Options" content="nosniff">
+<meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
+<title>Mis códigos – EiderTech Soluciones</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎟️</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700;9..144,800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="premium.css">
+</head>
+
+<body>
+
+<!-- Iconos -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <symbol id="i-lock" viewBox="0 0 24 24"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></symbol>
+    <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6l8-3z"/><path d="M9 12l2 2 4-4"/></symbol>
+    <symbol id="i-dice" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="3"/><circle cx="9" cy="9" r=".9" fill="currentColor"/><circle cx="15" cy="9" r=".9" fill="currentColor"/><circle cx="9" cy="15" r=".9" fill="currentColor"/><circle cx="15" cy="15" r=".9" fill="currentColor"/></symbol>
+    <symbol id="i-ticket" viewBox="0 0 24 24"><path d="M4 6h16v4a2 2 0 0 0 0 4v4H4v-4a2 2 0 0 0 0-4z"/><path d="M14 6v12" stroke-dasharray="2 2"/></symbol>
+    <symbol id="i-gem" viewBox="0 0 24 24"><path d="M6 4h12l3 5-9 11L3 9z"/><path d="M3 9h18M9 4l-2 5 5 11 5-11-2-5"/></symbol>
+    <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></symbol>
+    <symbol id="i-mail" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></symbol>
+    <symbol id="i-bank" viewBox="0 0 24 24"><path d="M3 10l9-6 9 6M5 10v8M9 10v8M15 10v8M19 10v8M3 20h18"/></symbol>
+    <symbol id="i-chev" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></symbol>
+    <symbol id="i-pause" viewBox="0 0 24 24"><path d="M9 5v14M15 5v14"/></symbol>
+    <symbol id="i-party" viewBox="0 0 24 24"><path d="M4 20l4-12 8 8z"/><path d="M14 4l1 2M19 9l2 1M17 3v3"/></symbol>
+    <symbol id="i-calendar" viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M9 3v4M15 3v4"/></symbol>
+  </defs>
+</svg>
+
+<header class="topbar">
+  <div class="topbar-in">
+    <a class="brand" href="/" aria-label="EiderTech Soluciones">
+      <img src="/imagenes/Logo.png" alt="EiderTech Soluciones" onerror="this.parentElement.style.display='none'">
+    </a>
+    <nav class="topnav" aria-label="Principal">
+      <a href="/">Inicio</a>
+      <a href="/#comprar" class="nav-cta">Comprar códigos</a>
+      <a href="Admin.html" id="adminTrigger" title="Admin" aria-label="Administración"><svg class="icon"><use href="#i-lock"/></svg></a>
+    </nav>
+  </div>
+</header>
+
+<main class="shell">
+  <div class="page-narrow">
+    <a class="back-link" href="/"><svg class="icon"><use href="#i-chev"/></svg>Volver al inicio</a>
+    <h1 class="page-title">Mis códigos</h1>
+    <p class="page-lead">Escribe el correo o la cédula con los que compraste y te mostramos tus códigos.</p>
+
+    <div class="consult-card">
+      <div class="consult-row">
+        <input type="text" id="buscar" placeholder="Correo o cédula" aria-label="Correo o cédula" autocomplete="off">
+        <button class="btn-consult" id="btnBuscar" onclick="consultar()"><svg class="icon"><use href="#i-search"/></svg>Buscar</button>
+      </div>
+
+      <div id="resultado" class="codes-list"
+        style="-webkit-user-select:none;user-select:none;-moz-user-select:none;-ms-user-select:none;pointer-events:none;"></div>
+
+      <div id="btnReenviarDiv" style="display:none; margin-top:14px;">
+        <button class="btn-reenviar" onclick="reenviarCorreo()"><svg class="icon"><use href="#i-mail"/></svg>Reenviar códigos a mi correo</button>
+      </div>
+      <div class="msg-reenvio" id="msgReenvio"></div>
+    </div>
+
+    <div class="consult-cta">
+      <p>¿Aún no tienes códigos?</p>
+      <a class="btn btn-primary" href="/#comprar">Comprar códigos</a>
+    </div>
+  </div>
+</main>
+
+<footer class="footer">
+  <div class="footer-in">
+    <span class="footer-brand"><img src="/imagenes/Logo.png" alt="EiderTech Soluciones" loading="lazy" onerror="this.parentElement.style.display='none'"></span>
+    <div class="footer-text">
+      <p>© 2026 EiderTech Soluciones. Todos los derechos reservados.</p>
+      <p><a href="mailto:infoeidertechsoluciones@gmail.com">infoeidertechsoluciones@gmail.com</a></p>
+      <p>Pagos procesados con Wompi · Cifrado SSL · Facturación electrónica disponible</p>
+    </div>
+  </div>
+</footer>
+
+<a href="https://wa.me/573053228703?text=Hola quiero comprar códigos" class="wa-float" target="_blank" rel="noopener" aria-label="Contactar por WhatsApp">
+  <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+</a>
+
+<script>
+const API_URL = window.location.origin;
+let datoActual = "";
+
+// ===============================
+// CONSULTAR CODIGOS
+// ===============================
+window.consultar = async function () {
+  const valor = document.getElementById("buscar").value.trim();
+  if (!valor) { alert("Ingresa correo o cédula"); return; }
+  datoActual = valor;
+  const resultado = document.getElementById("resultado");
+  resultado.innerHTML = `<span style="color:var(--muted)">Buscando…</span>`;
+  document.getElementById("btnReenviarDiv").style.display = "none";
+  document.getElementById("msgReenvio").textContent = "";
+
+  try {
+    const response = await fetch(`${API_URL}/api/mis-codigos`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ dato: valor })
+    });
+    const data = await response.json();
+    resultado.innerHTML = "";
+
+    if (!data.codigos || data.codigos.length === 0) {
+      resultado.innerHTML = `<span style="color:var(--muted)">No encontramos códigos con ese dato. Revisa el correo o la cédula.</span>`;
+      return;
+    }
+    data.codigos.forEach((codigo, index) => {
+      const chip = document.createElement("div");
+      chip.className = "code-chip" + (codigo.dorado ? " dorado" : "");
+      chip.textContent = codigo.codigo;
+      chip.style.animationDelay = `${index * 70}ms`;
+      resultado.appendChild(chip);
+    });
+    document.getElementById("btnReenviarDiv").style.display = "block";
+  } catch (error) {
+    resultado.innerHTML = `<span style="color:#FF9AA8">No pudimos consultar tus códigos. Intenta de nuevo.</span>`;
+  }
+};
+
+
+// ===============================
+// REENVIAR CORREO
+// ===============================
+window.reenviarCorreo = async function () {
+  if (!datoActual) return;
+  const msg = document.getElementById("msgReenvio");
+  msg.textContent = "Enviando correo…";
+  try {
+    const response = await fetch(`${API_URL}/api/reenviar-correo`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ dato: datoActual })
+    });
+    const data = await response.json();
+    msg.textContent = data.mensaje || "Correo reenviado correctamente";
+  } catch {
+    msg.textContent = "No pudimos reenviar el correo. Intenta de nuevo.";
+  }
+};
+
+
+
+document.getElementById('buscar').addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); consultar(); } });
+
+// Los códigos no se pueden copiar desde esta lista
+document.addEventListener('copy', function (e) {
+  const sel = window.getSelection();
+  if (!sel || !sel.anchorNode) return;
+  const resultado = document.getElementById('resultado');
+  if (resultado && resultado.contains(sel.anchorNode.parentElement)) {
+    e.preventDefault();
+    e.clipboardData && e.clipboardData.setData('text/plain', '');
+  }
+});
+document.getElementById('resultado').addEventListener('contextmenu', e => e.preventDefault());
+</script>
+</body>
+</html>
