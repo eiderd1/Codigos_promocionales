@@ -115,7 +115,7 @@ body::before {
   padding: clamp(24px, 5vw, 56px) clamp(16px, 4vw, 32px) 120px;
 }
 .layout { display: grid; grid-template-columns: minmax(0, 1fr); gap: 36px; }
-.stage { min-width: 0; }
+.stage { min-width: 0; container-type: inline-size; }
 .buy { min-width: 0; }
 
 @media (min-width: 960px) {
@@ -132,22 +132,27 @@ body::before {
   font-weight: 600; color: var(--text-dim);
   letter-spacing: .005em; line-height: 1.35;
   margin-bottom: 4px;
+  text-wrap: balance;
 }
 .prize {
   font-family: var(--font-display);
   font-weight: 800;
-  font-size: clamp(2.9rem, 11.5vw, 5.6rem);
+  /* El tamaño sigue el ancho de la columna (no de la pantalla): el número nunca invade el texto vecino */
+  font-size: clamp(2.2rem, 11.5vw, 5.6rem);
+  font-size: clamp(2.2rem, 14cqw, 5.6rem);
   line-height: 1; letter-spacing: -.035em;
-  display: flex; align-items: baseline; flex-wrap: wrap; gap: 0 .18em;
+  display: flex; align-items: baseline; flex-wrap: wrap; gap: .06em .16em;
+  margin-top: 6px;
   padding-bottom: .08em;
   font-variant-numeric: lining-nums tabular-nums;
 }
+.prize .prize-num { white-space: nowrap; }
 .prize .prize-cur, .prize .prize-num {
   background: var(--gold-grad);
   -webkit-background-clip: text; background-clip: text;
   -webkit-text-fill-color: transparent; color: transparent;
 }
-.prize .prize-cur { font-size: .62em; align-self: flex-start; margin-top: .1em; }
+.prize .prize-cur { font-size: .62em; align-self: flex-start; margin-top: .1em; margin-right: -.04em; }
 .prize .prize-cop {
   font-family: var(--font-body); font-weight: 700;
   font-size: clamp(.95rem, 2.6vw, 1.2rem); letter-spacing: .04em;
