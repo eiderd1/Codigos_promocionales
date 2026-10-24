@@ -95,9 +95,7 @@ router.post('/transferencia-registrar', async (req, res) => {
       });
     }
 
-    if (!soporte?.base64) {
-      return res.status(400).json({ error: 'Debes adjuntar el comprobante de pago para registrar la transferencia.' });
-    }
+    // El comprobante ya no es obligatorio al registrar: el cliente lo envía por WhatsApp.
 
     const { count: disponibles } = await supabase
       .from('codigos')
@@ -125,12 +123,15 @@ router.post('/transferencia-registrar', async (req, res) => {
       return res.status(409).json({ error: 'Los códigos disponibles cambiaron mientras procesábamos tu solicitud. Intenta nuevamente.' });
     }
 
+    // Soporte opcional (compatibilidad): si llega adjunto se guarda; si no, se espera por WhatsApp.
     let soporteGuardado = null;
-    try {
-      soporteGuardado = await guardarSoporte(referencia, soporte);
-    } catch (err) {
-      await supabase.from('codigos').update({ reservado: false, referencia: null }).eq('referencia', referencia).eq('reservado', true);
-      return res.status(400).json({ error: err.message });
+    if (soporte?.base64) {
+      try {
+        soporteGuardado = await guardarSoporte(referencia, soporte);
+      } catch (err) {
+        await supabase.from('codigos').update({ reservado: false, referencia: null }).eq('referencia', referencia).eq('reservado', true);
+        return res.status(400).json({ error: err.message });
+      }
     }
 
     const { error: errorCompra } = await supabase
@@ -297,9 +298,7 @@ router.post('/admin/transferencia-aprobar', authAdmin, async (req, res) => {
       return res.status(404).json({ error: 'Transferencia no encontrada, ya procesada o está siendo revisada por otro administrador.' });
     }
 
-    if (!previa.soporte_pago_path) {
-      return res.status(409).json({ error: 'No hay comprobante adjunto. Solicita al cliente el soporte de pago antes de aprobar.' });
-    }
+    // El comprobante llega por WhatsApp: el admin verifica el pago en su banco/Nequi antes de aprobar.
 
     // Cerrojamos la revisión: solo un administrador puede pasar esta referencia
     // de pendiente a procesando. Esto evita doble aprobación/doble envío.
