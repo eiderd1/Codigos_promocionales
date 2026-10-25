@@ -569,9 +569,6 @@ a.btn { text-decoration: none; }
 .trf-monto .t-sub { font-size: .8rem; color: var(--muted); }
 .trf-field { margin-bottom: 12px; }
 .trf-field label { display: block; font-size: .85rem; font-weight: 700; color: var(--text-dim); margin-bottom: 5px; }
-.trf-soporte { margin-top: 14px; padding: 14px; border-radius: 14px; background: rgba(228,191,107,.06); border: 1px dashed rgba(228,191,107,.45); }
-.trf-soporte label { display: block; font-size: .88rem; font-weight: 800; color: var(--gold-hi); margin-bottom: 8px; }
-.trf-soporte input[type="file"] { width: 100%; font-size: .85rem; color: var(--text-dim); }
 .trf-send {
   margin-top: 16px; width: 100%; padding: 15px; border: none; border-radius: 14px; cursor: pointer;
   background: var(--gold-grad); color: #1A1204; font-family: var(--font-body); font-size: 1rem; font-weight: 800;
@@ -680,3 +677,18 @@ a.btn { text-decoration: none; }
 @keyframes gemShine { 0%, 55% { transform: translateX(-130%); } 85%, 100% { transform: translateX(130%); } }
 .gold-callout .gc-icon .icon { animation: gemTilt 3.4s ease-in-out infinite; }
 @keyframes gemTilt { 0%, 100% { transform: rotate(0) scale(1); } 70% { transform: rotate(-8deg) scale(1.1); } 85% { transform: rotate(6deg) scale(1.1); } }
+
+/* ── Transferencia: comprobante por WhatsApp ── */
+.trf-wa-note { display: flex; gap: 12px; align-items: flex-start; margin-top: 14px; padding: 14px; border-radius: 14px; background: rgba(37,211,102,.08); border: 1px solid rgba(37,211,102,.35); font-size: .88rem; color: var(--text-dim); line-height: 1.55; }
+.trf-wa-note svg { width: 22px; height: 22px; flex-shrink: 0; margin-top: 2px; fill: #25D366; }
+.trf-wa-note strong { color: var(--ivory); }
+.trf-ok { padding: 16px; border-radius: 16px; background: rgba(61,220,151,.08); border: 1px solid rgba(61,220,151,.35); }
+.trf-ok-t { font-family: var(--font-display); font-weight: 800; font-size: 1.2rem; color: var(--ok); margin-bottom: 6px; }
+.trf-ok-p { font-size: .9rem; color: var(--text); line-height: 1.6; }
+.trf-ok-ref { margin-top: 8px; font-size: .82rem; color: var(--muted); }
+.trf-ok-ref b { color: var(--gold-hi); font-variant-numeric: tabular-nums; word-break: break-all; }
+.trf-ok-steps { margin: 12px 0 14px 18px; font-size: .88rem; color: var(--text-dim); line-height: 1.6; }
+.trf-ok-steps li { margin-bottom: 4px; }
+.trf-wa-btn { display: flex; align-items: center; justify-content: center; gap: 10px; padding: 15px 18px; border-radius: 14px; background: #25D366; color: #07290F; font-weight: 800; font-size: 1rem; text-decoration: none; box-shadow: 0 10px 28px -10px rgba(37,211,102,.7); transition: transform .15s, filter .2s; }
+.trf-wa-btn:hover { transform: translateY(-2px); filter: brightness(1.06); }
+.trf-wa-btn svg { width: 22px; height: 22px; fill: currentColor; }

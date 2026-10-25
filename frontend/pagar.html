@@ -392,10 +392,9 @@ btnPagar.addEventListener("click", async () => {
           oninput="trfActualizarMonto()" onchange="trfValidarRangoCantidad()" onblur="trfValidarRangoCantidad();">
       </div>
 
-      <div class="trf-soporte">
-        <label for="trfSoporteInput">Soporte de pago *</label>
-        <input id="trfSoporteInput" type="file" accept="image/jpeg,image/png,application/pdf,.jpg,.jpeg,.png,.pdf" onchange="trfValidarSoporte()">
-        <div id="trfSoporteInfo" style="color:#94A3B8;font-size:12px;line-height:1.5;margin-top:6px">Adjunta una foto clara o PDF del comprobante. Máximo 5 MB.</div>
+      <div class="trf-wa-note">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+        <div><strong>El comprobante lo envías por WhatsApp.</strong> Al registrar tu solicitud te mostramos un botón que abre el chat con tu referencia y tus datos ya escritos. Solo adjuntas la captura.</div>
       </div>
 
       <div id="trfFormMsg" style="margin-top:10px;min-height:14px"></div>
@@ -413,7 +412,7 @@ btnPagar.addEventListener("click", async () => {
 
       <p class="trf-foot">
         Tienes <strong>24 horas</strong> para realizar la transferencia.<br>
-        Una vez confirmada recibirás tus códigos al correo.
+        Cuando confirmemos tu comprobante recibirás tus códigos al correo.
       </p>
     </div>
   </div>
@@ -556,27 +555,13 @@ document.addEventListener('click', function(e) {
   if (modal && e.target === modal) cerrarModalTransferencia();
 });
 
-window.trfValidarSoporte = function() {
-  const input = document.getElementById('trfSoporteInput');
-  const info = document.getElementById('trfSoporteInfo');
-  const file = input?.files?.[0];
-  if (!info) return false;
-  if (!file) { info.textContent = 'Adjunta una foto clara o PDF del comprobante. Máximo 5 MB.'; info.style.color = '#94A3B8'; return false; }
-  const tipos = ['image/jpeg','image/png','application/pdf'];
-  if (!tipos.includes(file.type)) { info.textContent = '⚠️ Solo se aceptan JPG, PNG o PDF.'; info.style.color = '#f87171'; return false; }
-  if (file.size > 5 * 1024 * 1024) { info.textContent = '⚠️ El archivo supera el máximo de 5 MB.'; info.style.color = '#f87171'; return false; }
-  info.textContent = `✅ ${file.name} · ${(file.size / 1024 / 1024).toFixed(2)} MB`;
-  info.style.color = '#34D399';
-  return true;
-};
-
-function trfLeerArchivoBase64(file) {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => resolve(String(reader.result).split(',').pop());
-    reader.onerror = () => reject(new Error('No se pudo leer el comprobante.'));
-    reader.readAsDataURL(file);
-  });
+// Número de WhatsApp de soporte (el mismo del botón flotante)
+const TRF_WA_NUMERO = '573053228703';
+function trfLinkWhatsApp(ref, nombre, cantidad, monto) {
+  const txt = `Hola, acabo de registrar mi compra por transferencia.\n` +
+    `Referencia: ${ref}\nNombre: ${nombre}\nCódigos: ${cantidad}\nTotal: $${Number(monto).toLocaleString('es-CO')} COP\n\n` +
+    `Te envío el comprobante de pago:`;
+  return `https://wa.me/${TRF_WA_NUMERO}?text=${encodeURIComponent(txt)}`;
 }
 
 window.enviarSolicitudTransferencia = async function() {
@@ -586,8 +571,6 @@ window.enviarSolicitudTransferencia = async function() {
   const telefono = document.getElementById('trfTelefonoInput')?.value.trim() || '';
   const direccion = document.getElementById('trfDireccionInput')?.value.trim() || '';
   const cantidad = parseInt(document.getElementById('trfCantidadSelect')?.value, 10);
-  const soporteInput = document.getElementById('trfSoporteInput');
-  const soporteFile = soporteInput?.files?.[0] || null;
   const msgEl    = document.getElementById('trfFormMsg');
 
   if (!msgEl) return;
@@ -606,16 +589,12 @@ window.enviarSolicitudTransferencia = async function() {
     return;
   }
 
-  if (!soporteFile || !trfValidarSoporte()) {
-    msgEl.innerHTML = '<div style="background:rgba(248,113,113,.1);color:#f87171;padding:9px 12px;border-radius:8px;font-size:12px;border:1px solid rgba(248,113,113,.2)">⚠️ Adjunta el comprobante de pago para que podamos validar la transferencia.</div>';
-    return;
-  }
-
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(correo)) {
     msgEl.innerHTML = '<div style="background:rgba(248,113,113,.1);color:#f87171;padding:9px 12px;border-radius:8px;font-size:12px;border:1px solid rgba(248,113,113,.2)">⚠️ Correo electrónico inválido</div>';
     return;
   }
 
+  let registrado = false;
   const boton = document.querySelector('#modalTransferencia button[onclick*="enviarSolicitudTransferencia"]');
   if (boton) {
     boton.disabled = true;
@@ -625,13 +604,11 @@ window.enviarSolicitudTransferencia = async function() {
   msgEl.innerHTML = '<div style="color:#94A3B8;font-size:12px;padding:6px 0">⏳ Registrando solicitud...</div>';
 
   try {
-    const soporteBase64 = await trfLeerArchivoBase64(soporteFile);
     const r = await fetch('/api/transferencia-registrar', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        nombre, correo, cedula, telefono, direccion, cantidad: Number(cantidad),
-        soporte: { filename: soporteFile.name, contentType: soporteFile.type, base64: soporteBase64 }
+        nombre, correo, cedula, telefono, direccion, cantidad: Number(cantidad)
       })
     });
 
@@ -648,26 +625,31 @@ window.enviarSolicitudTransferencia = async function() {
       throw new Error(d.error || d.mensaje || `No se pudo registrar la solicitud (HTTP ${r.status}).`);
     }
 
+    const waHref = trfLinkWhatsApp(d.referencia || '', nombre, d.cantidadFinal || cantidad, d.montoTotal || (cantidad * precioCodigo));
+    const safe = (t) => String(t).replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
     msgEl.innerHTML = `
-      <div style="background:rgba(52,211,153,.08);border:1px solid rgba(52,211,153,.2);border-radius:10px;padding:14px;font-size:12px">
-        <div style="color:#34D399;font-family:var(--font-display);font-weight:800;font-size:14px;margin-bottom:6px">✅ ¡Solicitud registrada!</div>
-        <div style="color:#ECF0FF;line-height:1.7">${d.mensaje || 'Solicitud registrada correctamente.'}</div>
-        ${d.referencia ? `<div style="margin-top:8px;font-size:11px;color:#94A3B8">
-          Referencia: <span style="font-family:monospace;color:#E8A800">${d.referencia}</span>
-        </div>` : ''}
-        <div style="margin-top:10px;color:#94A3B8;font-size:11px;line-height:1.6">
-          Realiza la transferencia usando los datos mostrados arriba. Conserva la referencia para confirmar tu pago.
-        </div>
+      <div class="trf-ok">
+        <div class="trf-ok-t">Solicitud registrada</div>
+        <div class="trf-ok-p">${safe(d.mensaje || 'Solicitud registrada correctamente.')}</div>
+        ${d.referencia ? `<div class="trf-ok-ref">Referencia: <b>${safe(d.referencia)}</b></div>` : ''}
+        <ol class="trf-ok-steps">
+          <li>Haz la transferencia con los datos de arriba (si aún no la hiciste).</li>
+          <li>Toca el botón verde y envía la captura del comprobante por WhatsApp.</li>
+        </ol>
+        <a class="trf-wa-btn" href="${waHref}" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+          Enviar comprobante por WhatsApp
+        </a>
       </div>`;
+    registrado = true;
+    if (boton) boton.style.display = 'none';   // evita registrar (y reservar códigos) dos veces
+    msgEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
 
     ['trfNombreInput','trfCorreoInput','trfCedulaInput','trfTelefonoInput','trfDireccionInput']
       .forEach(id => {
         const el = document.getElementById(id);
         if (el) el.value = '';
       });
-    if (soporteInput) soporteInput.value = '';
-    const soporteInfo = document.getElementById('trfSoporteInfo');
-    if (soporteInfo) { soporteInfo.textContent = 'Adjunta una foto clara o PDF del comprobante. Máximo 5 MB.'; soporteInfo.style.color = '#94A3B8'; }
 
   } catch (e) {
     console.error('❌ Error registrando transferencia:', e);
@@ -676,7 +658,7 @@ window.enviarSolicitudTransferencia = async function() {
         ⚠️ ${e.message || 'Error de conexión. Intenta de nuevo.'}
       </div>`;
   } finally {
-    if (boton) {
+    if (boton && !registrado) {
       boton.disabled = false;
       boton.style.opacity = '1';
     }

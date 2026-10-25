@@ -1771,7 +1771,7 @@
           : '<span style="color:var(--text3);font-size:12px">—</span>';
         const soporteHtml = t.soporte_url
           ? `<div style="margin:8px 0;padding:8px 10px;background:var(--surface2);border-radius:8px;font-size:12px">📎 <strong>Comprobante:</strong> <a href="${t.soporte_url}" target="_blank" rel="noopener" style="color:var(--accent);font-weight:700">Ver soporte</a>${t.soporte_pago_nombre ? ` <span style="color:var(--text3)">· ${t.soporte_pago_nombre}</span>` : ''}</div>`
-          : `<div style="margin:8px 0;padding:8px 10px;background:#fff7ed;border:1px solid #fed7aa;border-radius:8px;font-size:12px;color:#9a3412">⚠️ Sin comprobante adjunto</div>`;
+          : `<div style="margin:8px 0;padding:8px 10px;background:#fff7ed;border:1px solid #fed7aa;border-radius:8px;font-size:12px;color:#9a3412">💬 Comprobante por WhatsApp: verifica el pago en tu banco/Nequi antes de aprobar</div>`;
         const reservaHtml = t.estado==='transferencia_pendiente' && t.reserva_expira_at
           ? `<div style="font-size:11px;color:var(--text3);margin-top:4px">🔒 Códigos reservados hasta ${new Date(t.reserva_expira_at).toLocaleString('es-CO')}</div>` : '';
         const acciones = t.estado==='transferencia_pendiente' ? `
